@@ -31,9 +31,9 @@ public class TestDexer {
 
 
 
-    String spot1;
-    String spot2;
-    String spot3;
+    String spot1 = "U";
+    String spot2 = "U";
+    String spot3 = "U";
     int checkingNumber = 1;
     String currentOrder = "UUU";
     String gamePattern;
