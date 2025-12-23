@@ -17,20 +17,20 @@ public class TestDexer {
 
 
 
-    final double gearRatio = 5.0/3;
+    final double gearFactor = 250.0;
     double frontPos = 0;
-    double frontSecondIntakePos = (1.0/3)/gearRatio;
-    double frontThirdIntakePos = 736478236; //random number
-    double backPos = .5/gearRatio;
-    double backSecondIntakePos = 56565545; //randopm number
-    double backThirdIntakePos = 6767676; //random number
-    double shootStartingAtSpot1 = 2983483; //random number
-    double shootStartingAtSpot2 = 2983483; //random number
-    double shootStartingAtSpot3 = 2983483; //random number
-    double shootRotator; //random number
+    double frontSecondIntakePos = 120/gearFactor;
+    double frontThirdIntakePos = 240/gearFactor;
+    double backPos = 180/gearFactor;
+    double backSecondIntakePos = -60/gearFactor; //300>250 so we do the negative equivalent
+    double backThirdIntakePos = 60/gearFactor;
+    double shootStartingAtSpot1 = 90/gearFactor;
+    double shootStartingAtSpot2 = 210/gearFactor;
+    double shootStartingAtSpot3 = -30/gearFactor;
+    double shootRotator; //will depend on whats being shot first
+    //the gear ratio has to increase for this to work
 
-
-
+    //all positions are in degrees divided by 250 (the maximum degrees in one direction given the gear ratio
     String spot1 = "U";
     String spot2 = "U";
     String spot3 = "U";
