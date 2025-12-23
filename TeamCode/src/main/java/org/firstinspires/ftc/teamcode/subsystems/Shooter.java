@@ -141,9 +141,11 @@ public class Shooter {
         numShot = 1;
         isActive = true;
         launchState = LaunchState.SPIN_UP;
+        //add spindexer func
         amountToShoot = 3;
         feederTimer.reset();
     }
+ /*
     public void shoot1(){
         isActive = true;
         numShot = 1;
@@ -151,6 +153,7 @@ public class Shooter {
         feederTimer.reset();
         launchState = LaunchState.SPIN_UP;
     }
+    */
     public void startFeeder(){
         feeder.setPosition(highPos);
     }
