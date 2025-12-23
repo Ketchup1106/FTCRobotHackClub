@@ -19,26 +19,27 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
-@TeleOp(name = "TeleOp")
-public class teleOp extends OpMode {
+@TeleOp(name = "turretTest")
+public class turretTest extends OpMode {
     int aprilTagTelemtryIndex = 0;
 
     ElapsedTime runtime = new ElapsedTime();
-    ArcadeDrive drive = new ArcadeDrive();
-    Follower follower;
-    Shooter shooter = new Shooter();
+    //ArcadeDrive drive = new ArcadeDrive();
+    //Follower follower;
+    //Shooter shooter = new Shooter();
 
     Turret turret = new Turret();
 
-    Spindexer spindexer = new Spindexer();
+
+    //Spindexer spindexer = new Spindexer();
     double goalX = 12;
 
     double goalY = 136;
 
-    Intake intake = new Intake();
+    //Intake intake = new Intake();
 
     //TouchySensor touchy1 = new TouchySensor();
-    AprilTagStuff aprilTagStuff = new AprilTagStuff();
+    //AprilTagStuff aprilTagStuff = new AprilTagStuff();
 
 
     boolean automatedDrive = false;
@@ -55,6 +56,7 @@ public class teleOp extends OpMode {
 
     @Override
     public void init(){
+        /*
         drive.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
         intake.init(hardwareMap);
@@ -63,6 +65,8 @@ public class teleOp extends OpMode {
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
+        */
+        turret.init(hardwareMap);
 
     }
 
@@ -77,6 +81,7 @@ public class teleOp extends OpMode {
 //        if(automatedDrive){
 //            automatedDrive(follower.getPose());
 //        }
+        /*
         follower.update();
 
         goalDist = Math.sqrt(Math.pow(goalX - follower.getPose().getX(), 2) + Math.pow(goalY - follower.getPose().getY(), 2));
@@ -140,20 +145,23 @@ public class teleOp extends OpMode {
             shooter.updateState(targetVel);
         }
 
-//        if(spindexer.frontTouchyActive()){
-//            spindexer.rotateToFront();
-//        }
-//
-//        if(spindexer.rearTouchyActive()){
-//            spindexer.rotateToBack();
-//        }
+        if(spindexer.frontTouchyActive()){
+            spindexer.rotateToFront();
+        }
+
+        if(spindexer.rearTouchyActive()){
+            spindexer.rotateToBack();
+        }
+        */
+        if(gamepad1.aWasPressed()){
+            turret.rotate();
+        }
+
+        //targetVel = shooter.setVel(goalDist);
 
 
-        targetVel = shooter.setVel(goalDist);
 
-
-
-
+/*
         telemetry.addData("motor1 ticks: ", intake.getPos());
         //telemetry.addData("Button status: ", touchy1.detectTouch());
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
@@ -171,6 +179,8 @@ public class teleOp extends OpMode {
         telemetry.addData("is turning?", turningToShoot);
         telemetry.addData("automated drive?", automatedDrive);
         telemetry.update();
+
+ */
     }//
 
 }

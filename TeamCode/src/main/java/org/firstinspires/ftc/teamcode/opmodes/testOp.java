@@ -150,13 +150,13 @@ public class testOp extends OpMode {
             shooter.updateState(targetVel);
         }
 
-        if(spindexer.frontTouchyActive()){
-            spindexer.rotateToFront();
-        }
-
-        if(spindexer.rearTouchyActive()){
-            spindexer.rotateToBack();
-        }
+//        if(spindexer.frontTouchyActive()){
+//            spindexer.rotateToFront();
+//        }
+//
+//        if(spindexer.rearTouchyActive()){
+//            spindexer.rotateToBack();
+//        }
 
 
         targetVel = shooter.setVel(goalDist);

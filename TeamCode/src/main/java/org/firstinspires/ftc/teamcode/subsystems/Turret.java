@@ -12,18 +12,21 @@ public class Turret {
     double ticksPerRadian = 537.6/(2 * Math.PI);
 
     public void init(HardwareMap hwMap){
-        turret = hwMap.get(DcMotorEx.class, "turret");
+        turret = hwMap.get(DcMotorEx.class, "tm");
         turret.setDirection(DcMotorSimple.Direction.FORWARD);
-        turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        //turret.setTargetPosition(0);
+        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
-        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0));
+        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10, 0, 0, 0));
     }
     public void rotateToGoal(double goalAngle){
         turret.setTargetPosition((int)(goalAngle * ticksPerRadian));
     }
 
     public void rotate(){
-        turret.setTargetPosition(turret.getCurrentPosition() + 1);
+
+        //turret.setTargetPosition(turret.getCurrentPosition() + 1);
+        turret.setPower(1);
     }
 
 
