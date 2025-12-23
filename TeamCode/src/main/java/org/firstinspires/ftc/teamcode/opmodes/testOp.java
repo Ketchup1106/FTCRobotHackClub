@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,8 +10,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
-import org.firstinspires.ftc.teamcode.subsystems.TouchySensor;
+import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -30,7 +27,7 @@ public class testOp extends OpMode {
 
     Turret turret = new Turret();
 
-    Spindexer spindexer = new Spindexer();
+    TestDexer spindexer = new TestDexer();
     double goalX = 12;
 
     double goalY = 136;
@@ -45,7 +42,7 @@ public class testOp extends OpMode {
 
     double goalDist;
     double goalAngle;
-    String order;
+    public String order;
     double powerSetter = .2;
     double targetVel = 0;
     int shoot = 0;
@@ -53,6 +50,8 @@ public class testOp extends OpMode {
     boolean slowMode = false;
     boolean turningToShoot = false;
     boolean isCheckingForApril = true;
+    ElapsedTime aprilTimer = new ElapsedTime();
+    boolean doesAprilTimerHaveToReset = true;
 
     @Override
     public void init(){
@@ -60,6 +59,7 @@ public class testOp extends OpMode {
         shooter.init(hardwareMap, telemetry);
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
+        spindexer.init(hardwareMap);
         follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
         follower.update();
         //touchy1.init(hardwareMap);
@@ -86,6 +86,10 @@ public class testOp extends OpMode {
 //            automatedDrive(follower.getPose());
 //        }
         follower.update();
+        if(doesAprilTimerHaveToReset){
+            aprilTimer.reset();
+            doesAprilTimerHaveToReset = false;
+        }
 
         goalDist = Math.sqrt(Math.pow(goalX - follower.getPose().getX(), 2) + Math.pow(goalY - follower.getPose().getY(), 2));
         goalAngle = Math.abs(Math.asin((goalX - follower.getPose().getX()) / goalDist)) + Math.toRadians(90);
@@ -100,23 +104,35 @@ public class testOp extends OpMode {
         }
 
         if (aprilTagStuff.patternID == 21) {
+            isCheckingForApril = false;
             order = "GPP";
+            spindexer.setGameOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 22) {
+            isCheckingForApril = false;
             order = "PGP";
+            spindexer.setGameOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 23) {
+            isCheckingForApril = false;
             order = "PPG";
+            spindexer.setGameOrder(order);
+            aprilTagStuff.stop();
+        }
+        if(aprilTimer.seconds() > 15 && isCheckingForApril){
+            isCheckingForApril = false;
+            order = "No order was detected within 15 seconds!";
+            spindexer.setGameOrder(order);
             aprilTagStuff.stop();
         }
         telemetry.addData("Order: ", order);
         follower.setTeleOpDrive(-gamepad1.left_stick_y*powerSetter, gamepad1.left_stick_x*powerSetter, gamepad1.right_stick_x*powerSetter);
         //drive.te(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
-        if (gamepad2.bWasPressed()) { //shoot 1
-            shooter.shoot1();
-        }
+//        if (gamepad2.bWasPressed()) { //shoot 1
+//            shooter.shoot1();
+//        }
         if (gamepad2.yWasPressed()) { // shoot 3
             shooter.shoot3();
         }
