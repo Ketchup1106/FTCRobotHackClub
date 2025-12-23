@@ -11,23 +11,34 @@ public class Turret {
 
     double ticksPerRadian = 537.6/(2 * Math.PI);
 
+    double gearRatio = 4/1;
+
     public void init(HardwareMap hwMap){
         turret = hwMap.get(DcMotorEx.class, "tm");
         turret.setDirection(DcMotorSimple.Direction.FORWARD);
-        //turret.setTargetPosition(0);
-        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setTargetPosition(0);
+        turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
-        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10, 0, 0, 0));
+        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10, 0, 0, 0));
     }
     public void rotateToGoal(double goalAngle){
-        turret.setTargetPosition((int)(goalAngle * ticksPerRadian));
+        turret.setTargetPosition((int)(goalAngle * ticksPerRadian * gearRatio));
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.5);
     }
 
     public void rotate(){
-
-        //turret.setTargetPosition(turret.getCurrentPosition() + 1);
-        turret.setPower(1);
+        turret.setTargetPosition((int)(turret.getCurrentPosition() + (ticksPerRadian * gearRatio * (Math.PI/4))));
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.5);
     }
+
+//    In TeleOp have a condition:
+//    if(turret.getCurrentPosition() == turret.getTargetPosition()){
+//        turret.setPower(0);
+//    }
+
 
 
 }
