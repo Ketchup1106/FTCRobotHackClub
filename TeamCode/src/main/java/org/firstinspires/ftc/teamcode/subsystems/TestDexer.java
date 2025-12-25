@@ -361,4 +361,8 @@ public class TestDexer {
         return 0;
     }
 
+    public void setStateToShoot(){
+        spinState = spinState.SHOOT;
+    }
+
 }

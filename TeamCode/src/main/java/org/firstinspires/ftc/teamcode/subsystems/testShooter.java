@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 //our next step here should be to create an algorithm that takes distance and adjusts the shooter pid values and angle
-public class Shooter {
+public class testShooter {
 
     private Telemetry telemetry;
     private final double FEED_TIME_SECONDS = 0.2;
@@ -21,23 +21,27 @@ public class Shooter {
     private double ticksPerRotation = 359;
     private double maxTicksPerMinute = 2154000;
     private double maxTicksPerSecond = maxTicksPerMinute/60;
-
+    
     double amountToShoot;
 
     private DcMotorEx shooter1, shooter2;
-    private Servo feeder;
     public boolean isActive = false;
     public int numShot = 1;
     private Intake intake = new Intake();
 
+    public Servo transferServo;
+    TestDexer spindexer = new TestDexer();
+
     public void init(HardwareMap hwMap, Telemetry telemetry){
         shooter1 = hwMap.get(DcMotorEx.class, "sm1");
         shooter2 = hwMap.get(DcMotorEx.class, "sm2");
-        feeder = hwMap.get(Servo.class, "liftarm2");
-//        intake = hwMap.get(DcMotorEx.class, "intake");
-//        intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        shooter1.setDirection(DcMotorSimple.Direction.FORWARD);
+        
+        transferServo = hwMap.get(Servo.class, "transferServo");
+
+        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
+        
+        transferServo.setDirection(Servo.Direction.FORWARD);
 
         shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -56,16 +60,9 @@ public class Shooter {
                 85    , 0, 0, 20.4
         )); //2.75 10
 
-
-
-
-//        intake.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-//                1, 0, 0, 10
-//        ));
-        feeder.setDirection(Servo.Direction.REVERSE);
-
         intake.init(hwMap);
 
+        spindexer.init(hwMap);
 
         launchState = LaunchState.IDLE;
         stopFeeder();
@@ -79,7 +76,7 @@ public class Shooter {
     private final double highPos = .31;
 
 
-    final double targetVel = 820; //.052   //820
+    final double targetVel = 820;
 
 
     public enum LaunchState{
@@ -91,17 +88,17 @@ public class Shooter {
     private LaunchState launchState;
 
     public void updateState(double velocity){
+        spindexer.updateState();
         switch(launchState){
             case IDLE:
                 isActive = false;
-                intake.stop();
                 stopAll();
                 break;
             case SPIN_UP:
                 if(numShot == 1){
-                    shooter1.setVelocity(-velocity);
-                    shooter2.setVelocity(velocity);
-                }if(numShot > 1){
+                    spinUp();
+                }
+                if(numShot > 1){
                 intake.runReverse();
             }
                 if ((Math.abs(shooter1.getVelocity()) > targetVel - 21)){ //this will now wait for the motors BEFORE moving to launch
@@ -110,12 +107,12 @@ public class Shooter {
                 }
                 break;
             case LAUNCH:
-                feeder.setPosition(highPos);
+                transferServo.setPosition(highPos);
+                spindexer.setStateToShoot();
                 launchState = LaunchState.RECOVER;
                 feederTimer.reset();
                 break;
             case RECOVER:
-
                 if(feederTimer.seconds() < .3){ //maybe decrease
                     break;
                 }
@@ -145,15 +142,15 @@ public class Shooter {
         amountToShoot = 3;
         feederTimer.reset();
     }
-
-    public void shoot1(){
-        isActive = true;
-        numShot = 1;
-        amountToShoot = 1;
-        feederTimer.reset();
-        launchState = LaunchState.SPIN_UP;
-    }
-
+    /*
+       public void shoot1(){
+           isActive = true;
+           numShot = 1;
+           amountToShoot = 1;
+           feederTimer.reset();
+           launchState = LaunchState.SPIN_UP;
+       }
+       */
     public void startFeeder(){
         feeder.setPosition(highPos);
     }
@@ -168,7 +165,7 @@ public class Shooter {
     }
 
     public void spinUp(){
-        shooter1.setVelocity(-targetVel);
+        shooter1.setVelocity(targetVel);
         shooter2.setVelocity(targetVel);
     }
     public void stopAll(){
@@ -185,9 +182,6 @@ public class Shooter {
     public double getVelocity2(){
         return shooter2.getVelocity();
     }
-    public double getServo(){
-        return feeder.getPosition();
-    }
     public LaunchState getLauunchState(){
         return launchState;
     }
@@ -198,6 +192,10 @@ public class Shooter {
                         -(0.612831*distance) // 0.612831x
                         +(779.81988) //779.81988
                 ,0, 1400);
+    }
+    
+    public void setOrder(String order){
+        spindexer.setGameOrder(order);
     }
 }
 

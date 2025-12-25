@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
@@ -23,7 +24,7 @@ public class testOp extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
     ArcadeDrive drive = new ArcadeDrive();
     Follower follower;
-    Shooter shooter = new Shooter();
+    testShooter shooter = new testShooter();
 
     Turret turret = new Turret();
 
@@ -106,25 +107,25 @@ public class testOp extends OpMode {
         if (aprilTagStuff.patternID == 21) {
             isCheckingForApril = false;
             order = "GPP";
-            spindexer.setGameOrder(order);
+            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 22) {
             isCheckingForApril = false;
             order = "PGP";
-            spindexer.setGameOrder(order);
+            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 23) {
             isCheckingForApril = false;
             order = "PPG";
-            spindexer.setGameOrder(order);
+            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if(aprilTimer.seconds() > 15 && isCheckingForApril){
             isCheckingForApril = false;
             order = "No order was detected within 15 seconds!";
-            spindexer.setGameOrder(order);
+            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         telemetry.addData("Order: ", order);
