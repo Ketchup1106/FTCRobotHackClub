@@ -141,16 +141,16 @@ public class SpinDexer {
     public void spinToFront(){ //check for openings
         if(isFrontBeingUsed()){
             if (checkForColorAtSpot("U", 1)){
-                s1.setPower(frontPos);
-                s2.setPower(frontPos);
+//                s1.setPower(frontPos);
+//                s2.setPower(frontPos);
                 targetPos = frontPos;
             }else if (checkForColorAtSpot("U", 2)){
-                s1.setPower(frontSecondIntakePos);
-                s2.setPower(frontSecondIntakePos);
+//                s1.setPower(frontSecondIntakePos);
+//                s2.setPower(frontSecondIntakePos);
                 targetPos = frontSecondIntakePos;
             }else if(checkForColorAtSpot("U", 3)){
-                s1.setPower(frontThirdIntakePos);
-                s2.setPower(frontThirdIntakePos);
+//                s1.setPower(frontThirdIntakePos);
+//                s2.setPower(frontThirdIntakePos);
                 targetPos = frontThirdIntakePos;
             }
         }
@@ -158,16 +158,16 @@ public class SpinDexer {
     public void spinToBack(){ //check for openings
         if(isBackBeingUsed()){
             if (checkForColorAtSpot("U", 1)){
-                s1.setPower(backPos);
-                s2.setPower(backPos);
+//                s1.setPower(backPos);
+//                s2.setPower(backPos);
                 targetPos = backPos;
             }else if (checkForColorAtSpot("U", 2)){
-                s1.setPower(backSecondIntakePos);
-                s2.setPower(backSecondIntakePos);
+//                s1.setPower(backSecondIntakePos);
+//                s2.setPower(backSecondIntakePos);
                 targetPos = backSecondIntakePos;
             }else if(checkForColorAtSpot("U", 3)){
-                s1.setPower(backThirdIntakePos);
-                s2.setPower(backThirdIntakePos);
+//                s1.setPower(backThirdIntakePos);
+//                s2.setPower(backThirdIntakePos);
                 targetPos = backSecondIntakePos;
             }
         }
@@ -180,24 +180,24 @@ public class SpinDexer {
     public void spinToNext(String frontOrBack){
         if(frontOrBack.equals("front")){
             if(targetPos == frontPos){
-                s1.setPower(frontSecondIntakePos);
-                s2.setPower(frontSecondIntakePos);
+//                s1.setPower(frontSecondIntakePos);
+//                s2.setPower(frontSecondIntakePos);
                 targetPos = frontSecondIntakePos;
             }
             if(targetPos == frontSecondIntakePos){
-                s1.setPower(frontThirdIntakePos);
-                s2.setPower(frontThirdIntakePos);
+//                s1.setPower(frontThirdIntakePos);
+//                s2.setPower(frontThirdIntakePos);
                 targetPos = frontThirdIntakePos;
             }
         }else if(frontOrBack.equals("back")){
             if(targetPos == backPos){
-                s1.setPower(backSecondIntakePos);
-                s2.setPower(backSecondIntakePos);
+//                s1.setPower(backSecondIntakePos);
+//                s2.setPower(backSecondIntakePos);
                 targetPos = backSecondIntakePos;
             }
             if(targetPos == backSecondIntakePos){
-                s1.setPower(backThirdIntakePos);
-                s2.setPower(backThirdIntakePos);
+//                s1.setPower(backThirdIntakePos);
+//                s2.setPower(backThirdIntakePos);
                 targetPos = backThirdIntakePos;
             }
         }
