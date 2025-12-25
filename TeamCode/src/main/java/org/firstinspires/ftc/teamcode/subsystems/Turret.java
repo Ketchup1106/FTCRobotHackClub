@@ -28,6 +28,14 @@ public class Turret {
         turret.setPower(0.5);
     }
 
+    public double getCurrentPosition(){
+        return turret.getCurrentPosition()/ticksPerRadian;
+    }
+
+    public void stop(){
+        turret.setPower(0);
+    }
+
     public void rotate(){
         turret.setTargetPosition((int)(turret.getCurrentPosition() + (ticksPerRadian * gearRatio * (Math.PI/4))));
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class TestDexer {
+public class SpinDexer {
     public CRServo s1;
     public CRServo s2;
     Shooter shooter = new Shooter();

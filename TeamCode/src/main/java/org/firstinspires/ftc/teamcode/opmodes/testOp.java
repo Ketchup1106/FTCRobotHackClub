@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
+import org.firstinspires.ftc.teamcode.subsystems.SpinDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
@@ -28,7 +28,7 @@ public class testOp extends OpMode {
 
     Turret turret = new Turret();
 
-    TestDexer spindexer = new TestDexer();
+    SpinDexer spindexer = new SpinDexer();
     double goalX = 12;
 
     double goalY = 136;
@@ -65,6 +65,7 @@ public class testOp extends OpMode {
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
+        turret.init(hardwareMap);
 
     }
     @Override
@@ -92,8 +93,14 @@ public class testOp extends OpMode {
             doesAprilTimerHaveToReset = false;
         }
 
+
+
         goalDist = Math.sqrt(Math.pow(goalX - follower.getPose().getX(), 2) + Math.pow(goalY - follower.getPose().getY(), 2));
         goalAngle = Math.abs(Math.asin((goalX - follower.getPose().getX()) / goalDist)) + Math.toRadians(90);
+
+
+
+
         if (isCheckingForApril){
             aprilTagStuff.update();
             AprilTagDetection id21 = aprilTagStuff.getTagById(21); //gpp
@@ -135,15 +142,25 @@ public class testOp extends OpMode {
 //            shooter.shoot1();
 //        }
         if (gamepad2.yWasPressed()) { // shoot 3
-            shooter.shoot3();
+            turret.rotateToGoal(goalAngle);
+            turningToShoot = true;
+        }
+        if(turningToShoot == true){
+            if(turret.getCurrentPosition() == goalAngle){
+                shooter.shoot3();
+                turningToShoot = false;
+                turret.stop();
+            }
         }
         if (gamepad1.right_trigger > 0.1) { //
             intake.run();
-        } else {
+        }
+        else {
             intake.stop();
         }
         if (gamepad1.left_trigger > 0.1) { //
             intake.runReverse();
+            shooter.setIntakeState();
         } else {
             intake.stop();
         }
@@ -156,12 +173,12 @@ public class testOp extends OpMode {
         else{
             powerSetter = 0.75;
         }
-        if (gamepad2.dpadUpWasPressed()) {
-            shooter.startFeeder();
-        }
-        if (gamepad2.dpadDownWasPressed()) {
-            shooter.stopFeeder();
-        }
+//        if (gamepad2.dpadUpWasPressed()) {
+//            shooter.startFeeder();
+//        }
+//        if (gamepad2.dpadDownWasPressed()) {
+//            shooter.stopFeeder();
+//        }
 
         if (shooter.isActive) {
             shooter.updateState(targetVel);
@@ -188,7 +205,7 @@ public class testOp extends OpMode {
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
         telemetry.addData("state: ", shooter.getLauunchState());
-        telemetry.addData("servo pos", shooter.getServo());
+        //telemetry.addData("servo pos", shooter.getServo());
         telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
         telemetry.addData("Follower X: ", follower.getPose().getX());
         telemetry.addData("Follower Y ", follower.getPose().getY());

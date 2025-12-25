@@ -19,9 +19,9 @@ public class Intake {
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-        intake.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                10, 0, 0, 10
-        )); //change to run without encoder?
+//        intake.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+//                10, 0, 0, 0
+//        )); //change to run without encoder?
     }
 
 

@@ -30,7 +30,7 @@ public class testShooter {
     private Intake intake = new Intake();
 
     public Servo transferServo;
-    TestDexer spindexer = new TestDexer();
+    SpinDexer spindexer = new SpinDexer();
 
     public void init(HardwareMap hwMap, Telemetry telemetry){
         shooter1 = hwMap.get(DcMotorEx.class, "sm1");
@@ -65,7 +65,7 @@ public class testShooter {
         spindexer.init(hwMap);
 
         launchState = LaunchState.IDLE;
-        stopFeeder();
+//        stopFeeder();
         stopLauncher();
     }
 
@@ -95,51 +95,29 @@ public class testShooter {
                 stopAll();
                 break;
             case SPIN_UP:
-                if(numShot == 1){
-                    spinUp();
-                }
-                if(numShot > 1){
-                intake.runReverse();
-            }
+                spinUp();
                 if ((Math.abs(shooter1.getVelocity()) > targetVel - 21)){ //this will now wait for the motors BEFORE moving to launch
                     launchState = LaunchState.LAUNCH;
                     feederTimer.reset();
                 }
                 break;
             case LAUNCH:
-                transferServo.setPosition(highPos);
+                transferServo.setPosition(lowPos);
                 spindexer.setStateToShoot();
-                launchState = LaunchState.RECOVER;
-                feederTimer.reset();
+                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
+                    launchState = LaunchState.RECOVER;
+                }
                 break;
             case RECOVER:
-                if(feederTimer.seconds() < .3){ //maybe decrease
-                    break;
-                }
-                feeder.setPosition(lowPos);
-                intake.runReverse();
-
-                if(amountToShoot == 1 || numShot == 3){
-                    launchState = LaunchState.IDLE;
-                    break;
-                }
-
-                if(feederTimer.seconds() < 1.2){ //decrease this as well
-                    break;
-                }
-                intake.stop();
-                numShot++;
-                launchState = LaunchState.SPIN_UP;
+                stopAll();
+                launchState = LaunchState.IDLE;
                 break;
-
         }
     }
     public void shoot3(){
-        numShot = 1;
         isActive = true;
         launchState = LaunchState.SPIN_UP;
         //add spindexer func
-        amountToShoot = 3;
         feederTimer.reset();
     }
     /*
@@ -151,12 +129,12 @@ public class testShooter {
            launchState = LaunchState.SPIN_UP;
        }
        */
-    public void startFeeder(){
-        feeder.setPosition(highPos);
-    }
-    public void stopFeeder(){
-        feeder.setPosition(lowPos);
-    }
+//    public void startFeeder(){
+//        feeder.setPosition(highPos);
+//    }
+//    public void stopFeeder(){
+//        feeder.setPosition(lowPos);
+//    }
     public void stopLauncher(){
         shooter1.setPower(0);
         shooter2.setPower(0);
@@ -170,8 +148,9 @@ public class testShooter {
     }
     public void stopAll(){
         intake.stop();
-        stopFeeder();
+//        stopFeeder();
         stopLauncher();
+        transferServo.setPosition(highPos);
     }
     public double getAmountTOShoot(){
         return amountToShoot;
@@ -196,6 +175,10 @@ public class testShooter {
     
     public void setOrder(String order){
         spindexer.setGameOrder(order);
+    }
+
+    public void setIntakeState(){
+        spindexer.setStateToMoveToIntake();
     }
 }
 
