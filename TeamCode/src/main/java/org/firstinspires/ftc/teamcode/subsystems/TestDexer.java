@@ -18,16 +18,16 @@ public class TestDexer {
 
 
 
-    final double gearFactor = 250.0;
+    final double encoderFactor = 8192/360.0; //ticks of encoder per degree
     double frontPos = 0;
-    double frontSecondIntakePos = 120/gearFactor;
-    double frontThirdIntakePos = 240/gearFactor;
-    double backPos = 180/gearFactor;
-    double backSecondIntakePos = -60/gearFactor; //300>250 so we do the negative equivalent
-    double backThirdIntakePos = 60/gearFactor;
-    double shootStartingAtSpot1 = 90/gearFactor;
-    double shootStartingAtSpot2 = 210/gearFactor;
-    double shootStartingAtSpot3 = -30/gearFactor;
+    double frontSecondIntakePos = 120* encoderFactor;
+    double frontThirdIntakePos = 240* encoderFactor;
+    double backPos = 180* encoderFactor;
+    double backSecondIntakePos = -60* encoderFactor; //300>250 so we do the negative equivalent
+    double backThirdIntakePos = 60* encoderFactor;
+    double shootStartingAtSpot1 = 90* encoderFactor;
+    double shootStartingAtSpot2 = 210* encoderFactor;
+    double shootStartingAtSpot3 = -30* encoderFactor;
     double shootRotator; //will depend on whats being shot first
     double targetPos = frontPos;
     double currentPos = 0;
@@ -73,6 +73,8 @@ public class TestDexer {
     {
         switch(spinState){
             case IDLE:
+                s1.setPower(setPowerToPosition(targetPos));
+                s2.setPower(setPowerToPosition(targetPos));
                 return; //if nothings happening just stay in place
             case MOVE_TO_INTAKE:
                 if (isFrontBeingUsed()){
@@ -83,11 +85,18 @@ public class TestDexer {
                     side = "back";
                     spinToBack();
                 }
-                spinState = spinState.INTAKING;
-                intakeTimer.reset();
+                //add condition that accounts for no usage being detected
+                if(setPowerToPosition(targetPos) != 0) {
+                    s1.setPower(setPowerToPosition(targetPos));
+                    s2.setPower(setPowerToPosition(targetPos));
+                }
+                if(setPowerToPosition(targetPos) == 0){
+                    spinState = spinState.INTAKING;
+                    intakeTimer.reset();
+                }
                 break;
             case INTAKING: //moves to next slot only after ball is seen or too long has passed
-                checkForBalls();
+                checkForBalls(); //calls the assign color to pos method
                 if(checkForColorAtSpot("P", checkingNumber) || checkForColorAtSpot("G", checkingNumber)){
                     spinState = SpinState.MOVE_TO_NEXT_SLOT;
                     break;
@@ -98,7 +107,12 @@ public class TestDexer {
                 }
                 break;
             case MOVE_TO_NEXT_SLOT:
-                spinToNext(side);
+                spinToNext(side); //moves to the next slot as long as were not already on slot 3
+                if(setPowerToPosition(targetPos) != 0) {
+                    s1.setPower(setPowerToPosition(targetPos));
+                    s2.setPower(setPowerToPosition(targetPos));
+                    break;
+                }
                 if(checkingNumber != 3){
                     checkingNumber++;
                     spinState = SpinState.INTAKING;
@@ -111,8 +125,7 @@ public class TestDexer {
                 setUpForShooting(gamePattern);
                 spinState = SpinState.IDLE;
             case SHOOT:
-                shootRotator = targetPos + 360;//degrees; change to value between 0 and 1 if needed
-                s1.setPower(shootRotator);
+                shootRotator = currentPos + (360*encoderFactor);//degrees; change to value between 0 and 1 if needed
                 checkingNumber = 1;
                 intakeTimer.reset();
                 spinState = SpinState.IDLE;
@@ -363,6 +376,12 @@ public class TestDexer {
 
     public void setStateToShoot(){
         spinState = spinState.SHOOT;
+    }
+    public void setStateToIdle(){
+        spinState = spinState.IDLE;
+    }
+    public void setStateToMoveToIntake(){
+        spinState = spinState.MOVE_TO_INTAKE;
     }
 
 }
