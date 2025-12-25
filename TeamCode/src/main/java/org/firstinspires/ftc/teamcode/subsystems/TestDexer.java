@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TestDexer {
-    public Servo s1;
-    public Servo s2;
+    public CRServo s1;
+    public CRServo s2;
+    Shooter shooter = new Shooter();
     Telemetry telemetry;
     public TouchySensor frontTouchy = new TouchySensor();
     public TouchySensor rearTouchy = new TouchySensor();
@@ -28,6 +29,8 @@ public class TestDexer {
     double shootStartingAtSpot2 = 210/gearFactor;
     double shootStartingAtSpot3 = -30/gearFactor;
     double shootRotator; //will depend on whats being shot first
+    double targetPos = frontPos;
+    double currentPos = 0;
     //the gear ratio has to increase for this to work
 
     //all positions are in degrees divided by 250 (the maximum degrees in one direction given the gear ratio
@@ -40,11 +43,11 @@ public class TestDexer {
     String side;
     ElapsedTime intakeTimer = new ElapsedTime();
     public void init(HardwareMap hwMap){
-        s1 = hwMap.get(Servo.class, "spin1");
-        s2 = hwMap.get(Servo.class, "spin2");
+        s1 = hwMap.get(CRServo.class, "spin1");
+        s2 = hwMap.get(CRServo.class, "spin2");
 
-        s1.setDirection(Servo.Direction.FORWARD);
-        s2.setDirection(Servo.Direction.REVERSE);
+        s1.setDirection(CRServo.Direction.FORWARD);
+        s2.setDirection(CRServo.Direction.REVERSE);
 
         frontTouchy.init(hwMap);
         rearTouchy.init(hwMap);
@@ -52,8 +55,9 @@ public class TestDexer {
         colorSensorFront.init(hwMap);
         colorSensorBack.init(hwMap);
 
-        s1.setPosition(frontPos);
-        s2.setPosition(frontPos); //0 is front intake
+        //s1.setPower(frontPos);
+        //s2.setPower(frontPos); //0 is front intake
+        shooter.init(hwMap, telemetry);
     }
     //step1: detect intake through touch sensor
     public enum SpinState{
@@ -107,8 +111,8 @@ public class TestDexer {
                 setUpForShooting(gamePattern);
                 spinState = SpinState.IDLE;
             case SHOOT:
-                shootRotator = s1.getPosition() + 360;//degrees; change to value between 0 and 1 if needed
-                s1.setPosition(shootRotator);
+                shootRotator = targetPos + 360;//degrees; change to value between 0 and 1 if needed
+                s1.setPower(shootRotator);
                 checkingNumber = 1;
                 intakeTimer.reset();
                 spinState = SpinState.IDLE;
@@ -124,28 +128,34 @@ public class TestDexer {
     public void spinToFront(){ //check for openings
         if(isFrontBeingUsed()){
             if (checkForColorAtSpot("U", 1)){
-                s1.setPosition(frontPos);
-                s2.setPosition(frontPos);
+                s1.setPower(frontPos);
+                s2.setPower(frontPos);
+                targetPos = frontPos;
             }else if (checkForColorAtSpot("U", 2)){
-                s1.setPosition(frontSecondIntakePos);
-                s2.setPosition(frontSecondIntakePos);
+                s1.setPower(frontSecondIntakePos);
+                s2.setPower(frontSecondIntakePos);
+                targetPos = frontSecondIntakePos;
             }else if(checkForColorAtSpot("U", 3)){
-                s1.setPosition(frontThirdIntakePos);
-                s2.setPosition(frontThirdIntakePos);
+                s1.setPower(frontThirdIntakePos);
+                s2.setPower(frontThirdIntakePos);
+                targetPos = frontThirdIntakePos;
             }
         }
     }
     public void spinToBack(){ //check for openings
         if(isBackBeingUsed()){
             if (checkForColorAtSpot("U", 1)){
-                s1.setPosition(backPos);
-                s2.setPosition(backPos);
+                s1.setPower(backPos);
+                s2.setPower(backPos);
+                targetPos = backPos;
             }else if (checkForColorAtSpot("U", 2)){
-                s1.setPosition(backSecondIntakePos);
-                s2.setPosition(backSecondIntakePos);
+                s1.setPower(backSecondIntakePos);
+                s2.setPower(backSecondIntakePos);
+                targetPos = backSecondIntakePos;
             }else if(checkForColorAtSpot("U", 3)){
-                s1.setPosition(backThirdIntakePos);
-                s2.setPosition(backThirdIntakePos);
+                s1.setPower(backThirdIntakePos);
+                s2.setPower(backThirdIntakePos);
+                targetPos = backSecondIntakePos;
             }
         }
     }
@@ -156,22 +166,26 @@ public class TestDexer {
     //step4: rotate the spindexer to the next position
     public void spinToNext(String frontOrBack){
         if(frontOrBack.equals("front")){
-            if(s1.getPosition() == frontPos){
-                s1.setPosition(frontSecondIntakePos);
-                s2.setPosition(frontSecondIntakePos);
+            if(targetPos == frontPos){
+                s1.setPower(frontSecondIntakePos);
+                s2.setPower(frontSecondIntakePos);
+                targetPos = frontSecondIntakePos;
             }
-            if(s1.getPosition() == frontSecondIntakePos){
-                s1.setPosition(frontThirdIntakePos);
-                s2.setPosition(frontThirdIntakePos);
+            if(targetPos == frontSecondIntakePos){
+                s1.setPower(frontThirdIntakePos);
+                s2.setPower(frontThirdIntakePos);
+                targetPos = frontThirdIntakePos;
             }
         }else if(frontOrBack.equals("back")){
-            if(s1.getPosition() == backPos){
-                s1.setPosition(backSecondIntakePos);
-                s2.setPosition(backSecondIntakePos);
+            if(targetPos == backPos){
+                s1.setPower(backSecondIntakePos);
+                s2.setPower(backSecondIntakePos);
+                targetPos = backSecondIntakePos;
             }
-            if(s1.getPosition() == backSecondIntakePos){
-                s1.setPosition(backThirdIntakePos);
-                s2.setPosition(backThirdIntakePos);
+            if(targetPos == backSecondIntakePos){
+                s1.setPower(backThirdIntakePos);
+                s2.setPower(backThirdIntakePos);
+                targetPos = backThirdIntakePos;
             }
         }
     }
@@ -179,63 +193,80 @@ public class TestDexer {
     public void setUpForShooting(String gameOrder) {
         if (currentOrder.equals("PGP")) {
             if (gameOrder.equals("PGP")) {
-                s1.setPosition(shootStartingAtSpot1);
-                s2.setPosition(shootStartingAtSpot1);
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
             }
             else if (gameOrder.equals("GPP")) {
-                s1.setPosition(shootStartingAtSpot3);
-                s2.setPosition(shootStartingAtSpot3);
+//                s1.setPower(shootStartingAtSpot3);
+//                s2.setPower(shootStartingAtSpot3);
+                targetPos = shootStartingAtSpot3;
             }
             else if (gameOrder.equals("PPG")) {
-                s1.setPosition(shootStartingAtSpot2);
-                s2.setPosition(shootStartingAtSpot2);
-            }else{ //failsafe if the camera cant pickup the obelisk
-                s1.setPosition(shootStartingAtSpot1);
-                s2.setPosition(shootStartingAtSpot1);
-            }
-        }else if (currentOrder.equals("PPG")) {
-            if (gameOrder.equals("PGP")) {
-                s1.setPosition(shootStartingAtSpot3);
-                s2.setPosition(shootStartingAtSpot3);
-            }
-            else if (gameOrder.equals("GPP")) {
-                s1.setPosition(shootStartingAtSpot2);
-                s2.setPosition(shootStartingAtSpot2);
-            }
-            else if (gameOrder.equals("PPG")) {
-                s1.setPosition(shootStartingAtSpot1);
-                s2.setPosition(shootStartingAtSpot1);
+//                s1.setPower(shootStartingAtSpot2);
+//                s2.setPower(shootStartingAtSpot2);
+                targetPos = shootStartingAtSpot2;
             }
             else{ //failsafe if the camera cant pickup the obelisk
-                s1.setPosition(shootStartingAtSpot1);
-                s2.setPosition(shootStartingAtSpot1);
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
             }
-        }else if (currentOrder.equals("GPP")) {
+        }
+        else if (currentOrder.equals("PPG")) {
             if (gameOrder.equals("PGP")) {
-                s1.setPosition(shootStartingAtSpot2);
-                s2.setPosition(shootStartingAtSpot2);
+//                s1.setPower(shootStartingAtSpot3);
+//                s2.setPower(shootStartingAtSpot3);
+                targetPos = shootStartingAtSpot3;
             }
             else if (gameOrder.equals("GPP")) {
-                s1.setPosition(shootStartingAtSpot1);
-                s2.setPosition(shootStartingAtSpot1);
+//                s1.setPower(shootStartingAtSpot2);
+//                s2.setPower(shootStartingAtSpot2);
+                targetPos = shootStartingAtSpot2;
             }
             else if (gameOrder.equals("PPG")) {
-                s1.setPosition(shootStartingAtSpot3);
-                s2.setPosition(shootStartingAtSpot3);
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
             }
             else{ //failsafe if the camera cant pickup the obelisk
-                s1.setPosition(shootStartingAtSpot1);
-                s2.setPosition(shootStartingAtSpot1);
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
             }
-        } else {
-            s1.setPosition(shootStartingAtSpot1);
-            s2.setPosition(shootStartingAtSpot1); //default position in case spindexer order is messed up
+        }
+        else if (currentOrder.equals("GPP")) {
+            if (gameOrder.equals("PGP")) {
+//                s1.setPower(shootStartingAtSpot2);
+//                s2.setPower(shootStartingAtSpot2);
+                targetPos = shootStartingAtSpot2;
+            }
+            else if (gameOrder.equals("GPP")) {
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
+            }
+            else if (gameOrder.equals("PPG")) {
+//                s1.setPower(shootStartingAtSpot3);
+//                s2.setPower(shootStartingAtSpot3);
+                targetPos = shootStartingAtSpot3;
+            }
+            else{ //failsafe if the camera cant pickup the obelisk
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
+            }
+        }
+        else {
+//            s1.setPower(shootStartingAtSpot1);
+//            s2.setPower(shootStartingAtSpot1); //default position in case spindexer order is messed up
+            targetPos = shootStartingAtSpot1;
         }
     }
 
     //helper methods
     public void assignColorToPosition(){
-        if(s1.getPosition() == frontPos){
+        if(targetPos == frontPos){
             //if idli dish 1 is facing front intake then check for the color and assign it to spot1
             if(colorSensorFront.getDetectedColor(telemetry) == Color.detectedColor.PURPLE){
                 spot1 = "P";
@@ -247,7 +278,7 @@ public class TestDexer {
                 spot1 = "U";
             }
         }
-        if(s1.getPosition() == backPos){
+        if(targetPos == backPos){
             //if idli dish 1 is facing back intake then check for the color and assign it to spot1
             if(colorSensorBack.getDetectedColor(telemetry) == Color.detectedColor.PURPLE){
                 spot1 = "P";
@@ -259,7 +290,7 @@ public class TestDexer {
                 spot1 = "U";
             }
         }
-        if(s1.getPosition() == frontSecondIntakePos){
+        if(targetPos == frontSecondIntakePos){
             //if idli dish 2 is facing front intake then check for the color and assign it to spot2
             if(colorSensorFront.getDetectedColor(telemetry) == Color.detectedColor.PURPLE){
                 spot2 = "P";
@@ -271,7 +302,7 @@ public class TestDexer {
                 spot2 = "U";
             }
         }
-        if(s1.getPosition() == backSecondIntakePos){
+        if(targetPos == backSecondIntakePos){
             //if idli dish 2 is facing back intake then check for the color and assign it to spot2
             if(colorSensorBack.getDetectedColor(telemetry) == Color.detectedColor.PURPLE){
                 spot2 = "P";
@@ -283,7 +314,7 @@ public class TestDexer {
                 spot2 = "U";
             }
         }
-        if(s1.getPosition() == frontThirdIntakePos){
+        if(targetPos == frontThirdIntakePos){
             //if idli dish 3 is facing front intake then check for the color and assign it to spot3
             if(colorSensorFront.getDetectedColor(telemetry) == Color.detectedColor.PURPLE){
                 spot3 = "P";
@@ -295,7 +326,7 @@ public class TestDexer {
                 spot3 = "U";
             }
         }
-        if(s1.getPosition() == backSecondIntakePos){
+        if(targetPos == backSecondIntakePos){
             //if idli dish 3 is facing back intake then check for the color and assign it to spot3
             if(colorSensorBack.getDetectedColor(telemetry) == Color.detectedColor.PURPLE){
                 spot3 = "P";
@@ -318,4 +349,16 @@ public class TestDexer {
     public void setGameOrder(String order){ //will be used in teleop once the camera picks up the apriltags
         gamePattern = order;
     }
+    public double setPowerToPosition(double target){
+        double ticksPerDegree = 8192/360.0;
+        double difference = target - currentPos;
+        if(difference > 2* ticksPerDegree){
+            return 1;
+        }
+        else if(difference <-2){
+            return -1;
+        }
+        return 0;
+    }
+
 }
