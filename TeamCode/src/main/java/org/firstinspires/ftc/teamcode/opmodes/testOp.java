@@ -183,6 +183,9 @@ public class testOp extends OpMode {
         if (shooter.isActive) {
             shooter.updateState(targetVel);
         }
+        if(gamepad1.dpadDownWasPressed()){
+            follower.setPose(new Pose(8, 8, 90));
+        }
 
 //        if(spindexer.frontTouchyActive()){
 //            spindexer.rotateToFront();
