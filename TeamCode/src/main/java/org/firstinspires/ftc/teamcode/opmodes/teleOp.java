@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
+import org.firstinspires.ftc.teamcode.subsystems.SpinDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -27,7 +27,7 @@ public class teleOp extends OpMode {
 
     Turret turret = new Turret();
 
-    TestDexer spindexer = new TestDexer();
+    SpinDexer spindexer = new SpinDexer();
     double goalX = 12;
 
     double goalY = 136;

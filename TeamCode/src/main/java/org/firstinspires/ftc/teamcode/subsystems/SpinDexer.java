@@ -71,10 +71,10 @@ public class SpinDexer {
     private SpinState spinState;
     public void updateState() //spindexer state machine that i 100% on john ftc himself did not steal from king ketchup
     {
+        s1.setPower(setPowerToPosition(targetPos));
+        s2.setPower(setPowerToPosition(targetPos));
         switch(spinState){
             case IDLE:
-                s1.setPower(setPowerToPosition(targetPos));
-                s2.setPower(setPowerToPosition(targetPos));
                 return; //if nothings happening just stay in place
             case MOVE_TO_INTAKE:
                 if (isFrontBeingUsed()){
@@ -109,8 +109,8 @@ public class SpinDexer {
             case MOVE_TO_NEXT_SLOT:
                 spinToNext(side); //moves to the next slot as long as were not already on slot 3
                 if(setPowerToPosition(targetPos) != 0) {
-                    s1.setPower(setPowerToPosition(targetPos));
-                    s2.setPower(setPowerToPosition(targetPos));
+//                    s1.setPower(setPowerToPosition(targetPos));
+//                    s2.setPower(setPowerToPosition(targetPos));
                     break;
                 }
                 if(checkingNumber != 3){
