@@ -95,7 +95,7 @@ public class testShooter {
                 stopAll();
                 break;
             case SPIN_UP:
-                spinUp();
+                spinUp(velocity);
                 if ((Math.abs(shooter1.getVelocity()) > targetVel - 21)){ //this will now wait for the motors BEFORE moving to launch
                     launchState = LaunchState.LAUNCH;
                     feederTimer.reset();
@@ -142,9 +142,9 @@ public class testShooter {
         shooter2.setVelocity(0);
     }
 
-    public void spinUp(){
-        shooter1.setVelocity(targetVel);
-        shooter2.setVelocity(targetVel);
+    public void spinUp(double velocity){
+        shooter1.setVelocity(velocity);
+        shooter2.setVelocity(velocity);
     }
     public void stopAll(){
         intake.stop();
@@ -176,9 +176,11 @@ public class testShooter {
     public void setOrder(String order){
         spindexer.setGameOrder(order);
     }
-
     public void setIntakeState(){
         spindexer.setStateToMoveToIntake();
+    }
+    public void setFrontOrBack(String side){
+        spindexer.intakeSide = side;
     }
 }
 

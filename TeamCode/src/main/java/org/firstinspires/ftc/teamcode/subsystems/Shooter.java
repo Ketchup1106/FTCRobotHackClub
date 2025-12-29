@@ -111,6 +111,7 @@ public class Shooter {
                 break;
             case LAUNCH:
                 feeder.setPosition(highPos);
+
                 launchState = LaunchState.RECOVER;
                 feederTimer.reset();
                 break;
@@ -141,7 +142,7 @@ public class Shooter {
         numShot = 1;
         isActive = true;
         launchState = LaunchState.SPIN_UP;
-        //add spindexer func
+
         amountToShoot = 3;
         feederTimer.reset();
     }

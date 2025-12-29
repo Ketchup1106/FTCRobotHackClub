@@ -158,6 +158,12 @@ public class testOp extends OpMode {
         else {
             intake.stop();
         }
+        if(gamepad2.dpadRightWasPressed()){
+            shooter.setFrontOrBack("front");
+        }
+        if(gamepad2.dpadLeftWasPressed()){
+            shooter.setFrontOrBack("back");
+        }
         if (gamepad1.left_trigger > 0.1) { //
             intake.runReverse();
             shooter.setIntakeState();

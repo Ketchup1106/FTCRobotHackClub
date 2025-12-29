@@ -41,6 +41,7 @@ public class SpinDexer {
     String currentOrder = "UUU";
     String gamePattern;
     String side;
+    String intakeSide = "waiting";
     ElapsedTime intakeTimer = new ElapsedTime();
     public void init(HardwareMap hwMap){
         s1 = hwMap.get(CRServo.class, "spin1");
@@ -77,13 +78,15 @@ public class SpinDexer {
             case IDLE:
                 return; //if nothings happening just stay in place
             case MOVE_TO_INTAKE:
-                if (isFrontBeingUsed()){
+                if (getSide().equals("front")){
                     side = "front";
                     spinToFront();
                 }
-                else if (isBackBeingUsed()){
+                else if (getSide().equals("back")){
                     side = "back";
                     spinToBack();
+                }else if(getSide().equals("waiting")){
+                    break;
                 }
                 //add condition that accounts for no usage being detected
                 if(setPowerToPosition(targetPos) != 0) {
@@ -93,6 +96,7 @@ public class SpinDexer {
                 if(setPowerToPosition(targetPos) == 0){
                     spinState = spinState.INTAKING;
                     intakeTimer.reset();
+                    intakeSide = "waiting";
                 }
                 break;
             case INTAKING: //moves to next slot only after ball is seen or too long has passed
@@ -126,6 +130,7 @@ public class SpinDexer {
                 spinState = SpinState.IDLE;
             case SHOOT:
                 shootRotator = currentPos + (360*encoderFactor);//degrees; change to value between 0 and 1 if needed
+                targetPos = shootRotator;
                 checkingNumber = 1;
                 intakeTimer.reset();
                 spinState = SpinState.IDLE;
@@ -139,7 +144,7 @@ public class SpinDexer {
     }
     //step2: spin to desired intake
     public void spinToFront(){ //check for openings
-        if(isFrontBeingUsed()){
+        //if(isFrontBeingUsed()){
             if (checkForColorAtSpot("U", 1)){
 //                s1.setPower(frontPos);
 //                s2.setPower(frontPos);
@@ -153,10 +158,10 @@ public class SpinDexer {
 //                s2.setPower(frontThirdIntakePos);
                 targetPos = frontThirdIntakePos;
             }
-        }
+        //}
     }
     public void spinToBack(){ //check for openings
-        if(isBackBeingUsed()){
+        //if(isBackBeingUsed()){
             if (checkForColorAtSpot("U", 1)){
 //                s1.setPower(backPos);
 //                s2.setPower(backPos);
@@ -170,7 +175,7 @@ public class SpinDexer {
 //                s2.setPower(backThirdIntakePos);
                 targetPos = backSecondIntakePos;
             }
-        }
+        //}
     }
     //step3:check for balls and store them
     public void checkForBalls(){
@@ -382,6 +387,9 @@ public class SpinDexer {
     }
     public void setStateToMoveToIntake(){
         spinState = spinState.MOVE_TO_INTAKE;
+    }
+    public String getSide(){
+        return intakeSide;
     }
 
 }
