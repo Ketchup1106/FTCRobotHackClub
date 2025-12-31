@@ -7,7 +7,8 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Color {
-    NormalizedColorSensor colorSensor;
+    NormalizedColorSensor colorSensor1;
+    NormalizedColorSensor colorSensor2;
 
     public enum detectedColor {
         PURPLE,
@@ -16,12 +17,14 @@ public class Color {
     }
 
     public void init(HardwareMap hwMap){
-        colorSensor = hwMap.get(NormalizedColorSensor.class, "sensor_color_distance");
-        colorSensor.setGain(4);
+        colorSensor1 = hwMap.get(NormalizedColorSensor.class, "color1");
+        colorSensor1.setGain(4);
+        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "color2");
+        colorSensor2.setGain(4);
     }
 
     public detectedColor getDetectedColor(Telemetry telemetry){
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        NormalizedRGBA colors = colorSensor1.getNormalizedColors();
 
         float normRed, normGreen, normBlue;
 

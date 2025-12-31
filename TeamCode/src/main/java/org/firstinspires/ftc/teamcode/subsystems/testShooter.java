@@ -30,7 +30,7 @@ public class testShooter {
     private Intake intake = new Intake();
 
     public Servo transferServo;
-    SpinDexer spindexer = new SpinDexer();
+    //SpinDexer spindexer = new SpinDexer();
 
     public void init(HardwareMap hwMap, Telemetry telemetry){
         shooter1 = hwMap.get(DcMotorEx.class, "sm1");
@@ -62,7 +62,7 @@ public class testShooter {
 
         intake.init(hwMap);
 
-        spindexer.init(hwMap);
+        //spindexer.init(hwMap);
 
         launchState = LaunchState.IDLE;
 //        stopFeeder();
@@ -88,7 +88,7 @@ public class testShooter {
     private LaunchState launchState;
 
     public void updateState(double velocity){
-        spindexer.updateState();
+        //spindexer.updateState();
         switch(launchState){
             case IDLE:
                 isActive = false;
@@ -103,10 +103,11 @@ public class testShooter {
                 break;
             case LAUNCH:
                 transferServo.setPosition(lowPos);
-                spindexer.setStateToShoot();
-                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
-                    launchState = LaunchState.RECOVER;
-                }
+//                spindexer.setStateToShoot();
+//                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
+//                    launchState = LaunchState.RECOVER;
+//                }
+                launchState = LaunchState.RECOVER;
                 break;
             case RECOVER:
                 stopAll();
@@ -174,13 +175,13 @@ public class testShooter {
     }
     
     public void setOrder(String order){
-        spindexer.setGameOrder(order);
+        //spindexer.setGameOrder(order);
     }
     public void setIntakeState(){
-        spindexer.setStateToMoveToIntake();
+        //spindexer.setStateToMoveToIntake();
     }
     public void setFrontOrBack(String side){
-        spindexer.intakeSide = side;
+        //spindexer.intakeSide = side;
     }
 }
 

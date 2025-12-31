@@ -9,10 +9,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class SpinDexer {
     public CRServo s1;
     public CRServo s2;
-    Shooter shooter = new Shooter();
+    testShooter shooter = new testShooter();
     Telemetry telemetry;
-    public TouchySensor frontTouchy = new TouchySensor();
-    public TouchySensor rearTouchy = new TouchySensor();
+    //public TouchySensor frontTouchy = new TouchySensor();
+    //public TouchySensor rearTouchy = new TouchySensor();
     Color colorSensorFront = new Color();
     Color colorSensorBack = new Color();
 
@@ -50,8 +50,8 @@ public class SpinDexer {
         s1.setDirection(CRServo.Direction.FORWARD);
         s2.setDirection(CRServo.Direction.REVERSE);
 
-        frontTouchy.init(hwMap);
-        rearTouchy.init(hwMap);
+        //frontTouchy.init(hwMap);
+        //rearTouchy.init(hwMap);
 
         colorSensorFront.init(hwMap);
         colorSensorBack.init(hwMap);
@@ -136,12 +136,14 @@ public class SpinDexer {
                 spinState = SpinState.IDLE;
         }
     }
+    /*
     public boolean isFrontBeingUsed(){
         return !frontTouchy.detectTouch();
     }
     public boolean isBackBeingUsed(){
         return !rearTouchy.detectTouch();
     }
+     */
     //step2: spin to desired intake
     public void spinToFront(){ //check for openings
         //if(isFrontBeingUsed()){

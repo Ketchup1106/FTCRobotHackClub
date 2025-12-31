@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.SpinDexer;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+//import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -203,7 +203,6 @@ public class testOp extends OpMode {
 
 
         targetVel = shooter.setVel(goalDist);
-
 
 
 

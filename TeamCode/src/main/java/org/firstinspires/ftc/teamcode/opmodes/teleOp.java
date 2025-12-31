@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.subsystems.SpinDexer;
+import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -23,11 +23,11 @@ public class teleOp extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
     ArcadeDrive drive = new ArcadeDrive();
     Follower follower;
-    Shooter shooter = new Shooter();
+    testShooter shooter = new testShooter();
 
     Turret turret = new Turret();
 
-    TestDexer spindexer = new TestDexer();
+    SpinDexer spindexer = new SpinDexer();
     double goalX = 12;
 
     double goalY = 136;
@@ -101,9 +101,9 @@ public class teleOp extends OpMode {
         telemetry.addData("Order: ", order);
 
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
-        if (gamepad2.bWasPressed()) { //shoot 1
-            shooter.shoot1();
-        }
+        //if (gamepad2.bWasPressed()) { //shoot 1
+         //   shooter.shoot1();
+        //}
         if (gamepad2.yWasPressed()) { // shoot 3
             shooter.shoot3();
         }
@@ -126,12 +126,15 @@ public class teleOp extends OpMode {
         else{
             powerSetter = 0.75;
         }
+        /*
         if (gamepad2.dpadUpWasPressed()) {
             shooter.startFeeder();
         }
         if (gamepad2.dpadDownWasPressed()) {
             shooter.stopFeeder();
         }
+        */
+
 
         if (shooter.isActive) {
             shooter.updateState(targetVel);
@@ -158,7 +161,7 @@ public class teleOp extends OpMode {
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
         telemetry.addData("state: ", shooter.getLauunchState());
-        telemetry.addData("servo pos", shooter.getServo());
+        //telemetry.addData("servo pos", shooter.getServo());
         telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
         telemetry.addData("Follower X: ", follower.getPose().getX());
         telemetry.addData("Follower Y ", follower.getPose().getY());
