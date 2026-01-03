@@ -31,6 +31,9 @@ public class testOp extends OpMode {
 
     double goalY = 136;
 
+    double disX;
+    double disY;
+
     Intake intake = new Intake();
 
     //TouchySensor touchy1 = new TouchySensor();
@@ -45,6 +48,10 @@ public class testOp extends OpMode {
     double powerSetter = .2;
     double targetVel = 0;
     int shoot = 0;
+    double robotHeading;
+
+    double desiredTurretAngle;
+
 
     boolean slowMode = false;
     boolean turningToShoot = false;
@@ -60,7 +67,8 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //spindexer.init(hardwareMap);
-        follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
+        //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
+        follower.setStartingPose(new Pose(8, 8,  Math.toRadians(90)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
@@ -94,10 +102,15 @@ public class testOp extends OpMode {
             doesAprilTimerHaveToReset = false;
         }
 
-
+        disX = goalX - follower.getPose().getX();
+        disY = goalY - follower.getPose().getY();
+        robotHeading = follower.getHeading();
 
         goalDist = Math.sqrt(Math.pow(goalX - follower.getPose().getX(), 2) + Math.pow(goalY - follower.getPose().getY(), 2));
-        goalAngle = Math.abs(Math.asin((goalX - follower.getPose().getX()) / goalDist)) + Math.toRadians(90);
+        //goalAngle = Math.abs(Math.asin((goalX - follower.getPose().getX()) / goalDist));
+        goalAngle = Math.atan2(disY, disX);
+        desiredTurretAngle = goalAngle - robotHeading;
+        turret.rotateToGoal(desiredTurretAngle);
 
 
 
@@ -147,7 +160,7 @@ public class testOp extends OpMode {
             turningToShoot = true;
         }
         if(turningToShoot == true){
-            if(turret.getCurrentPosition() == goalAngle){
+            if(turret.getCurrentPos() == goalAngle){
                 shooter.shoot3();
                 turningToShoot = false;
                 turret.stop();
@@ -229,7 +242,8 @@ public class testOp extends OpMode {
         telemetry.addData("current robot angle", Math.toDegrees(follower.getHeading()));
         telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
         telemetry.addData("is turning?", turningToShoot);
-        telemetry.addData("automated drive?", automatedDrive);
+        telemetry.addData("turret rtotation: ", turret.getPosWithoutSubtractionFactor());
+
         telemetry.update();
     }//
 
