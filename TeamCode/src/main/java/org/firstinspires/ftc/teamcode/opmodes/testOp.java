@@ -19,8 +19,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @TeleOp(name = "testOp")
 public class testOp extends OpMode {
-    int aprilTagTelemtryIndex = 0;
-
     ElapsedTime runtime = new ElapsedTime();
     ArcadeDrive drive = new ArcadeDrive();
     Follower follower;
@@ -28,7 +26,7 @@ public class testOp extends OpMode {
 
     Turret turret = new Turret();
 
-    SpinDexer spindexer = new SpinDexer();
+    //SpinDexer spindexer = new SpinDexer();
     double goalX = 12;
 
     double goalY = 136;
@@ -53,6 +51,7 @@ public class testOp extends OpMode {
     boolean isCheckingForApril = true;
     ElapsedTime aprilTimer = new ElapsedTime();
     boolean doesAprilTimerHaveToReset = true;
+    boolean homing = false;
 
     @Override
     public void init(){
@@ -60,12 +59,13 @@ public class testOp extends OpMode {
         shooter.init(hardwareMap, telemetry);
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
-        spindexer.init(hardwareMap);
+        //spindexer.init(hardwareMap);
         follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
         turret.init(hardwareMap);
+
 
     }
     @Override
@@ -88,6 +88,7 @@ public class testOp extends OpMode {
 //            automatedDrive(follower.getPose());
 //        }
         follower.update();
+
         if(doesAprilTimerHaveToReset){
             aprilTimer.reset();
             doesAprilTimerHaveToReset = false;
@@ -136,7 +137,7 @@ public class testOp extends OpMode {
             aprilTagStuff.stop();
         }
         telemetry.addData("Order: ", order);
-        follower.setTeleOpDrive(-gamepad1.left_stick_y*powerSetter, gamepad1.left_stick_x*powerSetter, gamepad1.right_stick_x*powerSetter);
+        follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         //drive.te(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
 //        if (gamepad2.bWasPressed()) { //shoot 1
 //            shooter.shoot1();
@@ -186,11 +187,18 @@ public class testOp extends OpMode {
 //            shooter.stopFeeder();
 //        }
 
-        if (shooter.isActive) {
-            shooter.updateState(targetVel);
-        }
-        if(gamepad1.dpadDownWasPressed()){
+
+        shooter.updateState(targetVel);
+        if(gamepad1.dpadDownWasPressed()){ //corner calibration
             follower.setPose(new Pose(8, 8, 90));
+            homing = true;
+            turret.isHomed = false;
+        }
+        if(homing){
+            turret.home();
+            if(turret.isHomed){
+                homing = false;
+            }
         }
 
 //        if(spindexer.frontTouchyActive()){

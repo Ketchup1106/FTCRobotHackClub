@@ -91,8 +91,10 @@ public class testShooter {
         //spindexer.updateState();
         switch(launchState){
             case IDLE:
-                isActive = false;
-                stopAll();
+                if(isActive) {
+                    isActive = false;
+                    stopAll();
+                }
                 break;
             case SPIN_UP:
                 spinUp(velocity);
@@ -148,7 +150,6 @@ public class testShooter {
         shooter2.setVelocity(velocity);
     }
     public void stopAll(){
-        intake.stop();
 //        stopFeeder();
         stopLauncher();
         transferServo.setPosition(highPos);

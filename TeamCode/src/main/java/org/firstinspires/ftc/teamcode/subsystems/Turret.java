@@ -12,9 +12,14 @@ public class Turret {
     double ticksPerRadian = 537.6/(2 * Math.PI);
 
     double gearRatio = 4/1;
+    double tickLimit = 1.75*537.6; //manually tune
+    double subtractionAmount = 0;
+    public boolean isHomed = false;
+    TouchySensor turretLimitSwitch = new TouchySensor();
 
     public void init(HardwareMap hwMap){
         turret = hwMap.get(DcMotorEx.class, "tm");
+        turretLimitSwitch.init(hwMap);
         turret.setDirection(DcMotorSimple.Direction.FORWARD);
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setTargetPosition(0);
@@ -29,7 +34,7 @@ public class Turret {
     }
 
     public double getCurrentPosition(){
-        return turret.getCurrentPosition()/ticksPerRadian;
+        return turret.getCurrentPosition() - subtractionAmount;
     }
 
     public void stop(){
@@ -41,7 +46,18 @@ public class Turret {
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(0.5);
     }
+    public void home(){
+        if(turretLimitSwitch.detectTouch()){
+            isHomed = true;
+        }
+        if(!isHomed){
+            turret.setPower(-.2);
+        }else{
+            turret.setPower(0);
+            subtractionAmount = turret.getCurrentPosition();
+        }
 
+    }
 //    In TeleOp have a condition:
 //    if(turret.getCurrentPosition() == turret.getTargetPosition()){
 //        turret.setPower(0);
