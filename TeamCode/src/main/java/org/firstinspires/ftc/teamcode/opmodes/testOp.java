@@ -104,14 +104,11 @@ public class testOp extends OpMode {
 
         disX = goalX - follower.getPose().getX();
         disY = goalY - follower.getPose().getY();
-        robotHeading = follower.getHeading();
+        robotHeading = follower.getHeading(); //will always be something plus that starting of 90
 
-        goalDist = Math.sqrt(Math.pow(goalX - follower.getPose().getX(), 2) + Math.pow(goalY - follower.getPose().getY(), 2));
-        //goalAngle = Math.abs(Math.asin((goalX - follower.getPose().getX()) / goalDist));
-        goalAngle = Math.atan2(disY, disX);
-
-        desiredTurretAngle = -(goalAngle - robotHeading);
-        //turret.rotateToGoal(desiredTurretAngle);
+        goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
+        goalAngle = Math.atan2(disY, disX) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
+        turret.rotateToGoal(goalAngle, robotHeading);
 
 
 
@@ -231,25 +228,24 @@ public class testOp extends OpMode {
 
 
 
-        telemetry.addData("motor1 ticks: ", intake.getPos());
+        ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
-
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
-        telemetry.addData("state: ", shooter.getLauunchState());
+        telemetry.addData("shooter state: ", shooter.getLauunchState());
         //telemetry.addData("servo pos", shooter.getServo());
         telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
         telemetry.addData("Follower X: ", follower.getPose().getX());
         telemetry.addData("Follower Y ", follower.getPose().getY());
+        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
+        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("Goal Dist: ", goalDist);
-        telemetry.addData("current robot angle", Math.toDegrees(follower.getHeading()));
+
         telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
         telemetry.addData("is turning?", turningToShoot);
-        telemetry.addData("turret rtotation: ", turret.getPosWithoutSubtractionFactor());
+        telemetry.addData("turret angle: ", turret.getPosWithoutSubtractionFactor());
         telemetry.addData("turnneeded", turret.turnNeeded);
-        telemetry.addData("follower reading", follower.getPose());
-        telemetry.addData("follower y reading", follower.getPose().getY());
 
         telemetry.update();
     }//

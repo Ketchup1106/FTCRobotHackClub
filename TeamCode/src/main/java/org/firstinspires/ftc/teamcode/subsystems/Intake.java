@@ -36,8 +36,5 @@ public class Intake {
     public void stop(){
         intake.setPower(0);
     }
-    public int getPos() {
-        return intake.getCurrentPosition();
-    }
 
 }
