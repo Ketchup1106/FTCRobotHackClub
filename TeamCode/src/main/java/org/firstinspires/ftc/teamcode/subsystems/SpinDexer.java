@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -51,8 +52,8 @@ public class SpinDexer {
         s1 = hwMap.get(CRServo.class, "spin1");
         s2 = hwMap.get(CRServo.class, "spin2");
 
-        s1.setDirection(CRServo.Direction.FORWARD);
-        s2.setDirection(CRServo.Direction.REVERSE);
+        s1.setDirection(CRServo.Direction.REVERSE);
+        s2.setDirection(CRServo.Direction.FORWARD);
 
         //frontTouchy.init(hwMap);
         //rearTouchy.init(hwMap);

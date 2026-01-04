@@ -17,7 +17,7 @@ public class Turret {
     double tickLimit = 827; //manually tune
     double subtractionAmount = 0;
     public boolean isHomed = false;
-    int turnNeeded;
+    public int turnNeeded;
     TouchySensor turretLimitSwitch = new TouchySensor();
 
     public void init(HardwareMap hwMap){
@@ -32,10 +32,10 @@ public class Turret {
     }
     public void rotateToGoal(double goalAngle){
         turnNeeded = (int)(goalAngle*ticksPerRadian);
-        if(turnNeeded > tickLimit - getCurrentPos()) {
+        if((turnNeeded > tickLimit - getCurrentPos()) || (turnNeeded < 0 - getCurrentPos())) {
             return;
         }
-        turret.setTargetPosition((int)(turnNeeded + getCurrentPos()));
+        turret.setTargetPosition((int)(turnNeeded));
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(0.5);
     }

@@ -48,7 +48,7 @@ public class testOp extends OpMode {
     double powerSetter = .2;
     double targetVel = 0;
     int shoot = 0;
-    double robotHeading;
+    public double robotHeading;
 
     double desiredTurretAngle;
 
@@ -95,7 +95,7 @@ public class testOp extends OpMode {
 //        if(automatedDrive){
 //            automatedDrive(follower.getPose());
 //        }
-        follower.update();
+        follower.poseTracker.update();
 
         if(doesAprilTimerHaveToReset){
             aprilTimer.reset();
@@ -109,8 +109,9 @@ public class testOp extends OpMode {
         goalDist = Math.sqrt(Math.pow(goalX - follower.getPose().getX(), 2) + Math.pow(goalY - follower.getPose().getY(), 2));
         //goalAngle = Math.abs(Math.asin((goalX - follower.getPose().getX()) / goalDist));
         goalAngle = Math.atan2(disY, disX);
-        desiredTurretAngle = goalAngle - robotHeading;
-        turret.rotateToGoal(desiredTurretAngle);
+
+        desiredTurretAngle = -(goalAngle - robotHeading);
+        //turret.rotateToGoal(desiredTurretAngle);
 
 
 
@@ -150,15 +151,18 @@ public class testOp extends OpMode {
             aprilTagStuff.stop();
         }
         telemetry.addData("Order: ", order);
-        follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x * .5, 1);
         //drive.te(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
 //        if (gamepad2.bWasPressed()) { //shoot 1
 //            shooter.shoot1();
 //        }
         if (gamepad2.yWasPressed()) { // shoot 3
-            turret.rotateToGoal(goalAngle);
-            turningToShoot = true;
+            //turret.rotateToGoal(goalAngle);
+            //turningToShoot = true;
+            shooter.shoot3();
         }
+        /*
         if(turningToShoot == true){
             if(turret.getCurrentPos() == goalAngle){
                 shooter.shoot3();
@@ -166,8 +170,13 @@ public class testOp extends OpMode {
                 turret.stop();
             }
         }
+         */
         if (gamepad1.right_trigger > 0.1) { //
             intake.run();
+        }
+        else if(gamepad1.left_trigger > 0.1){
+            intake.runReverse();
+            shooter.setIntakeState();
         }
         else {
             intake.stop();
@@ -178,12 +187,7 @@ public class testOp extends OpMode {
         if(gamepad2.dpadLeftWasPressed()){
             shooter.setFrontOrBack("back");
         }
-        if (gamepad1.left_trigger > 0.1) { //
-            intake.runReverse();
-            shooter.setIntakeState();
-        } else {
-            intake.stop();
-        }
+
         if (gamepad1.leftBumperWasPressed()) {
             slowMode = !slowMode;
         }
@@ -243,6 +247,9 @@ public class testOp extends OpMode {
         telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
         telemetry.addData("is turning?", turningToShoot);
         telemetry.addData("turret rtotation: ", turret.getPosWithoutSubtractionFactor());
+        telemetry.addData("turnneeded", turret.turnNeeded);
+        telemetry.addData("follower reading", follower.getPose());
+        telemetry.addData("follower y reading", follower.getPose().getY());
 
         telemetry.update();
     }//

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.TouchySensor;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -28,8 +29,12 @@ public class shooterPIDTunerOp extends OpMode {
     public DcMotorEx shooter1;
     public DcMotorEx shooter2;
 
+    public Servo hoodAngle;
+
     double low = 0;
     double high = 800;
+
+    double hoodAnglePos = 0;
 
     double currTargetVelocity = high;
 
@@ -45,11 +50,14 @@ public class shooterPIDTunerOp extends OpMode {
         shooter1 = hardwareMap.get(DcMotorEx.class, "sm1");
         shooter2 = hardwareMap.get(DcMotorEx.class, "sm2");
 
-        shooter1.setDirection(DcMotorSimple.Direction.FORWARD);
+        hoodAngle = hardwareMap.get(Servo.class, "hoodAngle");
+
+        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
         shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
@@ -86,12 +94,17 @@ public class shooterPIDTunerOp extends OpMode {
             P -= stepSizes[stepIndex];
         }
 
+        if(gamepad1.xWasPressed()){
+            hoodAnglePos += stepSizes[stepIndex];
+            hoodAngle.setPosition(hoodAnglePos);
+        }
+
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
         shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
-        shooter1.setVelocity(-currTargetVelocity);
+        shooter1.setVelocity(currTargetVelocity);
         shooter2.setVelocity(currTargetVelocity);
 
         double curVel1 = shooter1.getVelocity();

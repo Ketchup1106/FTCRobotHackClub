@@ -39,7 +39,7 @@ public class testShooter {
         transferServo = hwMap.get(Servo.class, "transferServo");
 
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         
         transferServo.setDirection(Servo.Direction.FORWARD);
 
