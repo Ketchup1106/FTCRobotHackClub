@@ -55,6 +55,17 @@ public class Turret {
         turret.setPower(0.5);
     }
 
+    public void rotateToGoalAnish2(double goalAngle, double robotAngle){
+        turnNeeded = (int)((Math.toRadians(100) + (robotAngle - (goalAngle + Math.toRadians(90)))) * ticksPerRadian);
+        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+            return;
+        }
+        turret.setTargetPosition(turnNeeded);
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.5);
+    }
+
+
     public double getCurrentPos(){
         return turret.getCurrentPosition() + subtractionAmount;
     }
