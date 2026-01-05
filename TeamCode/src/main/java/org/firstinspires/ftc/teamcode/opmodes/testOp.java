@@ -190,9 +190,11 @@ public class testOp extends OpMode {
         }
         if(gamepad2.dpadRightWasPressed()){
             shooter.setFrontOrBack("front");
+            shooter.spinManual("front");
         }
         if(gamepad2.dpadLeftWasPressed()){
             shooter.setFrontOrBack("back");
+            shooter.spinManual("back");
         }
 
         if (gamepad1.leftBumperWasPressed()) {

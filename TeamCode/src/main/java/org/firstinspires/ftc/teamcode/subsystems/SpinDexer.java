@@ -217,6 +217,30 @@ public class SpinDexer {
             }
         }
     }
+    public void spinToNextManual(String frontOrBack){
+        if(frontOrBack.equals("front")){
+            if(targetPos == frontPos){
+                targetPos = frontSecondIntakePos;
+            }
+            else if(targetPos == frontSecondIntakePos){
+                targetPos = frontThirdIntakePos;
+            }
+            else if(targetPos == frontThirdIntakePos){
+                targetPos = frontPos;
+            }
+        }
+        else if(frontOrBack.equals("back")){
+            if(targetPos == backPos){
+                targetPos = backSecondIntakePos;
+            }
+            else if(targetPos == backSecondIntakePos){
+                targetPos = backThirdIntakePos;
+            }
+            else if(targetPos == backThirdIntakePos){
+                targetPos = backPos;
+            }
+        }
+    }
     //step5: set up for shooting
     public void setUpForShooting(String gameOrder) {
         if (currentOrder.equals("PGP")) {

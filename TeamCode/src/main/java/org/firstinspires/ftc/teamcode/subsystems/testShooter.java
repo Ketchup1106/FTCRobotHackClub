@@ -31,6 +31,7 @@ public class testShooter {
 
     public Servo transferServo;
     public Servo hoodAngle;
+
     //SpinDexer spindexer = new SpinDexer();
 
     public void init(HardwareMap hwMap, Telemetry telemetry){
@@ -196,6 +197,10 @@ public class testShooter {
     }
     public void setFrontOrBack(String side){
         //spindexer.intakeSide = side;
+    }
+
+    public void spinManual(String side){
+        //spindexer.spinToNextManual(String side);
     }
 }
 
