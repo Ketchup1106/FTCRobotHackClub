@@ -35,34 +35,40 @@ public class Turret {
         //robotAngle = condenseAngle(Math.toDegrees(robotAngle));
         turnNeeded = (int)(Math.abs(goalAngle*ticksPerRadian - robotAngle*ticksPerRadian));
 
-        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+//        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+//            return;
+//        }
+        if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
             return;
         }
         turret.setTargetPosition(turnNeeded);
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turret.setPower(0.5);
+        turret.setPower(1);
     }
 
-    public void rotateToGoalAnish(double goalAngle, double robotAngle){
-        double TurretAngleOnBot = Math.toRadians(-10) + (getCurrentPos()/ticksPerRadian);
-        double turretHeading = robotAngle - TurretAngleOnBot;
-        turnNeeded = (int)(ticksPerRadian*(goalAngle - turretHeading));
-        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
-            return;
-        }
-        turret.setTargetPosition(turnNeeded);
-        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turret.setPower(0.5);
-    }
+//    public void rotateToGoalAnish(double goalAngle, double robotAngle){
+//        double TurretAngleOnBot = Math.toRadians(-10) + (getCurrentPos()/ticksPerRadian);
+//        double turretHeading = robotAngle - TurretAngleOnBot;
+//        turnNeeded = (int)(ticksPerRadian*(goalAngle - turretHeading));
+//        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+//            return;
+//        }
+//        turret.setTargetPosition(turnNeeded);
+//        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        turret.setPower(0.5);
+//    }
 
-    public void rotateToGoalAnish2(double goalAngle, double robotAngle){
+    public void rotateToGoalKetchup(double goalAngle, double robotAngle){
         turnNeeded = (int)((Math.toRadians(100) + (robotAngle - (goalAngle + Math.toRadians(90)))) * ticksPerRadian);
-        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+//        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+//            return;
+//        }
+        if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
             return;
         }
         turret.setTargetPosition(turnNeeded);
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turret.setPower(0.5);
+        turret.setPower(1);
     }
 
 
