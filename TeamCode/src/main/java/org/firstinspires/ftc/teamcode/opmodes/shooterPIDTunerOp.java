@@ -31,8 +31,8 @@ public class shooterPIDTunerOp extends OpMode {
 
     public Servo hoodAngle;
 
-    double low = 0;
-    double high = 800;
+    double low = 600;
+    double high = 1200;
 
     double hoodAnglePos = 0;
 
@@ -111,7 +111,7 @@ public class shooterPIDTunerOp extends OpMode {
 
         double curVel2 = shooter2.getVelocity();
 
-        double error1 = currTargetVelocity + curVel1;
+        double error1 = currTargetVelocity - curVel1;
 
         double error2 = currTargetVelocity - curVel2;
 
@@ -125,6 +125,7 @@ public class shooterPIDTunerOp extends OpMode {
         telemetry.addData("Tuning P: ", P);
         telemetry.addData("Tuning F: ", F);
         telemetry.addData("Step Size: ", stepSizes[stepIndex]);
+        telemetry.addLine("Y: switches velocity\nB: increase step size");
 
         //P 75
 

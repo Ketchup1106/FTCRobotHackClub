@@ -13,7 +13,8 @@ public class Turret {
 
     double gearRatio = 4/1;
 
-    double ticksPerRadian = (537.6 * gearRatio) /(2 * Math.PI);
+    public double ticksPerDegree = (537 * gearRatio)/360;
+    public double ticksPerRadian = (537.6 * gearRatio) /(2 * Math.PI);
     double tickLimit = 827; //manually tune
     double subtractionAmount = 0;
     public boolean isHomed = false;
@@ -31,8 +32,23 @@ public class Turret {
         turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10, 0, 0, 0));
     }
     public void rotateToGoal(double goalAngle, double robotAngle){
-        robotAngle = condenseAngle(Math.toDegrees(robotAngle));
-        turnNeeded = (int)(goalAngle*ticksPerRadian - robotAngle*ticksPerRadian);
+        //robotAngle = condenseAngle(Math.toDegrees(robotAngle));
+        turnNeeded = (int)((goalAngle*ticksPerRadian - robotAngle*ticksPerRadian));
+        if(Math.toDegrees(robotAngle*ticksPerRadian) > goalAngle){
+            turnNeeded = Math.abs(turnNeeded);
+        }
+        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
+            return;
+        }
+        turret.setTargetPosition(turnNeeded);
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.5);
+    }
+
+    public void rotateToGoalAnish(double goalAngle, double robotAngle){
+        double TurretAngleOnBot = Math.toRadians(-10) + (getCurrentPos()/ticksPerRadian);
+        double turretHeading = robotAngle - TurretAngleOnBot;
+        turnNeeded = (int)(ticksPerRadian*(goalAngle - turretHeading));
         if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
             return;
         }
@@ -53,7 +69,19 @@ public class Turret {
     }
 
     public void rotate(){
-        turret.setTargetPosition((int)(turret.getCurrentPosition() + (ticksPerRadian * gearRatio * (Math.PI/4))));
+        turret.setTargetPosition((int)(turret.getCurrentPosition() + (2 * ticksPerDegree)));
+        if(turret.getCurrentPosition() + (2 * ticksPerDegree) > tickLimit){
+            return;
+        }
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.5);
+    }
+    public void rotateReverse(){
+        turret.setTargetPosition((int)(turret.getCurrentPosition() - (2 * ticksPerDegree)));
+        if(turret.getCurrentPosition() - (2 * ticksPerDegree) <= 0){
+            return;
+        }
+        turret.setTargetPosition((int)(turret.getCurrentPosition() - (2 * ticksPerDegree)));
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(0.5);
     }

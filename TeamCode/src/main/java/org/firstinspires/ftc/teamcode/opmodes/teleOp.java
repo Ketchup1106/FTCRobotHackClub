@@ -154,14 +154,13 @@ public class teleOp extends OpMode {
 
 
 
-        telemetry.addData("motor1 ticks: ", intake.getPos());
         //telemetry.addData("Button status: ", touchy1.detectTouch());
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
 
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
         telemetry.addData("state: ", shooter.getLauunchState());
-        //telemetry.addData("servo pos", shooter.getServo());
+        //telemetry.addData("tuningservo pos", shooter.getServo());
         telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
         telemetry.addData("Follower X: ", follower.getPose().getX());
         telemetry.addData("Follower Y ", follower.getPose().getY());

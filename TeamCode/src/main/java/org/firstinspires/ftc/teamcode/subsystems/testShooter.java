@@ -30,6 +30,7 @@ public class testShooter {
     private Intake intake = new Intake();
 
     public Servo transferServo;
+    public Servo hoodAngle;
     //SpinDexer spindexer = new SpinDexer();
 
     public void init(HardwareMap hwMap, Telemetry telemetry){
@@ -37,7 +38,7 @@ public class testShooter {
         shooter2 = hwMap.get(DcMotorEx.class, "sm2");
         
         transferServo = hwMap.get(Servo.class, "transferServo");
-
+        hoodAngle = hwMap.get(Servo.class, "hoodAngle");
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         
@@ -49,15 +50,15 @@ public class testShooter {
         this.telemetry = telemetry;
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        hoodAngle.setDirection(Servo.Direction.REVERSE);
 
 
 
         shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                85, 0, 0, 20.4
+                160, 0, 0, 17.7
         )); // 2.75 10
         shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                85    , 0, 0, 20.4
+                160    , 0, 0, 17.7
         )); //2.75 10
 
         intake.init(hwMap);
@@ -109,7 +110,9 @@ public class testShooter {
 //                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
 //                    launchState = LaunchState.RECOVER;
 //                }
-                launchState = LaunchState.RECOVER;
+                if(feederTimer.seconds()>5) {
+                    launchState = LaunchState.RECOVER;
+                }
                 break;
             case RECOVER:
                 stopAll();
@@ -169,10 +172,20 @@ public class testShooter {
 
     public double setVel(double distance){
         return MathFunctions.clamp(
-                (0.0252784*Math.pow(distance, 2)) //0.0252784x^2
-                        -(0.612831*distance) // 0.612831x
-                        +(779.81988) //779.81988
-                ,0, 1400);
+                (0.00831624*Math.pow(distance, 2)) +
+                        (4.13011*distance) +
+                        (877.46841)
+                ,0, 1800);
+    }
+    public void setHood(double distance){
+        hoodAngle.setPosition(
+                MathFunctions.clamp(
+                (-(2.47416*(1/(Math.pow(10, 8)))) * Math.pow(distance, 4)) +
+                (0.00000985354* Math.pow(distance, 3)) -
+                (0.00136643*Math.pow(distance, 2)) +
+                (0.0833032*distance) -
+                (1.41432),
+                0, 1));
     }
     
     public void setOrder(String order){

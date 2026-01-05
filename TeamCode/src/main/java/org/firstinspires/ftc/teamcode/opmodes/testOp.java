@@ -49,6 +49,8 @@ public class testOp extends OpMode {
     double targetVel = 0;
     int shoot = 0;
     public double robotHeading;
+    double hoodAngle;
+    double velocity;
 
     double desiredTurretAngle;
 
@@ -107,9 +109,17 @@ public class testOp extends OpMode {
         robotHeading = follower.getHeading(); //will always be something plus that starting of 90
 
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
-        goalAngle = Math.atan2(disY, disX) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-        turret.rotateToGoal(goalAngle, robotHeading);
+        goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
+        //turret.rotateToGoal(goalAngle, robotHeading);
 
+        velocity = (0.00831624*Math.pow(goalDist, 2)) +
+                    (4.13011*goalDist) +
+                    (877.46841);
+        hoodAngle = (-(2.47416*(1/(Math.pow(10, 8)))) * Math.pow(goalDist, 4)) +
+                    (0.00000985354* Math.pow(goalDist, 3)) -
+                    (0.00136643*Math.pow(goalDist, 2)) +
+                    (0.0833032*goalDist) -
+                    (1.41432);
 
 
 
@@ -186,7 +196,11 @@ public class testOp extends OpMode {
         }
 
         if (gamepad1.leftBumperWasPressed()) {
-            slowMode = !slowMode;
+            turret.rotate();
+        }else if(gamepad1.rightBumperWasPressed()){
+            turret.rotateReverse();
+        }else{
+            turret.stop();
         }
         if(slowMode == true){
             powerSetter = 0.2;
@@ -225,6 +239,7 @@ public class testOp extends OpMode {
 
 
         targetVel = shooter.setVel(goalDist);
+        shooter.setHood(goalDist)
 
 
 
@@ -234,7 +249,7 @@ public class testOp extends OpMode {
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
         telemetry.addData("shooter state: ", shooter.getLauunchState());
-        //telemetry.addData("servo pos", shooter.getServo());
+        //telemetry.addData("tuningservo pos", shooter.getServo());
         telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
         telemetry.addData("Follower X: ", follower.getPose().getX());
         telemetry.addData("Follower Y ", follower.getPose().getY());
@@ -245,7 +260,7 @@ public class testOp extends OpMode {
         telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
         telemetry.addData("is turning?", turningToShoot);
         telemetry.addData("turret angle: ", turret.getPosWithoutSubtractionFactor());
-        telemetry.addData("turnneeded", turret.turnNeeded);
+        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
 
         telemetry.update();
     }//
