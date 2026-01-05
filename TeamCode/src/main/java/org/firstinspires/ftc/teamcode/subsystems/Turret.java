@@ -11,7 +11,7 @@ public class Turret {
 
 
 
-    double gearRatio = 4/1;
+    double gearRatio = 103.0/26;
 
     public double ticksPerDegree = (537 * gearRatio)/360;
     public double ticksPerRadian = (537.6 * gearRatio) /(2 * Math.PI);
@@ -33,10 +33,8 @@ public class Turret {
     }
     public void rotateToGoal(double goalAngle, double robotAngle){
         //robotAngle = condenseAngle(Math.toDegrees(robotAngle));
-        turnNeeded = (int)((goalAngle*ticksPerRadian - robotAngle*ticksPerRadian));
-        if(Math.toDegrees(robotAngle*ticksPerRadian) > goalAngle){
-            turnNeeded = Math.abs(turnNeeded);
-        }
+        turnNeeded = (int)(Math.abs(goalAngle*ticksPerRadian - robotAngle*ticksPerRadian));
+
         if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
             return;
         }
@@ -58,10 +56,10 @@ public class Turret {
     }
 
     public double getCurrentPos(){
-        return turret.getCurrentPosition() - subtractionAmount;
+        return turret.getCurrentPosition() + subtractionAmount;
     }
     public double getPosWithoutSubtractionFactor(){
-        return turret.getCurrentPosition();
+        return turret.getCurrentPosition()/ticksPerRadian;
     }
 
     public void stop(){
@@ -93,7 +91,7 @@ public class Turret {
             turret.setPower(-.2);
         }else{
             turret.setPower(0);
-            subtractionAmount = turret.getCurrentPosition();
+            turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
     }

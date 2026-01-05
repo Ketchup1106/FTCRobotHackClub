@@ -256,7 +256,7 @@ public class testOp extends OpMode {
         telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
         telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("Goal Dist: ", goalDist);
-
+        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
         telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
         telemetry.addData("is turning?", turningToShoot);
         telemetry.addData("turret angle: ", turret.getPosWithoutSubtractionFactor());
