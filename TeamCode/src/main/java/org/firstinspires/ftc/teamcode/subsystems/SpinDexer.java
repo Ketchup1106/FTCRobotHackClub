@@ -52,6 +52,8 @@ public class SpinDexer {
         s1 = hwMap.get(CRServo.class, "spin1");
         s2 = hwMap.get(CRServo.class, "spin2");
 
+        encoder = hwMap.get(DcMotorEx.class, "intake");
+
         s1.setDirection(CRServo.Direction.REVERSE);
         s2.setDirection(CRServo.Direction.FORWARD);
 

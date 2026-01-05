@@ -29,10 +29,10 @@ public class Turret {
         turret.setTargetPosition(0);
         turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
-        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10, 0, 0, 0));
+        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(40, 0, 0, 0));
     }
     public void rotateToGoal(double goalAngle, double robotAngle){
-        //robotAngle = condenseAngle(Math.toDegrees(robotAngle));
+        robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
         turnNeeded = (int)(Math.abs(goalAngle*ticksPerRadian - robotAngle*ticksPerRadian));
 
 //        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
@@ -112,15 +112,15 @@ public class Turret {
         }
 
     }
-    public double condenseAngle(double angle){
-        int divisionFactor = (int)angle/360;
-        angle -= 360*divisionFactor;
-
-        if(angle > 180){
-            angle = -1*(angle-180);
-        }else if(angle < -180){
-            angle = -1*(angle+180);
+    public double fixNegativeHeading(double angle){
+        if(angle < 0){
+            angle = (180 - Math.abs(angle)) + 180;
         }
+//        if(angle > 180){
+//            angle = -1*(angle-180);
+//        }else if(angle < -180){
+//            angle = -1*(angle+180);
+//        }
         return Math.toRadians(angle);
     }
 //    In TeleOp have a condition:

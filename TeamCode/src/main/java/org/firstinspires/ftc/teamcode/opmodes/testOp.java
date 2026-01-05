@@ -110,16 +110,18 @@ public class testOp extends OpMode {
 
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-        //turret.rotateToGoal(goalAngle, robotHeading);
+        if(gamepad1.xWasPressed()){
+            turret.rotateToGoal(goalAngle, robotHeading);
+        }
 
-        velocity = (0.00831624*Math.pow(goalDist, 2)) +
-                    (4.13011*goalDist) +
-                    (877.46841);
-        hoodAngle = (-(2.47416*(1/(Math.pow(10, 8)))) * Math.pow(goalDist, 4)) +
-                    (0.00000985354* Math.pow(goalDist, 3)) -
-                    (0.00136643*Math.pow(goalDist, 2)) +
-                    (0.0833032*goalDist) -
-                    (1.41432);
+//        velocity = (0.00831624*Math.pow(goalDist, 2)) +
+//                    (4.13011*goalDist) +
+//                    (877.46841);
+//        hoodAngle = (-(2.47416*(1/(Math.pow(10, 8)))) * Math.pow(goalDist, 4)) +
+//                    (0.00000985354* Math.pow(goalDist, 3)) -
+//                    (0.00136643*Math.pow(goalDist, 2)) +
+//                    (0.0833032*goalDist) -
+//                    (1.41432);
 
 
 
