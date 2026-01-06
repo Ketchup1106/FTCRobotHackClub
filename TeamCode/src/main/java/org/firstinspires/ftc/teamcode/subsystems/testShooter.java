@@ -29,21 +29,21 @@ public class testShooter {
     public int numShot = 1;
     private Intake intake = new Intake();
 
-    public Servo transferServo;
+    //public Servo transferServo;
     public Servo hoodAngle;
 
-    //SpinDexer spindexer = new SpinDexer();
+    SpinDexer spindexer = new SpinDexer();
 
     public void init(HardwareMap hwMap, Telemetry telemetry){
         shooter1 = hwMap.get(DcMotorEx.class, "sm1");
         shooter2 = hwMap.get(DcMotorEx.class, "sm2");
         
-        transferServo = hwMap.get(Servo.class, "transferServo");
+        //transferServo = hwMap.get(Servo.class, "transferServo");
         hoodAngle = hwMap.get(Servo.class, "hoodAngle");
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         
-        transferServo.setDirection(Servo.Direction.FORWARD);
+        //transferServo.setDirection(Servo.Direction.FORWARD);
 
         shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -64,7 +64,7 @@ public class testShooter {
 
         intake.init(hwMap);
 
-        //spindexer.init(hwMap);
+        spindexer.init(hwMap);
 
         launchState = LaunchState.IDLE;
 //        stopFeeder();
@@ -90,7 +90,7 @@ public class testShooter {
     private LaunchState launchState;
 
     public void updateState(double velocity){
-        //spindexer.updateState();
+        spindexer.updateState();
         switch(launchState){
             case IDLE:
                 if(isActive) {
@@ -106,11 +106,11 @@ public class testShooter {
                 }
                 break;
             case LAUNCH:
-                transferServo.setPosition(lowPos);
-//                spindexer.setStateToShoot();
-//                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
-//                    launchState = LaunchState.RECOVER;
-//                }
+                //transferServo.setPosition(lowPos);
+                spindexer.setStateToShoot();
+                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
+                    launchState = LaunchState.RECOVER;
+                }
                 if(feederTimer.seconds()>5) {
                     launchState = LaunchState.RECOVER;
                 }
@@ -156,7 +156,7 @@ public class testShooter {
     public void stopAll(){
 //        stopFeeder();
         stopLauncher();
-        transferServo.setPosition(highPos);
+        //transferServo.setPosition(highPos);
     }
     public double getAmountTOShoot(){
         return amountToShoot;
@@ -190,17 +190,25 @@ public class testShooter {
     }
     
     public void setOrder(String order){
-        //spindexer.setGameOrder(order);
+        spindexer.setGameOrder(order);
     }
     public void setIntakeState(){
-        //spindexer.setStateToMoveToIntake();
+        spindexer.setStateToMoveToIntake();
     }
     public void setFrontOrBack(String side){
-        //spindexer.intakeSide = side;
+        spindexer.intakeSide = side;
     }
 
     public void spinManual(String side){
-        //spindexer.spinToNextManual(String side);
+        spindexer.spinToNextManual(side);
+    }
+
+    public void setPowerPose(int target){
+        spindexer.setPowerToPosition(target);
+    }
+
+    public double getEncPos(){
+        return spindexer.getEncoderPos();
     }
 }
 

@@ -78,13 +78,13 @@ public class testOp extends OpMode {
 
 
     }
-    @Override
-    public void start() {
-        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
-        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
-        //If you don't pass anything in, it uses the default (false)
-        follower.startTeleopDrive();
-    }
+//    @Override
+//    public void start() {
+//        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
+//        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
+//        //If you don't pass anything in, it uses the default (false)
+//        follower.startTeleopDrive();
+//    }
 
     @Override
     public void loop(){
@@ -166,8 +166,45 @@ public class testOp extends OpMode {
 //        if (gamepad2.bWasPressed()) { //shoot 1
 //            shooter.shoot1();
 //        }
+
+
+
+        /*NEW CONTROLS _______________________________________________________________________________
+
+        if(gamepad1.right_trigger > 0.1){
+            intake.run();
+        }
+        else if(gamepad1.rightBumperWasPressed()){
+            intake.runReverse();
+        }
+        else{
+            intake.stop();
+        }
+        if(gamepad1.right_stick_button){
+            slowMode = !slowMode;
+        }
+        if(gamepad1.aWasPressed()){
+            turret.home();
+        }
+
+        if(gamepad2.right_stick_x > 0){ //EDIT
+            turret.rotate(gamepad2.right_stick_x);
+        }
+        if(gamepad2.leftBumperWasPressed()){
+            //add turret slowMode
+        }
+        if(gamepad2.left_trigger > 0.1){ //Need to edit or change button
+            shooter.shoot3();
+            //add stuff for spindexer
+        }
+        if(gamepad2.right_trigger > 0.1){
+            //add shoot 3 in pattern;
+        }
+
+        NEW CONTROLS _______________________________________________________________________________*/
+
         if (gamepad2.yWasPressed()) { // shoot 3
-            //turret.rotateToGoal(goalAngle);
+            //turret.rotateToGoal(robotHeading, goalAngle);
             //turningToShoot = true;
             shooter.shoot3();
         }
@@ -212,6 +249,8 @@ public class testOp extends OpMode {
         else{
             powerSetter = 0.75;
         }
+
+
 //        if (gamepad2.dpadUpWasPressed()) {
 //            shooter.startFeeder();
 //        }
@@ -219,10 +258,11 @@ public class testOp extends OpMode {
 //            shooter.stopFeeder();
 //        }
 
+        telemetry.addData("spindexer Pos", shooter.getEncPos());
 
         shooter.updateState(targetVel);
         if(gamepad1.dpadDownWasPressed()){ //corner calibration
-            follower.setPose(new Pose(8, 8, 90));
+            follower.setPose(new Pose(33, 135, 90));
             homing = true;
             turret.isHomed = false;
         }
@@ -243,9 +283,11 @@ public class testOp extends OpMode {
 
 
         targetVel = shooter.setVel(goalDist);
-        shooter.setHood(goalDist)
+        shooter.setHood(goalDist);
 
-
+        if(gamepad1.aWasPressed()){
+            turret.home();
+        }
 
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());

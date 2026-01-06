@@ -29,7 +29,7 @@ public class Turret {
         turret.setTargetPosition(0);
         turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
-        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(40, 0, 0, 0));
+        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(100, 0, 0, 0));
     }
     public void rotateToGoal(double goalAngle, double robotAngle){
         robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
@@ -91,6 +91,15 @@ public class Turret {
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(0.5);
     }
+
+    public void rotate(double t){
+        turret.setTargetPosition((int)(turret.getCurrentPosition() + (2 * ticksPerDegree)));
+        if(turret.getCurrentPosition() + (2 * ticksPerDegree) > tickLimit){
+            return;
+        }
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.5);
+    }
     public void rotateReverse(){
         turret.setTargetPosition((int)(turret.getCurrentPosition() - (2 * ticksPerDegree)));
         if(turret.getCurrentPosition() - (2 * ticksPerDegree) <= 0){
@@ -105,7 +114,8 @@ public class Turret {
             isHomed = true;
         }
         if(!isHomed){
-            turret.setPower(-.2);
+            turret.setTargetPosition((int)(turret.getCurrentPosition() - (ticksPerDegree)));
+            turret.setPower(-1);
         }else{
             turret.setPower(0);
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

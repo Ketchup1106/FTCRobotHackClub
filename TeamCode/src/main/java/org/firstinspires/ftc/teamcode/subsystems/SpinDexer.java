@@ -14,7 +14,6 @@ public class SpinDexer {
     public CRServo s2;
 
     DcMotorEx encoder;
-    testShooter shooter = new testShooter();
     Telemetry telemetry;
     //public TouchySensor frontTouchy = new TouchySensor();
     //public TouchySensor rearTouchy = new TouchySensor();
@@ -65,9 +64,9 @@ public class SpinDexer {
 
         //s1.setPower(frontPos);
         //s2.setPower(frontPos); //0 is front intake
-        shooter.init(hwMap, telemetry);
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        spinState = SpinState.IDLE;
     }
     //step1: detect intake through touch sensor
     public enum SpinState{
@@ -413,6 +412,10 @@ public class SpinDexer {
             return -1;
         }
         return 0;
+    }
+
+    public double getEncoderPos(){
+        return encoder.getCurrentPosition();
     }
 
     public void setStateToShoot(){

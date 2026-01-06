@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,16 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
-import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.TouchySensor;
-import org.firstinspires.ftc.teamcode.subsystems.testShooter;
-import org.firstinspires.ftc.teamcode.subsystems.testShooter;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 @TeleOp(name = "turet pid tuner")
@@ -40,7 +26,7 @@ public class turretTuner extends OpMode {
 
     double hoodAnglePos = 0;
 
-    double currTargetVelocity = high;
+    double currTargetPosition = high;
 
     double I = 0;
 
@@ -48,26 +34,31 @@ public class turretTuner extends OpMode {
     double D = 0;
 
     double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
-    int stepIndex = 1;
+    int stepIndex = 0;
 
     @Override
     public void init(){
-        shooter1 = hardwareMap.get(DcMotorEx.class, "sm1");
-        shooter2 = hardwareMap.get(DcMotorEx.class, "sm2");
+//        shooter1 = hardwareMap.get(DcMotorEx.class, "sm1");
+//        shooter2 = hardwareMap.get(DcMotorEx.class, "sm2");
         turret = hardwareMap.get(DcMotorEx.class, "tm");
+        turret.setDirection(DcMotorSimple.Direction.REVERSE);
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setTargetPosition(0);
+        turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         hoodAngle = hardwareMap.get(Servo.class, "hoodAngle");
 
-        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+//        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
+//        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, 0);
-        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, 0);
+        turret.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);
+//        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         telemetry.addLine("Init Complete");
 
@@ -77,21 +68,21 @@ public class turretTuner extends OpMode {
     @Override
     public void loop(){
         if(gamepad1.yWasPressed()){
-            if(currTargetVelocity == high){
-                currTargetVelocity= low;
+            if(currTargetPosition == high){
+                currTargetPosition = low;
             }
             else{
-                currTargetVelocity = high;
+                currTargetPosition = high;
             }
         }
         if(gamepad1.bWasPressed()){
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
         if(gamepad1.dpadLeftWasPressed()){
-            F -= stepSizes[stepIndex];
+            I -= stepSizes[stepIndex];
         }
         if(gamepad1.dpadRightWasPressed()){
-            F += stepSizes[stepIndex];
+            I += stepSizes[stepIndex];
         }
         if(gamepad1.dpadUpWasPressed()){
             P += stepSizes[stepIndex];
@@ -99,39 +90,42 @@ public class turretTuner extends OpMode {
         if(gamepad1.dpadDownWasPressed()){
             P -= stepSizes[stepIndex];
         }
-
         if(gamepad1.xWasPressed()){
-            hoodAnglePos += stepSizes[stepIndex];
-            hoodAngle.setPosition(hoodAnglePos);
+            D += stepSizes[stepIndex];
+        }
+        if(gamepad1.aWasPressed()){
+            D -= stepSizes[stepIndex];
         }
 
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        if(gamepad1.bWasPressed()){
+            turret.setTargetPosition((int) currTargetPosition);
+        }
 
-        shooter1.setVelocity(currTargetVelocity);
-        shooter2.setVelocity(currTargetVelocity);
 
-        double curVel1 = shooter1.getVelocity();
-
-        double curVel2 = shooter2.getVelocity();
-
-        double error1 = currTargetVelocity - curVel1;
-
-        double error2 = currTargetVelocity - curVel2;
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, 0);
+        turret.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);
 
 
 
-        telemetry.addData("target Velocity: ", currTargetVelocity);
-        telemetry.addData("Current sm1 Velocity: ", curVel1);
-        telemetry.addData("Current sm2 Vel: ", curVel2);
-        telemetry.addData("Error sm1: ", error1);
-        telemetry.addData("Error sm2: ", error2);
+        double curVel1 = turret.getCurrentPosition();
+
+
+        double error1 = currTargetPosition - curVel1;
+
+
+
+
+        telemetry.addData("target pos: ", currTargetPosition);
+        telemetry.addData("Current pos: ", curVel1);
+
+        telemetry.addData("Error ", error1);
+
         telemetry.addData("Tuning P: ", P);
-        telemetry.addData("Tuning F: ", F);
+        telemetry.addData("Tuning I: ", I);
+        telemetry.addData("Tuning D: ", D);
         telemetry.addData("Step Size: ", stepSizes[stepIndex]);
-        telemetry.addLine("Y: switches velocity\nB: increase step size");
+        telemetry.addLine("Y: switches target pose\nB: increase step size");
 
         //P 75
 

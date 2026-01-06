@@ -17,7 +17,7 @@ public class Intake {
 
 
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 //        intake.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
@@ -26,7 +26,9 @@ public class Intake {
     }
 
 
-
+    public double spindexerPos(){
+        return intake.getCurrentPosition();
+    }
     public void run(){
         intake.setPower(1);
     }
