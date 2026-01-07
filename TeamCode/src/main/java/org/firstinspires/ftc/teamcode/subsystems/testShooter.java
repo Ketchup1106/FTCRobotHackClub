@@ -127,6 +127,14 @@ public class testShooter {
         //add spindexer func
         feederTimer.reset();
     }
+
+    public void setShootState(){
+        spindexer.setStateToShoot();
+    }
+
+    public boolean isShootState(){
+        return spindexer.isShootState();
+    }
     /*
        public void shoot1(){
            isActive = true;

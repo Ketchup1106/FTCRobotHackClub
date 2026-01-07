@@ -14,15 +14,12 @@ public class turretTuner extends OpMode {
     double gearRatio = 103.0/26;
 
     double ticksPerDegree = (537 * gearRatio)/360;
-
-    public DcMotorEx shooter1;
-    public DcMotorEx shooter2;
     public DcMotorEx turret;
 
     public Servo hoodAngle;
 
     double low = 45*ticksPerDegree;
-    double high = 135 *ticksPerDegree;
+    double high = 100 *ticksPerDegree;
 
     double hoodAnglePos = 0;
 
@@ -56,8 +53,7 @@ public class turretTuner extends OpMode {
 //        shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, 0);
-        turret.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);
+        turret.setVelocityPIDFCoefficients(P, I, D, 0);
 //        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         telemetry.addLine("Init Complete");
@@ -98,13 +94,15 @@ public class turretTuner extends OpMode {
         }
 
 
-        if(gamepad1.bWasPressed()){
-            turret.setTargetPosition((int) currTargetPosition);
+
+        if(gamepad1.rightBumperWasPressed()){
+            turret.setTargetPosition((int)currTargetPosition);
+            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turret.setPower(1);
         }
 
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, I, D, 0);
-        turret.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);
+        turret.setVelocityPIDFCoefficients(P,I,D,0);
 
 
 
@@ -116,10 +114,10 @@ public class turretTuner extends OpMode {
 
 
 
-        telemetry.addData("target pos: ", currTargetPosition);
-        telemetry.addData("Current pos: ", curVel1);
+        telemetry.addData("target pos: ", currTargetPosition/ticksPerDegree);
+        telemetry.addData("Current pos: ", curVel1/ticksPerDegree);
 
-        telemetry.addData("Error ", error1);
+        telemetry.addData("Error ", error1/ticksPerDegree);
 
         telemetry.addData("Tuning P: ", P);
         telemetry.addData("Tuning I: ", I);

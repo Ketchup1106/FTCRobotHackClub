@@ -11,13 +11,13 @@ public class Turret {
 
 
 
-    double gearRatio = 103.0/26;
+    double gearRatio = 26/103.0;
 
-    public double ticksPerDegree = (537 * gearRatio)/360;
-    public double ticksPerRadian = (537.6 * gearRatio) /(2 * Math.PI);
+    public double ticksPerDegree = (384.5 / gearRatio)/360;
+    public double ticksPerRadian = (384.5 / gearRatio) /(2 * Math.PI);
     double tickLimit = 827; //manually tune
     double subtractionAmount = 0;
-    public boolean isHomed = false;
+    public boolean isHomed = true;
     public int turnNeeded;
     TouchySensor turretLimitSwitch = new TouchySensor();
 
@@ -29,21 +29,28 @@ public class Turret {
         turret.setTargetPosition(0);
         turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
-        turret.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(100, 0, 0, 0));
+        turret.setVelocityPIDFCoefficients(10, .25, 1, 0);
     }
-    public void rotateToGoal(double goalAngle, double robotAngle){
+    public int calculateTurn(double goalAngle, double robotAngle) {
         robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
-        turnNeeded = (int)(Math.abs(goalAngle*ticksPerRadian - robotAngle*ticksPerRadian));
+        turnNeeded = (int) (Math.abs(goalAngle * ticksPerRadian - robotAngle * ticksPerRadian));
+        if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
+            return 0;
+        }
+        return turnNeeded;
+    }
+    public void rotateToGoal(int turn){
+
 
 //        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
 //            return;
 //        }
-        if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
-            return;
-        }
-        turret.setTargetPosition(turnNeeded);
+        turret.setTargetPosition(turn);
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(1);
+    }
+    public boolean getTurretStatus(){
+        return turret.isBusy();
     }
 
 //    public void rotateToGoalAnish(double goalAngle, double robotAngle){
@@ -59,11 +66,12 @@ public class Turret {
 //    }
 
     public void rotateToGoalKetchup(double goalAngle, double robotAngle){
-        turnNeeded = (int)((Math.toRadians(100) + (robotAngle - (goalAngle + Math.toRadians(90)))) * ticksPerRadian);
+        double roboAngle = fixNegativeHeading(robotAngle);
+        turnNeeded = (int)((Math.toRadians(100) + (roboAngle - (goalAngle + Math.toRadians(90)))) * ticksPerRadian);
 //        if((turnNeeded > tickLimit) || (turnNeeded < 0)) {
 //            return;
 //        }
-        if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
+        if(roboAngle < (goalAngle - Math.toRadians(10)) || roboAngle > (goalAngle + Math.toRadians(180))){
             return;
         }
         turret.setTargetPosition(turnNeeded);
@@ -114,9 +122,13 @@ public class Turret {
             isHomed = true;
         }
         if(!isHomed){
-            turret.setTargetPosition((int)(turret.getCurrentPosition() - (ticksPerDegree)));
-            turret.setPower(-1);
+            turret.setTargetPosition((int)(-11*ticksPerDegree));
+            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turret.setPower(-0.5);
+
         }else{
+            turret.setTargetPosition((int)(getCurrentPos()));
+            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             turret.setPower(0);
             turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }

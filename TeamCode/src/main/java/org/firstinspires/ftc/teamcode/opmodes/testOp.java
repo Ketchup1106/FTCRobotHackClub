@@ -52,7 +52,7 @@ public class testOp extends OpMode {
     double hoodAngle;
     double velocity;
 
-    double desiredTurretAngle;
+    int desiredTurretAngle;
 
 
     boolean slowMode = false;
@@ -68,7 +68,6 @@ public class testOp extends OpMode {
         shooter.init(hardwareMap, telemetry);
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
-        //spindexer.init(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
         follower.setStartingPose(new Pose(8, 8,  Math.toRadians(90)));
         follower.update();
@@ -110,8 +109,16 @@ public class testOp extends OpMode {
 
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-        if(gamepad1.xWasPressed()){
-            turret.rotateToGoal(goalAngle, robotHeading);
+        desiredTurretAngle = turret.calculateTurn(goalAngle, robotHeading);
+
+        if(gamepad1.dpadDownWasPressed()){ //corner calibration
+            follower.setPose(new Pose(33, 135, 90));
+            turret.isHomed = false;
+        }
+        if(!turret.isHomed){
+            turret.home();
+        }else{
+            turret.rotateToGoal(desiredTurretAngle);
         }
 
 //        velocity = (0.00831624*Math.pow(goalDist, 2)) +
@@ -261,17 +268,7 @@ public class testOp extends OpMode {
         telemetry.addData("spindexer Pos", shooter.getEncPos());
 
         shooter.updateState(targetVel);
-        if(gamepad1.dpadDownWasPressed()){ //corner calibration
-            follower.setPose(new Pose(33, 135, 90));
-            homing = true;
-            turret.isHomed = false;
-        }
-        if(homing){
-            turret.home();
-            if(turret.isHomed){
-                homing = false;
-            }
-        }
+
 
 //        if(spindexer.frontTouchyActive()){
 //            spindexer.rotateToFront();
@@ -285,12 +282,15 @@ public class testOp extends OpMode {
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
 
-        if(gamepad1.aWasPressed()){
-            turret.home();
+        if(gamepad1.yWasPressed()){
+            shooter.setShootState();
         }
+
 
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
+
+        telemetry.addData("Spindexer in Shoot State", shooter.isShootState());
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
@@ -305,7 +305,9 @@ public class testOp extends OpMode {
         telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
         telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
         telemetry.addData("is turning?", turningToShoot);
-        telemetry.addData("turret angle: ", turret.getPosWithoutSubtractionFactor());
+        telemetry.addData("is busy?", turret.getTurretStatus());
+        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
+        telemetry.addData("turret angle: ", turret.getCurrentPos());
         telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
 
         telemetry.update();

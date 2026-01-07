@@ -35,6 +35,8 @@ public class SpinDexer {
     double shootRotator; //will depend on whats being shot first
     double targetPos = frontPos;
     double currentPos = 0;
+
+    boolean shooting;
     //the gear ratio has to increase for this to work
 
     //all positions are in degrees divided by 250 (the maximum degrees in one direction given the gear ratio
@@ -53,7 +55,7 @@ public class SpinDexer {
 
         encoder = hwMap.get(DcMotorEx.class, "intake");
 
-        s1.setDirection(CRServo.Direction.REVERSE);
+        s1.setDirection(CRServo.Direction.FORWARD);
         s2.setDirection(CRServo.Direction.FORWARD);
 
         //frontTouchy.init(hwMap);
@@ -62,11 +64,13 @@ public class SpinDexer {
         colorSensorFront.init(hwMap);
         colorSensorBack.init(hwMap);
 
-        //s1.setPower(frontPos);
-        //s2.setPower(frontPos); //0 is front intake
+//        s1.setPower(frontPos);
+//        s2.setPower(frontPos); //0 is front intake
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        targetPos = frontPos;
         spinState = SpinState.IDLE;
+        shooting = false;
     }
     //step1: detect intake through touch sensor
     public enum SpinState{
@@ -143,6 +147,7 @@ public class SpinDexer {
                 checkingNumber = 1;
                 intakeTimer.reset();
                 spinState = SpinState.IDLE;
+                shooting = true;
         }
     }
     /*
@@ -405,17 +410,25 @@ public class SpinDexer {
     public double setPowerToPosition(double target){
         double ticksPerDegree = 8192/360.0;
         double difference = target - currentPos;
-        if(difference > 2* ticksPerDegree){
+//        if(difference > 2 * ticksPerDegree){
+//            return 1;
+//        }
+//        else if(difference <-2){
+//            return -1;
+//        }
+//        return 0;
+        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
             return 1;
         }
-        else if(difference <-2){
+        else if(Math.abs(difference) > 2 * ticksPerDegree){
             return -1;
         }
+        shooting = false;
         return 0;
     }
 
     public double getEncoderPos(){
-        return encoder.getCurrentPosition();
+        return currentPos;
     }
 
     public void setStateToShoot(){
@@ -429,6 +442,12 @@ public class SpinDexer {
     }
     public String getSide(){
         return intakeSide;
+    }
+    public boolean isShootState(){
+        if(spinState == SpinState.SHOOT){
+            return true;
+        }
+        return false;
     }
 
 }
