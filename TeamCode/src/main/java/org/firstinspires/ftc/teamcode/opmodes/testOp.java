@@ -44,7 +44,7 @@ public class testOp extends OpMode {
 
     double goalDist;
     double goalAngle;
-    public String order;
+    public String order = "None yet";
     double powerSetter = .2;
     double targetVel = 0;
     int ballCount = 0;
@@ -61,8 +61,10 @@ public class testOp extends OpMode {
     boolean turningToShoot = false;
     boolean isCheckingForApril = true;
     ElapsedTime aprilTimer = new ElapsedTime();
+    ElapsedTime spindexerDelayTimer = new ElapsedTime();
     boolean doesAprilTimerHaveToReset = true;
     boolean homing = false;
+
 
     @Override
     public void init(){
@@ -138,25 +140,21 @@ public class testOp extends OpMode {
         if (aprilTagStuff.patternID == 21) {
             isCheckingForApril = false;
             order = "GPP";
-            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 22) {
             isCheckingForApril = false;
             order = "PGP";
-            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 23) {
             isCheckingForApril = false;
             order = "PPG";
-            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if(aprilTimer.seconds() > 15 && isCheckingForApril){
             isCheckingForApril = false;
             order = "No order was detected within 15 seconds!";
-            shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         telemetry.addData("Order: ", order);
@@ -173,6 +171,7 @@ public class testOp extends OpMode {
 
         if(gamepad1.right_trigger > 0.1){
             intake.run();
+            testDexer.setSpinState(1);
         }
         else if(gamepad1.rightBumperWasPressed()){
             intake.runReverse();
@@ -186,38 +185,61 @@ public class testOp extends OpMode {
         else{
             slowMode = false;
         }
+        //step 1 select intake
         if(gamepad1.dpadUpWasPressed()){
             intakeSide = "front";
-            if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){
-                testDexer.spinToFront();
+            if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
+
         }
         if(gamepad2.dpadDownWasPressed()){
             intakeSide = "back";
-            if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){ //if we are prepping for shot then dont spin to intake
-                testDexer.spinToBack();
+            if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
+
         }
+        if(intakeSide.equals("front")){
+            if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){
+                testDexer.spinToFront();
+                testDexer.setSpinState(2);
+            }
+        }else{
+            if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){ //if we are prepping for shot then dont spin to intake
+                testDexer.spinToBack();
+                testDexer.setSpinState(2);
+            }
+        }
+
+        //step 2 sort balls
         if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING){
             //if intaking and not full, check for color. if color, move to next slot. repeat until full.
             if(ballCount < 3){
                 testDexer.checkForBalls();
-                if(!testDexer.getPatternOrSpots(String.valueOf(ballCount)).equals("U")) { //wait until color
+                if(!testDexer.getPatternOrSpots(String.valueOf(ballCount)).equals("U") && spindexerDelayTimer.seconds() > .5) { //wait until color
                     ballCount++;
+                    testDexer.spinToNext(intakeSide);
+                    spindexerDelayTimer.reset();
                 }
             }
             else{
-                testDexer.setSpinState(2);
+                testDexer.setSpinState(3);
             }
         }
+        //step 3 set up for shot
         if(testDexer.getSpinState() == TestDexer.SpinState.PREPARE_FOR_SHOT){
             testDexer.setUpForShooting(order);
             testDexer.setSpinState(0);
         }
-        if(testDexer.getSpinState() == TestDexer.SpinState.SHOOT){
+        //step 4 shoot
+        if(gamepad2.left_trigger > 0.1){ //Need to edit or change button
+            shooter.shoot3();
+            testDexer.setSpinState(4);
+        }
+        if(testDexer.getSpinState() == TestDexer.SpinState.SHOOT && shooter.getLauunchState() == testShooter.LaunchState.LAUNCH){
             testDexer.shoot();
+            testDexer.setSpinState(0);
         }
         //        if(gamepad2.right_stick_x > 0){ not necessary due to auto tracking
 //            turret.rotate(gamepad2.right_stick_x);
@@ -225,10 +247,7 @@ public class testOp extends OpMode {
 //        if(gamepad2.leftBumperWasPressed()){
 //            //add turret slowMode
 //        }
-        if(gamepad2.left_trigger > 0.1){ //Need to edit or change button
-            shooter.shoot3();
-            //add stuff for spindexer
-        }
+
         if(gamepad2.right_trigger > 0.1){
             //add shoot 3 in pattern;
         }
@@ -260,12 +279,14 @@ public class testOp extends OpMode {
         }
         --------------------------------------------------------------*/
 
-        if(slowMode == true){
+        if(slowMode){
             powerSetter = 0.2;
         }
         else{
             powerSetter = 0.75;
         }
+        int spinPos = testDexer.updatePos();
+        testDexer.setPowerToPosition(spinPos);
         shooter.updateState(targetVel);
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
@@ -275,8 +296,6 @@ public class testOp extends OpMode {
 
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
-
-        telemetry.addData("Spindexer in Shoot State", shooter.isShootState());
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());

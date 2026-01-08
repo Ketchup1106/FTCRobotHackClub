@@ -75,8 +75,7 @@ public class TestDexer {
     public enum SpinState{
         IDLE,
         MOVE_TO_INTAKE,
-        INTAKING, //remove
-        MOVE_TO_NEXT_SLOT,
+        INTAKING,
         PREPARE_FOR_SHOT,
         SHOOT
     }
@@ -84,7 +83,7 @@ public class TestDexer {
     public SpinState getSpinState(){
         return spinState;
     }
-    public void updateState() //spindexer state machine that i 100% on john ftc himself did not steal from king ketchup
+    /*public void updateState() //spindexer state machine that i 100% on john ftc himself did not steal from king ketchup
     {
 
         s1.setPower(setPowerToPosition(targetPos));
@@ -151,7 +150,7 @@ public class TestDexer {
                 spinState = SpinState.IDLE;
                 shooting = true;
         }
-    }
+    }*/
 
     public int updatePos(){
         currentPos = encoder.getCurrentPosition() / encoderFactor;
@@ -431,32 +430,12 @@ public class TestDexer {
         if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
             return 1;
         }
+        //maybe consider if we need to retreat or add an angle wrap
         else if(Math.abs(difference) > 2 * ticksPerDegree){
             return -1;
         }
         shooting = false;
         return 0;
-    }
-
-
-
-    public void setStateToShoot(){
-        spinState = spinState.SHOOT;
-    }
-    public void setStateToIdle(){
-        spinState = spinState.IDLE;
-    }
-    public void setStateToMoveToIntake(){
-        spinState = spinState.MOVE_TO_INTAKE;
-    }
-    public String getSide(){
-        return intakeSide;
-    }
-    public boolean isShootState(){
-        if(spinState == SpinState.SHOOT){
-            return true;
-        }
-        return false;
     }
     public String getPatternOrSpots(String desired){
         if(desired.equals("1")){
@@ -472,10 +451,12 @@ public class TestDexer {
     }
     public void setSpinState(int desiredState){
         if(desiredState == 1){
+            spinState = SpinState.MOVE_TO_INTAKE;
+        } else if(desiredState == 2){
             spinState = SpinState.INTAKING;
-        }else if(desiredState == 2){
-            spinState = SpinState.PREPARE_FOR_SHOT;
         }else if(desiredState == 3){
+            spinState = SpinState.PREPARE_FOR_SHOT;
+        }else if(desiredState == 4){
             spinState = SpinState.SHOOT;
         }else if(desiredState == 0){
             spinState = SpinState.IDLE;

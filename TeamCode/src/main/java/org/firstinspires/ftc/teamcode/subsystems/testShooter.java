@@ -32,8 +32,6 @@ public class testShooter {
     //public Servo transferServo;
     public Servo hoodAngle;
 
-    SpinDexer spindexer = new SpinDexer();
-
     public void init(HardwareMap hwMap, Telemetry telemetry){
         shooter1 = hwMap.get(DcMotorEx.class, "sm1");
         shooter2 = hwMap.get(DcMotorEx.class, "sm2");
@@ -64,8 +62,6 @@ public class testShooter {
 
         intake.init(hwMap);
 
-        spindexer.init(hwMap);
-
         launchState = LaunchState.IDLE;
 //        stopFeeder();
         stopLauncher();
@@ -90,8 +86,6 @@ public class testShooter {
     private LaunchState launchState;
 
     public void updateState(double velocity){
-        spindexer.updateState();
-        telemetry.addData("encoder pos: ", spindexer.updatePos());
 
         switch(launchState){
 
@@ -110,10 +104,6 @@ public class testShooter {
                 break;
             case LAUNCH:
                 //transferServo.setPosition(lowPos);
-                spindexer.setStateToShoot();
-                if(spindexer.setPowerToPosition(spindexer.targetPos) == 0){
-                    launchState = LaunchState.RECOVER;
-                }
                 if(feederTimer.seconds()>5) {
                     launchState = LaunchState.RECOVER;
                 }
@@ -129,14 +119,6 @@ public class testShooter {
         launchState = LaunchState.SPIN_UP;
         //add spindexer func
         feederTimer.reset();
-    }
-
-    public void setShootState(){
-        spindexer.setStateToShoot();
-    }
-
-    public boolean isShootState(){
-        return spindexer.isShootState();
     }
     /*
        public void shoot1(){
@@ -199,25 +181,6 @@ public class testShooter {
                 (1.41432),
                 0, 1));
     }
-    
-    public void setOrder(String order){
-        spindexer.setGameOrder(order);
-    }
-    public void setIntakeState(){
-        spindexer.setStateToMoveToIntake();
-    }
-    public void setFrontOrBack(String side){
-        spindexer.intakeSide = side;
-    }
-
-    public void spinManual(String side){
-        spindexer.spinToNextManual(side);
-    }
-
-    public void setPowerPose(int target){
-        spindexer.setPowerToPosition(target);
-    }
-
 }
 
 
