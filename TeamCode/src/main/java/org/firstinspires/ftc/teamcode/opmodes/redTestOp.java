@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 @TeleOp(name = "testOp")
-public class testOp extends OpMode {
+public class redTestOp extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
     ArcadeDrive drive = new ArcadeDrive();
     Follower follower;
@@ -27,7 +27,7 @@ public class testOp extends OpMode {
     Turret turret = new Turret();
 
     //SpinDexer spindexer = new SpinDexer();
-    double goalX = 12;
+    double goalX = 132;
 
     double goalY = 136;
 
@@ -69,7 +69,7 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(8, 8,  Math.toRadians(90)));
+        follower.setStartingPose(new Pose(136, 8,  Math.toRadians(90)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
@@ -110,11 +110,11 @@ public class testOp extends OpMode {
 
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+        desiredTurretAngle = turret.calculateTurnRed(goalAngle, robotHeading);
 
 
         if(gamepad1.dpadDownWasPressed()){ //corner calibration
-            follower.setPose(new Pose(33, 135, 90));
+            follower.setPose(new Pose(111, 135, 90));
         }
         turret.rotateToGoal(desiredTurretAngle);
 

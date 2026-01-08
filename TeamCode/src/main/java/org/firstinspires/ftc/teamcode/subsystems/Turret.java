@@ -10,12 +10,11 @@ public class Turret {
     public DcMotorEx turret;
 
 
-
     double gearRatio = 26/103.0;
 
     public double ticksPerDegree = (384.5 / gearRatio)/360;
     public double ticksPerRadian = (384.5 / gearRatio) /(2 * Math.PI);
-    double tickLimit = 827; //manually tune
+    double tickLimit = 748; //manually tune
     double subtractionAmount = 0;
     public boolean isHomed = true;
     public int turnNeeded;
@@ -31,10 +30,18 @@ public class Turret {
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
         turret.setVelocityPIDFCoefficients(10, .25, 1, 0);
     }
-    public int calculateTurn(double goalAngle, double robotAngle) {
+    public int calculateTurnBlue(double goalAngle, double robotAngle) {
         robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
         turnNeeded = (int) (Math.abs(goalAngle * ticksPerRadian - robotAngle * ticksPerRadian));
         if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
+            return 0;
+        }
+        return turnNeeded;
+    }
+    public int calculateTurnRed(double goalAngle, double robotAngle) {
+        robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
+        turnNeeded = (int)  (robotAngle * ticksPerRadian - goalAngle * ticksPerRadian);
+        if(turnNeeded > tickLimit || turnNeeded < 0){
             return 0;
         }
         return turnNeeded;
@@ -117,23 +124,22 @@ public class Turret {
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(0.5);
     }
-    public void home(){
-        if(turretLimitSwitch.detectTouch()){
-            isHomed = true;
-        }
-        if(!isHomed){
-            turret.setTargetPosition((int)(-11*ticksPerDegree));
-            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turret.setPower(-0.5);
-
-        }else{
-            turret.setTargetPosition((int)(getCurrentPos()));
-            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turret.setPower(0);
-            turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
-
-    }
+//    public void home(){
+//        if(turretLimitSwitch.detectTouch()){
+//            isHomed = true;
+//        }
+//        if(!isHomed){
+//            turret.setTargetPosition((int)(-200*ticksPerDegree));
+//            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            turret.setPower(-0.5);
+//
+//        }else{
+//            turret.setTargetPosition((int)(getCurrentPos()));
+//            turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            turret.setPower(0);
+//            turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        }
+//    }
     public double fixNegativeHeading(double angle){
         if(angle < 0){
             angle = (180 - Math.abs(angle)) + 180;

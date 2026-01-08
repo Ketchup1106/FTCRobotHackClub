@@ -67,7 +67,7 @@ public class SpinDexer {
 //        s1.setPower(frontPos);
 //        s2.setPower(frontPos); //0 is front intake
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        encoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         targetPos = frontPos;
         spinState = SpinState.IDLE;
         shooting = false;
@@ -84,7 +84,7 @@ public class SpinDexer {
     private SpinState spinState;
     public void updateState() //spindexer state machine that i 100% on john ftc himself did not steal from king ketchup
     {
-        currentPos = encoder.getCurrentPosition() * encoderFactor;
+
         s1.setPower(setPowerToPosition(targetPos));
         s2.setPower(setPowerToPosition(targetPos));
         switch(spinState){
@@ -149,6 +149,10 @@ public class SpinDexer {
                 spinState = SpinState.IDLE;
                 shooting = true;
         }
+    }
+    public int updatePos(){
+        currentPos = encoder.getCurrentPosition() / encoderFactor;
+        return (int)currentPos;
     }
     /*
     public boolean isFrontBeingUsed(){
@@ -427,9 +431,7 @@ public class SpinDexer {
         return 0;
     }
 
-    public double getEncoderPos(){
-        return currentPos;
-    }
+
 
     public void setStateToShoot(){
         spinState = spinState.SHOOT;

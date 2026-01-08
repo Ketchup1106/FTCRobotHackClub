@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
-    private static double robotMass = 10.95;  //Robot mass in KG
+    private static double robotMass = 14.69639;  //Robot mass in KG
     private static double maxRobotPower = 1.0; // Should be between 0.0 and 1.0
 
     public static FollowerConstants followerConstants = new FollowerConstants()

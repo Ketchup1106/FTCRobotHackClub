@@ -91,7 +91,10 @@ public class testShooter {
 
     public void updateState(double velocity){
         spindexer.updateState();
+        telemetry.addData("encoder pos: ", spindexer.updatePos());
+
         switch(launchState){
+
             case IDLE:
                 if(isActive) {
                     isActive = false;
@@ -215,9 +218,6 @@ public class testShooter {
         spindexer.setPowerToPosition(target);
     }
 
-    public double getEncPos(){
-        return spindexer.getEncoderPos();
-    }
 }
 
 
