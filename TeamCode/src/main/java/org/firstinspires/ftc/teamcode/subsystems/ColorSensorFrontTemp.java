@@ -18,7 +18,7 @@ public class ColorSensorFrontTemp {
 
     public void init(HardwareMap hwMap){
         colorSensor1 = hwMap.get(NormalizedColorSensor.class, "color1");
-        colorSensor1.setGain(4);
+        colorSensor1.setGain(50);
     }
 
     public detectedColor getDetectedColor(Telemetry telemetry){

@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
-@TeleOp(name = "testOp")
+@TeleOp(name = "testOpBlue")
 public class testOp extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
     ArcadeDrive drive = new ArcadeDrive();

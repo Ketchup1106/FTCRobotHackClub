@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Color;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorFrontTemp;
 
 
-@TeleOp(name = "Color Calibration")
-public class ColorCalib extends OpMode {
+@TeleOp(name = "Color Calibration Front")
+public class ColorCalibFront extends OpMode {
     ColorSensorFrontTemp color = new ColorSensorFrontTemp();
 
 
@@ -19,6 +19,19 @@ public class ColorCalib extends OpMode {
         color.init(hardwareMap);
     }
 
+    /*
+    Green:
+    R - <0.4
+    G - >0.85
+    B - >0.7
+
+    Purple:
+
+    R -
+    G -
+    B -
+
+     */
 
     @Override
     public void loop(){

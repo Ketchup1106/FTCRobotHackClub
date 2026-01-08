@@ -18,7 +18,7 @@ public class ColorSensorBackTemp {
 
     public void init(HardwareMap hwMap){
         colorSensor2 = hwMap.get(NormalizedColorSensor.class, "color1");
-        colorSensor2.setGain(4);
+        colorSensor2.setGain(50);
     }
 
     public detectedColor getDetectedColor(Telemetry telemetry){

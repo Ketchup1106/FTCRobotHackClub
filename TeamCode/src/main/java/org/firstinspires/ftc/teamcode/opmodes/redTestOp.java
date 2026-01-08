@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
-@TeleOp(name = "testOp")
+@TeleOp(name = "testOpRed")
 public class redTestOp extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
     ArcadeDrive drive = new ArcadeDrive();
@@ -143,25 +143,25 @@ public class redTestOp extends OpMode {
         if (aprilTagStuff.patternID == 21) {
             isCheckingForApril = false;
             order = "GPP";
-            shooter.setOrder(order);
+            //shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 22) {
             isCheckingForApril = false;
             order = "PGP";
-            shooter.setOrder(order);
+            //shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if (aprilTagStuff.patternID == 23) {
             isCheckingForApril = false;
             order = "PPG";
-            shooter.setOrder(order);
+            //shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         if(aprilTimer.seconds() > 15 && isCheckingForApril){
             isCheckingForApril = false;
             order = "No order was detected within 15 seconds!";
-            shooter.setOrder(order);
+            //shooter.setOrder(order);
             aprilTagStuff.stop();
         }
         telemetry.addData("Order: ", order);
@@ -227,18 +227,18 @@ public class redTestOp extends OpMode {
         }
         else if(gamepad1.left_trigger > 0.1){
             intake.runReverse();
-            shooter.setIntakeState();
+            //shooter.setIntakeState();
         }
         else {
             intake.stop();
         }
         if(gamepad2.dpadRightWasPressed()){
-            shooter.setFrontOrBack("front");
-            shooter.spinManual("front");
+            //shooter.setFrontOrBack("front");
+            //shooter.spinManual("front");
         }
         if(gamepad2.dpadLeftWasPressed()){
-            shooter.setFrontOrBack("back");
-            shooter.spinManual("back");
+            //shooter.setFrontOrBack("back");
+            //shooter.spinManual("back");
         }
 
         if(slowMode == true){
@@ -273,14 +273,13 @@ public class redTestOp extends OpMode {
         shooter.setHood(goalDist);
 
         if(gamepad1.yWasPressed()){
-            shooter.setShootState();
+
         }
 
 
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
 
-        telemetry.addData("Spindexer in Shoot State", shooter.isShootState());
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());

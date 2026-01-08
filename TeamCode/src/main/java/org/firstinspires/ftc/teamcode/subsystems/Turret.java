@@ -32,7 +32,7 @@ public class Turret {
     }
     public int calculateTurnBlue(double goalAngle, double robotAngle) {
         robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
-        turnNeeded = (int) (Math.abs(goalAngle * ticksPerRadian - robotAngle * ticksPerRadian));
+        turnNeeded = (int) (Math.abs(goalAngle * ticksPerRadian - robotAngle * ticksPerRadian) - 4*ticksPerDegree);
         if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
             return 0;
         }
@@ -40,7 +40,7 @@ public class Turret {
     }
     public int calculateTurnRed(double goalAngle, double robotAngle) {
         robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
-        turnNeeded = (int)  (robotAngle * ticksPerRadian - goalAngle * ticksPerRadian);
+        turnNeeded = (int)  (robotAngle * ticksPerRadian - goalAngle * ticksPerRadian + 6*ticksPerDegree);
         if(turnNeeded > tickLimit || turnNeeded < 0){
             return 0;
         }
