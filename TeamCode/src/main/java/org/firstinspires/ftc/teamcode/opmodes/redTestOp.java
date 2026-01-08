@@ -109,7 +109,7 @@ public class redTestOp extends OpMode {
         robotHeading = follower.getHeading(); //will always be something plus that starting of 90
 
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
-        goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
+        goalAngle = Math.abs(Math.atan2(disY, disX)); //simple inverse trig with compensation for robot's extra 90 degrees
         desiredTurretAngle = turret.calculateTurnRed(goalAngle, robotHeading);
 
 

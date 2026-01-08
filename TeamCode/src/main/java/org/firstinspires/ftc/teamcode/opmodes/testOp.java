@@ -10,9 +10,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.SpinDexer;
 //import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -23,7 +23,7 @@ public class testOp extends OpMode {
     ArcadeDrive drive = new ArcadeDrive();
     Follower follower;
     testShooter shooter = new testShooter();
-
+    TestDexer testDexer = new TestDexer();
     Turret turret = new Turret();
 
     //SpinDexer spindexer = new SpinDexer();
@@ -47,12 +47,14 @@ public class testOp extends OpMode {
     public String order;
     double powerSetter = .2;
     double targetVel = 0;
+    int ballCount = 0;
     int shoot = 0;
     public double robotHeading;
     double hoodAngle;
     double velocity;
 
     int desiredTurretAngle;
+    String intakeSide = "front";
 
 
     boolean slowMode = false;
@@ -74,16 +76,10 @@ public class testOp extends OpMode {
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
         turret.init(hardwareMap);
+        testDexer.init(hardwareMap);
 
 
     }
-//    @Override
-//    public void start() {
-//        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
-//        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
-//        //If you don't pass anything in, it uses the default (false)
-//        follower.startTeleopDrive();
-//    }
 
     @Override
     public void loop(){
@@ -139,7 +135,6 @@ public class testOp extends OpMode {
             AprilTagDetection id23 = aprilTagStuff.getTagById(23); //ppg
             aprilTagStuff.displayDetection(id23);
         }
-
         if (aprilTagStuff.patternID == 21) {
             isCheckingForApril = false;
             order = "GPP";
@@ -174,7 +169,7 @@ public class testOp extends OpMode {
 
 
 
-        /*NEW CONTROLS _______________________________________________________________________________
+        //NEW CONTROLS _______________________________________________________________________________
 
         if(gamepad1.right_trigger > 0.1){
             intake.run();
@@ -186,18 +181,50 @@ public class testOp extends OpMode {
             intake.stop();
         }
         if(gamepad1.right_stick_button){
-            slowMode = !slowMode;
+            slowMode = true;
         }
-        if(gamepad1.aWasPressed()){
-            turret.home();
+        else{
+            slowMode = false;
         }
-
-        if(gamepad2.right_stick_x > 0){ //EDIT
-            turret.rotate(gamepad2.right_stick_x);
+        if(gamepad1.dpadUpWasPressed()){
+            intakeSide = "front";
+            if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){
+                testDexer.spinToFront();
+                testDexer.setSpinState(1);
+            }
         }
-        if(gamepad2.leftBumperWasPressed()){
-            //add turret slowMode
+        if(gamepad2.dpadDownWasPressed()){
+            intakeSide = "back";
+            if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){ //if we are prepping for shot then dont spin to intake
+                testDexer.spinToBack();
+                testDexer.setSpinState(1);
+            }
         }
+        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING){
+            //if intaking and not full, check for color. if color, move to next slot. repeat until full.
+            if(ballCount < 3){
+                testDexer.checkForBalls();
+                if(!testDexer.getPatternOrSpots(String.valueOf(ballCount)).equals("U")) { //wait until color
+                    ballCount++;
+                }
+            }
+            else{
+                testDexer.setSpinState(2);
+            }
+        }
+        if(testDexer.getSpinState() == TestDexer.SpinState.PREPARE_FOR_SHOT){
+            testDexer.setUpForShooting(order);
+            testDexer.setSpinState(0);
+        }
+        if(testDexer.getSpinState() == TestDexer.SpinState.SHOOT){
+            testDexer.shoot();
+        }
+        //        if(gamepad2.right_stick_x > 0){ not necessary due to auto tracking
+//            turret.rotate(gamepad2.right_stick_x);
+//        }
+//        if(gamepad2.leftBumperWasPressed()){
+//            //add turret slowMode
+//        }
         if(gamepad2.left_trigger > 0.1){ //Need to edit or change button
             shooter.shoot3();
             //add stuff for spindexer
@@ -205,23 +232,14 @@ public class testOp extends OpMode {
         if(gamepad2.right_trigger > 0.1){
             //add shoot 3 in pattern;
         }
-
-        NEW CONTROLS _______________________________________________________________________________*/
-
+        /*OLD CONTROLS ------------------------------------------------------------------------------
         if (gamepad2.yWasPressed()) { // shoot 3
-            //turret.rotateToGoal(robotHeading, goalAngle);
-            //turningToShoot = true;
             shooter.shoot3();
         }
-        /*
-        if(turningToShoot == true){
-            if(turret.getCurrentPos() == goalAngle){
-                shooter.shoot3();
-                turningToShoot = false;
-                turret.stop();
-            }
+        if(gamepad1.yWasPressed()){
+            shooter.setShootState();
         }
-         */
+
         if (gamepad1.right_trigger > 0.1) { //
             intake.run();
         }
@@ -240,6 +258,7 @@ public class testOp extends OpMode {
             shooter.setFrontOrBack("back");
             shooter.spinManual("back");
         }
+        --------------------------------------------------------------*/
 
         if(slowMode == true){
             powerSetter = 0.2;
@@ -247,34 +266,11 @@ public class testOp extends OpMode {
         else{
             powerSetter = 0.75;
         }
-
-
-//        if (gamepad2.dpadUpWasPressed()) {
-//            shooter.startFeeder();
-//        }
-//        if (gamepad2.dpadDownWasPressed()) {
-//            shooter.stopFeeder();
-//        }
-
-
         shooter.updateState(targetVel);
-
-
-//        if(spindexer.frontTouchyActive()){
-//            spindexer.rotateToFront();
-//        }
-//
-//        if(spindexer.rearTouchyActive()){
-//            spindexer.rotateToBack();
-//        }
-
-
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
 
-        if(gamepad1.yWasPressed()){
-            shooter.setShootState();
-        }
+
 
 
         ;
