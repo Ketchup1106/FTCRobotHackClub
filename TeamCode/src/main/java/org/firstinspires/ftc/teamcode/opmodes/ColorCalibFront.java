@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ColorSensorFrontTemp;
 
 
 @TeleOp(name = "Color Calibration Front")
+@Disabled
 public class ColorCalibFront extends OpMode {
     ColorSensorFrontTemp color = new ColorSensorFrontTemp();
 

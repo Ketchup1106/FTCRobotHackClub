@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 
 @TeleOp(name = "turretTest")
+@Disabled
 public class turretTest extends OpMode {
 
     Turret turret = new Turret();
