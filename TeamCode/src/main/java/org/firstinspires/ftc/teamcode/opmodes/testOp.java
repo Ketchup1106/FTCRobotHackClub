@@ -239,7 +239,11 @@ public class testOp extends OpMode {
         }
         if(testDexer.getSpinState() == TestDexer.SpinState.SHOOT && shooter.getLauunchState() == testShooter.LaunchState.LAUNCH){
             testDexer.shoot();
+
+
+        }if(shooter.getLauunchState() == testShooter.LaunchState.RECOVER){
             testDexer.setSpinState(0);
+            ballCount = 0;
         }
         //        if(gamepad2.right_stick_x > 0){ not necessary due to auto tracking
 //            turret.rotate(gamepad2.right_stick_x);
@@ -250,6 +254,9 @@ public class testOp extends OpMode {
 
         if(gamepad2.right_trigger > 0.1){
             //add shoot 3 in pattern;
+        }
+        if(gamepad1.dpadRightWasPressed()){
+            testDexer.spinToNextManual("front");
         }
         /*OLD CONTROLS ------------------------------------------------------------------------------
         if (gamepad2.yWasPressed()) { // shoot 3
@@ -300,6 +307,10 @@ public class testOp extends OpMode {
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
         telemetry.addData("shooter state: ", shooter.getLauunchState());
+        telemetry.addData("spindexer pos", spinPos);
+        telemetry.addData("spinstate ", testDexer.getSpinState());
+        telemetry.addData("spindexer target ", testDexer.getTargetPos());
+
         //telemetry.addData("tuningservo pos", shooter.getServo());
         telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
         telemetry.addData("Follower X: ", follower.getPose().getX());

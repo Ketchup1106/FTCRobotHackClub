@@ -21,7 +21,7 @@ public class ColorSensorFrontTemp {
         colorSensor1.setGain(50);
     }
 
-    public detectedColor getDetectedColor(Telemetry telemetry){
+    public detectedColor getDetectedColor(){
         NormalizedRGBA colors = colorSensor1.getNormalizedColors();
 
         float normRed, normGreen, normBlue;
@@ -30,19 +30,12 @@ public class ColorSensorFrontTemp {
         normGreen = colors.green/colors.alpha;
         normBlue = colors.blue/colors.alpha;
 
-        telemetry.addData("red", normRed);
-        telemetry.addData("blue", normBlue);
-        telemetry.addData("green", normGreen);
 
 
-        /*
-        green - .01 - .06; .04 - .1; .04 - .1;
-        purple - .02 - .07; .04 - .11; .02 - .1         */
-
-        if(normRed > .01 && normRed < .06 && normBlue > .04 && normBlue < .1 && normGreen > .04 && normGreen < .1){
+        if(normRed > 0.18 && normRed < .3 && normBlue > .56 && normBlue < 0.8 && normGreen > .67){
             return detectedColor.GREEN;
         }
-        else if(normRed > .02 && normRed < .07 && normBlue > .04 && normBlue < .11 && normGreen > .02 && normGreen < .1){
+        else if(normRed > 0.28 && normRed < .44 && normBlue > .68 && normGreen < 0.55 && normGreen > 0.4){
             return detectedColor.PURPLE;
         }
         else{

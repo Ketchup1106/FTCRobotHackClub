@@ -17,11 +17,11 @@ public class ColorSensorBackTemp {
     }
 
     public void init(HardwareMap hwMap){
-        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "color1");
+        colorSensor2 = hwMap.get(NormalizedColorSensor.class, "color2");
         colorSensor2.setGain(50);
     }
 
-    public detectedColor getDetectedColor(Telemetry telemetry){
+    public detectedColor getDetectedColor(){
         NormalizedRGBA colors = colorSensor2.getNormalizedColors();
 
         float normRed, normGreen, normBlue;
@@ -30,19 +30,11 @@ public class ColorSensorBackTemp {
         normGreen = colors.green/colors.alpha;
         normBlue = colors.blue/colors.alpha;
 
-        telemetry.addData("red", normRed);
-        telemetry.addData("blue", normBlue);
-        telemetry.addData("green", normGreen);
 
-
-        /*
-        green - .01 - .06; .04 - .1; .04 - .1;
-        purple - .02 - .07; .04 - .11; .02 - .1         */
-
-        if(normRed > .01 && normRed < .06 && normBlue > .04 && normBlue < .1 && normGreen > .04 && normGreen < .1){
+        if(normRed < 0.3 && normBlue < 0.67  && normBlue > 0.5 && normGreen > 0.7){
             return detectedColor.GREEN;
         }
-        else if(normRed > .02 && normRed < .07 && normBlue > .04 && normBlue < .11 && normGreen > .02 && normGreen < .1){
+        else if(normRed > .3 && normRed < .41 && normBlue > .58 && normBlue < .72 && normGreen > .37 && normGreen < .52){
             return detectedColor.PURPLE;
         }
         else{

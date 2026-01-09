@@ -32,7 +32,8 @@ public class ColorCalibBack extends OpMode {
 
     @Override
     public void loop(){
-        color.getDetectedColor(telemetry);
+        color.getDetectedColor();
+
     }
 }
 

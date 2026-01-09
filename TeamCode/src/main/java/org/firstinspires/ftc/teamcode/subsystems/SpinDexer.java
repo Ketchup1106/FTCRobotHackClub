@@ -330,73 +330,73 @@ public class SpinDexer {
     public void assignColorToPosition(){
         if(targetPos == frontPos){
             //if idli dish 1 is facing front intake then check for the color and assign it to spot1
-            if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.PURPLE){
+            if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
                 spot1 = "P";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.GREEN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
                 spot1 = "G";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.UNKNOWN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.UNKNOWN){
                 spot1 = "U";
             }
         }
         if(targetPos == backPos){
             //if idli dish 1 is facing back intake then check for the color and assign it to spot1
-            if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.PURPLE){
+            if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot1 = "P";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.GREEN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
                 spot1 = "G";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.UNKNOWN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.UNKNOWN){
                 spot1 = "U";
             }
         }
         if(targetPos == frontSecondIntakePos){
             //if idli dish 2 is facing front intake then check for the color and assign it to spot2
-            if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.PURPLE){
+            if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
                 spot2 = "P";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.GREEN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
                 spot2 = "G";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.UNKNOWN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.UNKNOWN){
                 spot2 = "U";
             }
         }
         if(targetPos == backSecondIntakePos){
             //if idli dish 2 is facing back intake then check for the color and assign it to spot2
-            if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.PURPLE){
+            if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot2 = "P";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.GREEN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
                 spot2 = "G";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.UNKNOWN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.UNKNOWN){
                 spot2 = "U";
             }
         }
         if(targetPos == frontThirdIntakePos){
             //if idli dish 3 is facing front intake then check for the color and assign it to spot3
-            if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.PURPLE){
+            if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
                 spot3 = "P";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.GREEN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
                 spot3 = "G";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.UNKNOWN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.UNKNOWN){
                 spot3 = "U";
             }
         }
         if(targetPos == backSecondIntakePos){
             //if idli dish 3 is facing back intake then check for the color and assign it to spot3
-            if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.PURPLE){
+            if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot3 = "P";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.GREEN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
                 spot3 = "G";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.UNKNOWN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.UNKNOWN){
                 spot3 = "U";
             }
         }

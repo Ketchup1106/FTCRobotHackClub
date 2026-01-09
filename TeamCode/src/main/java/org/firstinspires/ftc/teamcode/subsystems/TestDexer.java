@@ -65,8 +65,7 @@ public class TestDexer {
 
 //        s1.setPower(frontPos);
 //        s2.setPower(frontPos); //0 is front intake
-        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         targetPos = frontPos;
         spinState = SpinState.IDLE;
         shooting = false;
@@ -83,74 +82,6 @@ public class TestDexer {
     public SpinState getSpinState(){
         return spinState;
     }
-    /*public void updateState() //spindexer state machine that i 100% on john ftc himself did not steal from king ketchup
-    {
-
-        s1.setPower(setPowerToPosition(targetPos));
-        s2.setPower(setPowerToPosition(targetPos));
-        switch(spinState){
-            case IDLE:
-                return; //if nothings happening just stay in place
-            case MOVE_TO_INTAKE:
-                if (getSide().equals("front")){
-                    side = "front";
-                    spinToFront();
-                }
-                else if (getSide().equals("back")){
-                    side = "back";
-                    spinToBack();
-                }else if(getSide().equals("waiting")){
-                    break;
-                }
-                //add condition that accounts for no usage being detected
-                if(setPowerToPosition(targetPos) != 0) {
-                    s1.setPower(setPowerToPosition(targetPos));
-                    s2.setPower(setPowerToPosition(targetPos));
-                }
-                if(setPowerToPosition(targetPos) == 0){
-                    spinState = spinState.INTAKING;
-                    intakeTimer.reset();
-                    intakeSide = "waiting";
-                }
-                break;
-            case INTAKING: //moves to next slot only after ball is seen or too long has passed
-                checkForBalls(); //calls the assign color to pos method
-                if(checkForColorAtSpot("P", checkingNumber) || checkForColorAtSpot("G", checkingNumber)){
-                    spinState = SpinState.MOVE_TO_NEXT_SLOT;
-                    break;
-                }
-                if(intakeTimer.seconds() > .25){ //needs to be really short
-                    spinState = SpinState.MOVE_TO_NEXT_SLOT;
-                    break;
-                }
-                break;
-            case MOVE_TO_NEXT_SLOT:
-                spinToNext(side); //moves to the next slot as long as were not already on slot 3
-                if(setPowerToPosition(targetPos) != 0) {
-//                    s1.setPower(setPowerToPosition(targetPos));
-//                    s2.setPower(setPowerToPosition(targetPos));
-                    break;
-                }
-                if(checkingNumber != 3){
-                    checkingNumber++;
-                    spinState = SpinState.INTAKING;
-                    intakeTimer.reset();
-                    break;
-                }
-                spinState = SpinState.PREPARE_FOR_SHOT;
-                break;
-            case PREPARE_FOR_SHOT:
-                setUpForShooting(gamePattern);
-                spinState = SpinState.IDLE;
-            case SHOOT:
-                shootRotator = currentPos + (360*encoderFactor);//degrees; change to value between 0 and 1 if needed
-                targetPos = shootRotator;
-                checkingNumber = 1;
-                intakeTimer.reset();
-                spinState = SpinState.IDLE;
-                shooting = true;
-        }
-    }*/
 
     public int updatePos(){
         currentPos = encoder.getCurrentPosition() / encoderFactor;
@@ -168,16 +99,10 @@ public class TestDexer {
     public void spinToFront(){ //check for openings
         //if(isFrontBeingUsed()){
         if (checkForColorAtSpot("U", 1)){
-//                s1.setPower(frontPos);
-//                s2.setPower(frontPos);
             targetPos = frontPos;
         }else if (checkForColorAtSpot("U", 2)){
-//                s1.setPower(frontSecondIntakePos);
-//                s2.setPower(frontSecondIntakePos);
             targetPos = frontSecondIntakePos;
         }else if(checkForColorAtSpot("U", 3)){
-//                s1.setPower(frontThirdIntakePos);
-//                s2.setPower(frontThirdIntakePos);
             targetPos = frontThirdIntakePos;
         }
         //}
@@ -336,73 +261,73 @@ public class TestDexer {
     public void assignColorToPosition(){
         if(targetPos == frontPos){
             //if idli dish 1 is facing front intake then check for the color and assign it to spot1
-            if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.PURPLE){
+            if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
                 spot1 = "P";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.GREEN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
                 spot1 = "G";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.UNKNOWN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.UNKNOWN){
                 spot1 = "U";
             }
         }
         if(targetPos == backPos){
             //if idli dish 1 is facing back intake then check for the color and assign it to spot1
-            if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.PURPLE){
+            if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot1 = "P";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.GREEN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
                 spot1 = "G";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.UNKNOWN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.UNKNOWN){
                 spot1 = "U";
             }
         }
         if(targetPos == frontSecondIntakePos){
             //if idli dish 2 is facing front intake then check for the color and assign it to spot2
-            if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.PURPLE){
+            if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
                 spot2 = "P";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.GREEN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
                 spot2 = "G";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.UNKNOWN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.UNKNOWN){
                 spot2 = "U";
             }
         }
         if(targetPos == backSecondIntakePos){
             //if idli dish 2 is facing back intake then check for the color and assign it to spot2
-            if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.PURPLE){
+            if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot2 = "P";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.GREEN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
                 spot2 = "G";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.UNKNOWN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.UNKNOWN){
                 spot2 = "U";
             }
         }
         if(targetPos == frontThirdIntakePos){
             //if idli dish 3 is facing front intake then check for the color and assign it to spot3
-            if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.PURPLE){
+            if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
                 spot3 = "P";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.GREEN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
                 spot3 = "G";
             }
-            else if(colorSensorFront.getDetectedColor(telemetry) == ColorSensorFrontTemp.detectedColor.UNKNOWN){
+            else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.UNKNOWN){
                 spot3 = "U";
             }
         }
         if(targetPos == backSecondIntakePos){
             //if idli dish 3 is facing back intake then check for the color and assign it to spot3
-            if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.PURPLE){
+            if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot3 = "P";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.GREEN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
                 spot3 = "G";
             }
-            else if(colorSensorBack.getDetectedColor(telemetry) == ColorSensorBackTemp.detectedColor.UNKNOWN){
+            else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.UNKNOWN){
                 spot3 = "U";
             }
         }
@@ -417,25 +342,26 @@ public class TestDexer {
     public void setGameOrder(String order){ //will be used in teleop once the camera picks up the apriltags
         gamePattern = order;
     }
-    public double setPowerToPosition(double target){
+    public double setPowerToPosition(double curr){
         double ticksPerDegree = 8192/360.0;
-        double difference = target - currentPos;
-//        if(difference > 2 * ticksPerDegree){
+        double difference = targetPos - curr;
+        if(difference > 2 * ticksPerDegree){
+            s1.setPower(1);
+            s2.setPower(1);
+        }
+        else if(difference <-2){
+            s1.setPower(-1);
+            s2.setPower(-1);
+        }
+        return 0;
+//        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
 //            return 1;
 //        }
-//        else if(difference <-2){
+//        //maybe consider if we need to retreat or add an angle wrap
+//        else if(Math.abs(difference) > 2 * ticksPerDegree){
 //            return -1;
 //        }
-//        return 0;
-        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
-            return 1;
-        }
-        //maybe consider if we need to retreat or add an angle wrap
-        else if(Math.abs(difference) > 2 * ticksPerDegree){
-            return -1;
-        }
-        shooting = false;
-        return 0;
+
     }
     public String getPatternOrSpots(String desired){
         if(desired.equals("1")){
@@ -461,6 +387,15 @@ public class TestDexer {
         }else if(desiredState == 0){
             spinState = SpinState.IDLE;
         }
+    }
+
+    public double getTargetPos(){
+        return targetPos;
+    }
+
+    public void setPower(double pow){
+        s1.setPower(pow);
+        s2.setPower(pow);
     }
 
 }
