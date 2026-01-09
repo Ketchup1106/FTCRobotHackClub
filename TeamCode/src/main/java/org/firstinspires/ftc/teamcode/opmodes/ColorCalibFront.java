@@ -35,7 +35,7 @@ public class ColorCalibFront extends OpMode {
 
     @Override
     public void loop(){
-        color.getDetectedColor(telemetry);
+        color.getDetectedColor();
     }
 }
 

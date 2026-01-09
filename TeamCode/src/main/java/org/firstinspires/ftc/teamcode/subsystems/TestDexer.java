@@ -344,15 +344,22 @@ public class TestDexer {
     }
     public double setPowerToPosition(double curr){
         double ticksPerDegree = 8192/360.0;
-        double difference = targetPos - curr;
-        if(difference > 2 * ticksPerDegree){
+        double difference = targetPos - curr*ticksPerDegree;
+        if(difference > 40 * ticksPerDegree){
             s1.setPower(1);
             s2.setPower(1);
+        }else if(difference > 6*ticksPerDegree){
+            s1.setPower(.05);
+            s2.setPower(.05);
         }
-        else if(difference <-2){
+        else if(difference <-40*ticksPerDegree){
             s1.setPower(-1);
             s2.setPower(-1);
+        }else if(difference < -6*ticksPerDegree){
+            s1.setPower(-.05);
+            s2.setPower(-.05);
         }
+        telemetry.addData("Difference: ", difference);
         return 0;
 //        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
 //            return 1;
