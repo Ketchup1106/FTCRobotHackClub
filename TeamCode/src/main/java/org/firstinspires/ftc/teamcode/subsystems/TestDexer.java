@@ -343,24 +343,27 @@ public class TestDexer {
     public void setGameOrder(String order){ //will be used in teleop once the camera picks up the apriltags
         gamePattern = order;
     }
-    public double setPowerToPosition(double curr){
+    public void setPowerToPosition(double curr){
         double ticksPerDegree = 8192/360.0;
         difference = targetPos - curr*ticksPerDegree;
-        if(difference > 40 * ticksPerDegree){
+        if(difference > 20 * ticksPerDegree){
             s1.setPower(1);
             s2.setPower(1);
-        }else if(difference > 6*ticksPerDegree){
-            s1.setPower(.05);
-            s2.setPower(.05);
         }
-        else if(difference <-40*ticksPerDegree){
+        else if(difference <-20*ticksPerDegree){
             s1.setPower(-1);
             s2.setPower(-1);
-        }else if(difference < -6*ticksPerDegree){
-            s1.setPower(-.05);
-            s2.setPower(-.05);
         }
-        return 0;
+        else if(difference > 3*ticksPerDegree){
+            s1.setPower(.07);
+            s2.setPower(.07);
+        }
+        else if(difference < -3*ticksPerDegree){
+            s1.setPower(-.07);
+            s2.setPower(-.07);
+        }
+        s1.setPower(0);
+        s2.setPower(0);
 //        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
 //            return 1;
 //        }

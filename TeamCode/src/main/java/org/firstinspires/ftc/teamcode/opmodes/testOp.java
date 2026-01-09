@@ -95,6 +95,7 @@ public class testOp extends OpMode {
 //        if(automatedDrive){
 //            automatedDrive(follower.getPose());
 //        }
+        ballCount = 0;
         follower.poseTracker.update();
 
         if(doesAprilTimerHaveToReset){
