@@ -85,7 +85,7 @@ public class TestDexer {
     }
 
     public int updatePos(){
-        currentPos = encoder.getCurrentPosition() / encoderFactor;
+        currentPos = encoder.getCurrentPosition();
         return (int)currentPos;
     }
     /*
@@ -371,7 +371,14 @@ public class TestDexer {
 //        else if(Math.abs(difference) > 2 * ticksPerDegree){
 //            return -1;
 //        }
-
+    }
+    public void setPowerToPosition2(double curr){
+        double ticksPerDegree = 8192/360.0;
+        difference = targetPos - curr*ticksPerDegree;
+        double fullPowerTicks = 8192/2;
+        double power = -difference/fullPowerTicks;
+        s1.setPower(power);
+        s2.setPower(power);
     }
     public String getPatternOrSpots(String desired){
         if(desired.equals("1")){
