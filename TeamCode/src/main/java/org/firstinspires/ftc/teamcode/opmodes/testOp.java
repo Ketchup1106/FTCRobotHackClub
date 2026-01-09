@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import android.util.Log;
 
 
 @TeleOp(name = "testOpBlue")
@@ -33,6 +34,7 @@ public class testOp extends OpMode {
 
     double disX;
     double disY;
+    String tag = "spin power";
 
     Intake intake = new Intake();
 
@@ -95,6 +97,7 @@ public class testOp extends OpMode {
 //        if(automatedDrive){
 //            automatedDrive(follower.getPose());
 //        }
+        Log.d(tag, "power" + testDexer.power);
         ballCount = 0;
         follower.poseTracker.update();
 
@@ -291,7 +294,7 @@ public class testOp extends OpMode {
             powerSetter = 0.75;
         }
         int spinPos = testDexer.updatePos();
-        testDexer.setPowerToPosition(spinPos);
+        testDexer.setPowerToPosition2(spinPos, runtime.seconds());
         shooter.updateState(targetVel);
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
@@ -301,29 +304,31 @@ public class testOp extends OpMode {
 
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
+        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
+        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
         telemetry.addData("Difference: ", testDexer.difference);
-        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
-        telemetry.addData("shooter target velocity: ", targetVel);
-        telemetry.addData("shootervel: ", shooter.getVelocity1());
-        telemetry.addData("shooter state: ", shooter.getLauunchState());
+//        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
+//        telemetry.addData("shooter target velocity: ", targetVel);
+//        telemetry.addData("shootervel: ", shooter.getVelocity1());
+//        telemetry.addData("shooter state: ", shooter.getLauunchState());
         telemetry.addData("spindexer pos", spinPos);
         telemetry.addData("spinstate ", testDexer.getSpinState());
         telemetry.addData("spindexer target ", testDexer.getTargetPos());
 
         //telemetry.addData("tuningservo pos", shooter.getServo());
-        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
-        telemetry.addData("Follower X: ", follower.getPose().getX());
-        telemetry.addData("Follower Y ", follower.getPose().getY());
-        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
-        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
-        telemetry.addData("Goal Dist: ", goalDist);
-        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
-        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
-        telemetry.addData("is turning?", turningToShoot);
-        telemetry.addData("is busy?", turret.getTurretStatus());
-        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
-        telemetry.addData("turret angle: ", turret.getCurrentPos());
-        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
+//        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
+//        telemetry.addData("Follower X: ", follower.getPose().getX());
+//        telemetry.addData("Follower Y ", follower.getPose().getY());
+//        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
+//        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
+//        telemetry.addData("Goal Dist: ", goalDist);
+//        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
+//        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
+//        telemetry.addData("is turning?", turningToShoot);
+//        telemetry.addData("is busy?", turret.getTurretStatus());
+//        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
+//        telemetry.addData("turret angle: ", turret.getCurrentPos());
+//        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
 
         telemetry.update();
     }//

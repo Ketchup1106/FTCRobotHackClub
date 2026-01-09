@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -35,6 +35,10 @@ public class TestDexer {
     double shootRotator; //will depend on whats being shot first
     double targetPos = frontPos;
     double currentPos = 0;
+    double previousTime = 0;
+    double currTime = 0;
+    double currError = 0;
+    double pastError = 0;
 
     boolean shooting;
     //the gear ratio has to increase for this to work
@@ -48,6 +52,8 @@ public class TestDexer {
     String gamePattern;
     String side;
     String intakeSide = "waiting";
+    public double power;
+    double iError = 0;
     ElapsedTime intakeTimer = new ElapsedTime();
     public void init(HardwareMap hwMap){
         s1 = hwMap.get(CRServo.class, "spin1");
@@ -320,7 +326,7 @@ public class TestDexer {
                 spot3 = "U";
             }
         }
-        if(targetPos == backSecondIntakePos){
+        if(targetPos == backThirdIntakePos){
             //if idli dish 3 is facing back intake then check for the color and assign it to spot3
             if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
                 spot3 = "P";
@@ -372,13 +378,25 @@ public class TestDexer {
 //            return -1;
 //        }
     }
-    public void setPowerToPosition2(double curr){
-        double ticksPerDegree = 8192/360.0;
-        difference = targetPos - curr*ticksPerDegree;
+    public void setPowerToPosition2(double curr, double currentTime){
+        double pMult = 1;
+        difference = targetPos - curr;
         double fullPowerTicks = 8192/2;
-        double power = -difference/fullPowerTicks;
+        double pVal = difference/fullPowerTicks;
+
+        currTime = currentTime;
+        currError = difference;
+        double dVal = (currError - pastError)/(currentTime - previousTime);
+        double dMult = .00001;
+
+        iError += currError*(currTime-previousTime);
+        double iMult = 0.00001;
+        double iVal = iError * iMult;
+        power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + iVal , -1, 1);
         s1.setPower(power);
         s2.setPower(power);
+        previousTime = currTime;
+        pastError = currError;
     }
     public String getPatternOrSpots(String desired){
         if(desired.equals("1")){
@@ -413,6 +431,28 @@ public class TestDexer {
     public void setPower(double pow){
         s1.setPower(pow);
         s2.setPower(pow);
+    }
+    public String getDetectedColorFront(){
+        if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.PURPLE){
+            return "purple";
+        }
+        else if(colorSensorFront.getDetectedColor() == ColorSensorFrontTemp.detectedColor.GREEN){
+            return "green";
+        }
+        else{
+            return "unknown";
+        }
+    }
+    public String getDetectedColorBack(){
+        if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.PURPLE){
+            return "purple";
+        }
+        else if(colorSensorBack.getDetectedColor() == ColorSensorBackTemp.detectedColor.GREEN){
+            return "green";
+        }
+        else{
+            return "unknown";
+        }
     }
 
 }
