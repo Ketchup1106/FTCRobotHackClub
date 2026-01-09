@@ -30,10 +30,10 @@ public class Intake {
         return intake.getCurrentPosition();
     }
     public void run(){
-        intake.setPower(1);
+        intake.setPower(-1);
     }
     public void runReverse(){
-        intake.setPower(-1);
+        intake.setPower(1);
     }
     public void stop(){
         intake.setPower(0);

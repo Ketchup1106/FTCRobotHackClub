@@ -180,10 +180,7 @@ public class testOp extends OpMode {
             intake.stop();
         }
         if(gamepad1.right_stick_button){
-            slowMode = true;
-        }
-        else{
-            slowMode = false;
+            slowMode = !slowMode;
         }
         //step 1 select intake
         if(gamepad1.dpadUpWasPressed()){
