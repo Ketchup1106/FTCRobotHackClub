@@ -13,6 +13,7 @@ public class TestDexer {
     public CRServo s2;
 
     DcMotorEx encoder;
+    public double difference;
     Telemetry telemetry;
     //public TouchySensor frontTouchy = new TouchySensor();
     //public TouchySensor rearTouchy = new TouchySensor();
@@ -344,7 +345,7 @@ public class TestDexer {
     }
     public double setPowerToPosition(double curr){
         double ticksPerDegree = 8192/360.0;
-        double difference = targetPos - curr*ticksPerDegree;
+        difference = targetPos - curr*ticksPerDegree;
         if(difference > 40 * ticksPerDegree){
             s1.setPower(1);
             s2.setPower(1);
@@ -359,7 +360,6 @@ public class TestDexer {
             s1.setPower(-.05);
             s2.setPower(-.05);
         }
-        telemetry.addData("Difference: ", difference);
         return 0;
 //        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
 //            return 1;

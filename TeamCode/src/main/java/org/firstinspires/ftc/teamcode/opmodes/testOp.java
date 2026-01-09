@@ -300,6 +300,7 @@ public class testOp extends OpMode {
 
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
+        telemetry.addData("Difference: ", testDexer.difference);
         telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
         telemetry.addData("shooter target velocity: ", targetVel);
         telemetry.addData("shootervel: ", shooter.getVelocity1());
