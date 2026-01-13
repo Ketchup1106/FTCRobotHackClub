@@ -18,8 +18,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import android.util.Log;
 
 
-@TeleOp(name = "FAR Blue Teleop")
-public class testOp extends OpMode {
+@TeleOp(name = "CLOSE Blue Teleop")
+public class closeBlueTestOp extends OpMode {
 
     double P = 1.4;
 
@@ -35,11 +35,9 @@ public class testOp extends OpMode {
     Turret turret = new Turret();
 
     //SpinDexer spindexer = new SpinDexer();
-    double goalX = 0;
+    double goalX = 12;
 
-    double goalY = 144;
-    double turretXOffset;
-    double turretYOffset;
+    double goalY = 136;
 
     double disX;
     double disY;
@@ -101,7 +99,7 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(36, 10,  Math.toRadians(90)));
+        follower.setStartingPose(new Pose(19, 105,   Math.toRadians(90)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
@@ -132,14 +130,10 @@ public class testOp extends OpMode {
             doesAprilTimerHaveToReset = false;
         }
 
-
         disX = goalX - follower.getPose().getX();
         disY = goalY - follower.getPose().getY();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 90
-        turretXOffset = 3.175*Math.cos(Math.toRadians(robotHeading));
-        turretYOffset = 3.175*Math.sin(Math.toRadians(robotHeading));
-        disX += turretXOffset;
-        disY += turretYOffset;
+
         goalDist = Math.sqrt(Math.pow(disX + 2, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
@@ -204,6 +198,7 @@ public class testOp extends OpMode {
 
         if(gamepad1.right_trigger > 0.1){
             intake.runReverse();
+            testDexer.setSpinState(1);
             intakeSide = "front";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
@@ -211,6 +206,7 @@ public class testOp extends OpMode {
         }
         else if(gamepad1.left_trigger > .1){
             intake.run();
+            testDexer.setSpinState(1);
             intakeSide = "back";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
@@ -250,7 +246,7 @@ public class testOp extends OpMode {
         }
 
         //step 2 sort balls
-        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING && testDexer.power < .1){
+        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING){
             //if intaking and not full, check for color. if color, move to next slot. repeat until full.
             if(ballCount < 3){
                 testDexer.checkForBalls();

@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import android.util.Log;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -12,7 +14,7 @@ public class TestDexer {
     public CRServo s1;
     public CRServo s2;
 
-    DcMotorEx encoder;
+    public DcMotorEx encoder;
     public double difference;
     Telemetry telemetry;
     //public TouchySensor frontTouchy = new TouchySensor();
@@ -23,24 +25,24 @@ public class TestDexer {
 
 
     final double encoderFactor = 8192/360.0; //ticks of encoder per degree
-    double frontPos = 0;
-    double frontSecondIntakePos = 120* encoderFactor;
-    double frontThirdIntakePos = 240* encoderFactor;
-    double backPos = 180* encoderFactor;
-    double backSecondIntakePos = -60* encoderFactor; //300>250 so we do the negative equivalent
-    double backThirdIntakePos = 60* encoderFactor;
-    double shootStartingAtSpot1 = 90* encoderFactor;
-    double shootStartingAtSpot2 = 210* encoderFactor;
-    double shootStartingAtSpot3 = -30* encoderFactor;
+    public double frontPos = 0; //0
+    public double frontSecondIntakePos = -2652;
+    public double frontThirdIntakePos = -5405;
+    public double backPos = -4050;
+    public double backSecondIntakePos = -6790;
+    public double backThirdIntakePos = -9522;
+    public double shootStartingAtSpot1 = -11759;
+    public double shootStartingAtSpot2 = -14573;
+    public double shootStartingAtSpot3 = -17294;
     double shootRotator; //will depend on whats being shot first
-    double targetPos = frontPos;
+    public double targetPos = frontPos;
     double currentPos = 0;
     double previousTime = 0;
     double currTime = 0;
     double currError = 0;
     double pastError = 0;
 
-    boolean shooting;
+    public boolean shooting;
     //the gear ratio has to increase for this to work
 
     //all positions are in degrees divided by 250 (the maximum degrees in one direction given the gear ratio
@@ -48,11 +50,11 @@ public class TestDexer {
     String spot2 = "U";
     String spot3 = "U";
     int checkingNumber = 1;
-    String currentOrder = "UUU";
+    public String currentOrder = "UUU";
     String gamePattern;
     String side;
     String intakeSide = "waiting";
-    public double power;
+    public double power = 1;
     double iError = 0;
     ElapsedTime intakeTimer = new ElapsedTime();
     public void init(HardwareMap hwMap){
@@ -63,6 +65,8 @@ public class TestDexer {
 
         s1.setDirection(CRServo.Direction.FORWARD);
         s2.setDirection(CRServo.Direction.FORWARD);
+
+        encoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //frontTouchy.init(hwMap);
         //rearTouchy.init(hwMap);
@@ -91,8 +95,9 @@ public class TestDexer {
     }
 
     public int updatePos(){
-        currentPos = encoder.getCurrentPosition();
-        return (int)currentPos;
+        int currentPos = encoder.getCurrentPosition();
+        //currentPos = ((currentPos % 8192) + 8192) % 8192;
+        return currentPos;
     }
     /*
     public boolean isFrontBeingUsed(){
@@ -103,31 +108,31 @@ public class TestDexer {
     }
      */
     //step2: spin to desired intake
-    public void spinToFront(){ //check for openings
+    public void spinToFront(int ballCount){ //check for openings
         //if(isFrontBeingUsed()){
-        if (checkForColorAtSpot("U", 1)){
+        if (ballCount == 0){
             targetPos = frontPos;
-        }else if (checkForColorAtSpot("U", 2)){
+        }else if (ballCount == 1){
             targetPos = frontSecondIntakePos;
-        }else if(checkForColorAtSpot("U", 3)){
+        }else if(ballCount == 2){
             targetPos = frontThirdIntakePos;
         }
         //}
     }
-    public void spinToBack(){ //check for openings
+    public void spinToBack(int ballCount){ //check for openings
         //if(isBackBeingUsed()){
-        if (checkForColorAtSpot("U", 1)){
+        if (ballCount == 0){
 //                s1.setPower(backPos);
 //                s2.setPower(backPos);
             targetPos = backPos;
-        }else if (checkForColorAtSpot("U", 2)){
+        }else if (ballCount == 1){
 //                s1.setPower(backSecondIntakePos);
 //                s2.setPower(backSecondIntakePos);
             targetPos = backSecondIntakePos;
-        }else if(checkForColorAtSpot("U", 3)){
+        }else if(ballCount == 2){
 //                s1.setPower(backThirdIntakePos);
 //                s2.setPower(backThirdIntakePos);
-            targetPos = backSecondIntakePos;
+            targetPos = backThirdIntakePos;
         }
         //}
     }
@@ -143,7 +148,7 @@ public class TestDexer {
 //                s2.setPower(frontSecondIntakePos);
                 targetPos = frontSecondIntakePos;
             }
-            if(targetPos == frontSecondIntakePos){
+            else if(targetPos == frontSecondIntakePos){
 //                s1.setPower(frontThirdIntakePos);
 //                s2.setPower(frontThirdIntakePos);
                 targetPos = frontThirdIntakePos;
@@ -154,7 +159,7 @@ public class TestDexer {
 //                s2.setPower(backSecondIntakePos);
                 targetPos = backSecondIntakePos;
             }
-            if(targetPos == backSecondIntakePos){
+            else if(targetPos == backSecondIntakePos){
 //                s1.setPower(backThirdIntakePos);
 //                s2.setPower(backThirdIntakePos);
                 targetPos = backThirdIntakePos;
@@ -189,19 +194,19 @@ public class TestDexer {
     public void setUpForShooting(String gameOrder) {
         if (currentOrder.equals("PGP")) {
             if (gameOrder.equals("PGP")) {
-//                s1.setPower(shootStartingAtSpot1);
-//                s2.setPower(shootStartingAtSpot1);
-                targetPos = shootStartingAtSpot1;
-            }
-            else if (gameOrder.equals("GPP")) {
 //                s1.setPower(shootStartingAtSpot3);
 //                s2.setPower(shootStartingAtSpot3);
+                targetPos = shootStartingAtSpot2;
+            }
+            else if (gameOrder.equals("GPP")) {
+//                s1.setPower(shootStartingAtSpot2);
+//                s2.setPower(shootStartingAtSpot2);
                 targetPos = shootStartingAtSpot3;
             }
             else if (gameOrder.equals("PPG")) {
-//                s1.setPower(shootStartingAtSpot2);
-//                s2.setPower(shootStartingAtSpot2);
-                targetPos = shootStartingAtSpot2;
+//                s1.setPower(shootStartingAtSpot1);
+//                s2.setPower(shootStartingAtSpot1);
+                targetPos = shootStartingAtSpot1;
             }
             else{ //failsafe if the camera cant pickup the obelisk
 //                s1.setPower(shootStartingAtSpot1);
@@ -211,20 +216,21 @@ public class TestDexer {
         }
         else if (currentOrder.equals("PPG")) {
             if (gameOrder.equals("PGP")) {
-//                s1.setPower(shootStartingAtSpot3);
-//                s2.setPower(shootStartingAtSpot3);
-                targetPos = shootStartingAtSpot3;
-            }
-            else if (gameOrder.equals("GPP")) {
-//                s1.setPower(shootStartingAtSpot2);
-//                s2.setPower(shootStartingAtSpot2);
-                targetPos = shootStartingAtSpot2;
-            }
-            else if (gameOrder.equals("PPG")) {
 //                s1.setPower(shootStartingAtSpot1);
 //                s2.setPower(shootStartingAtSpot1);
                 targetPos = shootStartingAtSpot1;
             }
+            else if (gameOrder.equals("GPP")) {
+//                s1.setPower(shootStartingAtSpot3);
+//                s2.setPower(shootStartingAtSpot3);
+                targetPos = shootStartingAtSpot2;
+            }
+            else if (gameOrder.equals("PPG")) {
+//                s1.setPower(shootStartingAtSpot2);
+//                s2.setPower(shootStartingAtSpot2);
+                targetPos = shootStartingAtSpot3;
+            }
+
             else{ //failsafe if the camera cant pickup the obelisk
 //                s1.setPower(shootStartingAtSpot1);
 //                s2.setPower(shootStartingAtSpot1);
@@ -261,7 +267,11 @@ public class TestDexer {
     }//step6: shoot
     public void shoot(){
         shooting = true;
-        currentPos+=400;
+        targetPos += 13000;
+        currentOrder = "UUU";
+        spot1 = "U";
+        spot2 = "U";
+        spot3 = "U";
     }
 
     //helper methods
@@ -340,8 +350,8 @@ public class TestDexer {
         }
         currentOrder = spot1 + spot2 + spot3;
     }
-    public boolean checkForColorAtSpot(String ballColor, int spot){
-        if(currentOrder.indexOf(ballColor) == spot-1){
+    public boolean checkForColorAtSpot(char ballColor, int spot){
+        if(currentOrder.charAt(spot-1) == ballColor){
             return true;
         }
         return false;
@@ -379,20 +389,29 @@ public class TestDexer {
 //        }
     }
     public void setPowerToPosition2(double curr, double currentTime){
-        double pMult = 1;
+        double pMult = 1.4;
         difference = targetPos - curr;
         double fullPowerTicks = 8192/2;
         double pVal = difference/fullPowerTicks;
 
+
         currTime = currentTime;
         currError = difference;
         double dVal = (currError - pastError)/(currentTime - previousTime);
-        double dMult = .00001;
+        double dMult = 0.00002593;
 
-        iError += currError*(currTime-previousTime);
-        double iMult = 0.00001;
-        double iVal = iError * iMult;
-        power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + iVal , -1, 1);
+//        iError += currError*(currTime-previousTime);
+//        double iMult = 0;
+//        double iVal = iError * iMult;
+        power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult), -1, 1);
+        if(shooting){
+            power /= 1.5;
+        }
+//        if(shooting){
+//            power = Math.abs(power);
+//        }else{
+//            power = -Math.abs(power);
+//        }
         s1.setPower(power);
         s2.setPower(power);
         previousTime = currTime;
@@ -453,6 +472,10 @@ public class TestDexer {
         else{
             return "unknown";
         }
+    }
+
+    public void setTargetPos(double pos){
+        targetPos = pos;
     }
 
 }

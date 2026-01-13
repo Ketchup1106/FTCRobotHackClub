@@ -6,7 +6,6 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,9 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@Autonomous(name = "blue far", group = "Autonomous")
-@Disabled
-public class BlueAutoFar extends LinearOpMode {
+@Autonomous(name = "blue close final", group = "Autonomous")
+public class BlueAutoCloseFInal extends LinearOpMode {
 
     Follower follower;
     testShooter shooter = new testShooter();
@@ -54,7 +52,7 @@ public class BlueAutoFar extends LinearOpMode {
         int spinPos;
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56, 8,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(33, 135,  Math.toRadians(180)));
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -97,15 +95,15 @@ public class BlueAutoFar extends LinearOpMode {
         spinDelay.reset();
         while (opModeIsActive()) {
             spinPos = testDexer.updatePos();
-            follower.poseTracker.update();
+            follower.update();
             disX = goalX - follower.getPose().getX();
             disY = goalY - follower.getPose().getY();
             robotHeading = follower.getHeading(); //will always be something plus that starting of 90
             goalDist = Math.sqrt(Math.pow(disX + 2.5, 2) + Math.pow(disY, 2)); //pythagorean theorem
-            goalAngle = Math.abs(Math.atan2(disX + 2.5, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
+            goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
             if(step != 17){
                 desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-                turret.rotateToGoal(desiredTurretAngle);
+                //turret.rotateToGoal(desiredTurretAngle);
             } //turret
             targetVel = shooter.setVel(goalDist);
             shooter.setHood(goalDist);
@@ -189,11 +187,11 @@ public class BlueAutoFar extends LinearOpMode {
                     step++;
                     break;
                 case 1:
-                    if(shooter.isActive){
+                    if (shooter.isActive) {
                         shooter.updateState(targetVel);
-                        if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && testDexer.getSpinState() == TestDexer.SpinState.SHOOT && !launched){
-                            testDexer.s1.setPower(.3);
-                            testDexer.s2.setPower(.3);
+                        if (shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && testDexer.getSpinState() == TestDexer.SpinState.SHOOT && !launched) {
+                            testDexer.s1.setPower(.2);
+                            testDexer.s2.setPower(.2);
                             launched = true;
                             spinDelay.reset();
                         }
@@ -209,108 +207,12 @@ public class BlueAutoFar extends LinearOpMode {
                     break;
 
                 case 2:
-                    follower.followPath(set2);
-                    testDexer.setSpinState(1);
-                    step++;
-                    break;
-
-                case 3:
-                    if (!follower.isBusy()) {
-                        intake.runReverse();
-                        follower.followPath(grab2);
+                    if(!follower.isBusy()){
+                        follower.followPath(park);
                         step++;
-                    }
-                    break;
-
-                case 4:
-                    if (!follower.isBusy()) {
-                        intake.stop();
-                        follower.followPath(shoot2);
-                        step++;
-                    }
-                    break;
-
-                case 5:
-                    if(shooter.isActive){
-                        shooter.updateState(targetVel);
-                        break;
-                    }
-                    step++;
-                    break;
-
-                case 6:
-                    follower.followPath(set3);
-                    step++;
-                    break;
-
-                case 7:
-                    if (!follower.isBusy()) {
-                        intake.runReverse();
-                        follower.followPath(grab3);
-                        step++;
-                    }
-                    break;
-
-                case 8:
-                    if (!follower.isBusy()) {
-                        intake.stop();
-                        follower.followPath(shoot3);
-                        step++;
-                    }
-                    break;
-
-                case 9:
-                    if(shooter.isActive){
-                        shooter.updateState(targetVel);
-                        break;
-                    }
-                    step++;
-                    break;
-
-                case 10:
-                    if (!follower.isBusy()) {
-                        follower.followPath(set4);
-                        step++;
-                    }
-                    break;
-
-                case 11:
-                    if (!follower.isBusy()) {
-                        intake.runReverse();
-                        follower.followPath(grab4);
-                        step++;
-                    }
-                    break;
-
-                case 12:
-                    if (!follower.isBusy()) {
-                        intake.stop();
-                        follower.followPath(shoot4);
-                        step++;
-                    }
-                    break;
-
-                case 13:
-                    if(shooter.isActive){
-                        shooter.updateState(targetVel);
-                        break;
-                    }
-                    step++;
-                    break;
-
-                case 14:
-                    follower.followPath(park);
-                    step++;
-                    break;
-
-                case 15: //May have to add Parametric Call back if not enough time to reach this
-                    if(!follower.isBusy()) {
-                        desiredTurretAngle = 0;
-                        turret.rotateToGoal(desiredTurretAngle);
                     }
                     break;
             }
-
             // Debug Info
             telemetry.addData("Step", step);
             telemetry.addData("Pose", follower.getPose());
@@ -326,78 +228,35 @@ public class BlueAutoFar extends LinearOpMode {
     // ---------------------------------------------------------------------
     public void buildPaths() {
 
-        final Pose startPose = new Pose(56, 8,  Math.toRadians(180));
-        final Pose shootMid = new Pose(60, 8,  Math.toRadians(90));
-        final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
-        final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
-        final Pose grabPose1 = new Pose(40, 60, Math.toRadians(180));
-        final Pose grabbed1 = new Pose(23, 60, Math.toRadians(180));
-        final Pose rampMid = new Pose(11, 67, Math.toRadians(225));
-        final Pose ramp = new Pose(15, 70, Math.toRadians(180));
-        final Pose grabPose2 = new Pose(40, 36, Math.toRadians(180));
-        final Pose grabbed2 = new Pose(23, 36, Math.toRadians(180));
-        final Pose grabPose3 = new Pose(32, 16, Math.toRadians(180));
-        final Pose grabbed3 = new Pose(10, 16, Math.toRadians(180));
-        final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));
+        final Pose startPose = new Pose(33, 135,  Math.toRadians(180));
+
+        final Pose shootPose = new Pose(48, 98,  Math.toRadians(133));
+
+
+//        final Pose midPose = new Pose(108, 13,  Math.toRadians(90));
+
+
+        final Pose parkPose = new Pose(19, 105,   Math.toRadians(90));
 
         preload = follower.pathBuilder()
-                .addPath(new BezierCurve(startPose, shootMid, shootPoseFar))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootMid.getHeading(), shootPoseFar.getHeading())
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .addParametricCallback(0.75, () -> {shooter.shoot3();})
                 .build();
 
-        set2 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPoseFar, grabPose1))
-                .setLinearHeadingInterpolation(shootPoseFar.getHeading(), grabPose1.getHeading())
-                .build();
-
-        grab2 = follower.pathBuilder()
-                .addPath(new BezierLine(grabPose1, grabbed1))
-                .setLinearHeadingInterpolation(grabPose1.getHeading(), grabbed1.getHeading())
-                .setVelocityConstraint(5)
-                .build();
-        emptyRamp = follower.pathBuilder()
-                .addPath(new BezierCurve(grabbed1, rampMid, ramp))
-                .setLinearHeadingInterpolation(grabbed1.getHeading(), rampMid.getHeading(), ramp.getHeading())
-                .setVelocityConstraint(5)
-                .build();
-        shoot2 = follower.pathBuilder()
-                .addPath(new BezierCurve(ramp, shootMid2, shootPoseFar))
-                .setLinearHeadingInterpolation(ramp.getHeading(), shootMid2.getHeading(), shootPoseFar.getHeading())
-                .addParametricCallback(0.75, () -> {shooter.shoot3();})
-                .build();
-        set3 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPoseFar, grabPose2))
-                .setLinearHeadingInterpolation(shootPoseFar.getHeading(), grabPose2.getHeading())
-                .build();
-
-        grab3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabPose2, grabbed2))
-                .setLinearHeadingInterpolation(grabPose2.getHeading(), grabbed2.getHeading())
-                .build();
-
-        shoot3 = follower.pathBuilder()
-                .addPath(new BezierLine(grabbed2, shootPoseFar))
-                .setLinearHeadingInterpolation(grabbed2.getHeading(), shootPoseFar.getHeading())
-                .addParametricCallback(0.75, () -> {shooter.shoot3();})
-                .build();
-        set4 = follower.pathBuilder()
-                .addPath(new BezierLine(shootPoseFar, grabPose3))
-                .setLinearHeadingInterpolation(shootPoseFar.getHeading(), grabPose3.getHeading())
-                .build();
-        grab4 = follower.pathBuilder()
-                .addPath(new BezierLine(grabPose3, grabbed3))
-                .setLinearHeadingInterpolation(grabPose3.getHeading(), grabbed3.getHeading())
-                .build();
-        shoot4 = follower.pathBuilder()
-                .addPath(new BezierLine(grabbed3, shootPoseFar))
-                .setLinearHeadingInterpolation(grabbed3.getHeading(), shootPoseFar.getHeading())
-                .addParametricCallback(0.75, () -> {shooter.shoot3();})
-                .build();
+//        gotToPark = follower.pathBuilder()
+//                .addPath(new BezierLine(shootPose, midPose))
+//                .setLinearHeadingInterpolation(shootPose.getHeading(), midPose.getHeading())
+//                .build();
         park = follower.pathBuilder()
-                .addPath(new BezierLine(shootPoseFar, parkPose))
-                .setLinearHeadingInterpolation(shootPoseFar.getHeading(), parkPose.getHeading())
+                .addPath(new BezierLine(shootPose, parkPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), parkPose.getHeading())
                 .build();
+
+
+
+
+
     }
 }
 

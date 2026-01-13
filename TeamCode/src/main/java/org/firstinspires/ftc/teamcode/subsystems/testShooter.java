@@ -54,10 +54,10 @@ public class testShooter {
 
 
         shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                160, 0, 0, 17.7
+                180, 0, 0, 17.7
         )); // 2.75 10
         shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                160    , 0, 0, 17.7
+                180    , 0, 0, 17.7
         )); //2.75 10
 
         intake.init(hwMap);
@@ -97,14 +97,14 @@ public class testShooter {
                 break;
             case SPIN_UP:
                 spinUp(velocity);
-                if ((Math.abs(shooter1.getVelocity()) > targetVel - 21)){ //this will now wait for the motors BEFORE moving to launch
+                if ((Math.abs(shooter1.getVelocity()) > velocity - 21)){ //this will now wait for the motors BEFORE moving to launch
                     launchState = LaunchState.LAUNCH;
                     feederTimer.reset();
                 }
                 break;
             case LAUNCH:
                 //transferServo.setPosition(lowPos);
-                if(feederTimer.seconds()>5) {
+                if(feederTimer.seconds()>2.5) {
                     launchState = LaunchState.RECOVER;
                 }
                 break;
@@ -168,7 +168,7 @@ public class testShooter {
         return MathFunctions.clamp(
                 (0.00831624*Math.pow(distance, 2)) +
                         (4.13011*distance) +
-                        (877.46841)
+                        (875.46841)
                 ,0, 1800);
     }
     public void setHood(double distance){
