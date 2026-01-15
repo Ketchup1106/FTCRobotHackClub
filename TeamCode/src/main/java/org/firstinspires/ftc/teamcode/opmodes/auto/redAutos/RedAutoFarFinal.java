@@ -211,7 +211,7 @@ public class RedAutoFarFinal extends LinearOpMode {
             switch (step) {
                 //step 1 - shoot3
                 case 0:
-                    shooter.shoot3();
+                    //shooter.shoot3();
                     testDexer.setSpinState(4);
                     step++;
                     break;

@@ -56,7 +56,7 @@ public class testOp extends OpMode {
     double goalDist;
     double goalAngle;
     public String order = "None yet";
-    double powerSetter = .2;
+    double powerSetter = .75;
     double targetVel = 0;
     int ballCount = 0;
     int shoot = 0;
@@ -101,7 +101,7 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(36, 10,  Math.toRadians(90)));
+        follower.setStartingPose(new Pose(8, 8,  Math.toRadians(90)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
@@ -136,11 +136,11 @@ public class testOp extends OpMode {
         disX = goalX - follower.getPose().getX();
         disY = goalY - follower.getPose().getY();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 90
-        turretXOffset = 3.175*Math.cos(Math.toRadians(robotHeading));
-        turretYOffset = 3.175*Math.sin(Math.toRadians(robotHeading));
+        turretXOffset = 3.175*Math.cos((robotHeading));
+        turretYOffset = 3.175*Math.sin((robotHeading));
         disX += turretXOffset;
         disY += turretYOffset;
-        goalDist = Math.sqrt(Math.pow(disX + 2, 2) + Math.pow(disY, 2)); //pythagorean theorem
+        goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 
@@ -193,7 +193,7 @@ public class testOp extends OpMode {
         }
         telemetry.addData("Order: ", order);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        drive.drive(-gamepad1.left_stick_y* .25, gamepad1.left_stick_x * .25, gamepad1.right_stick_x * .2, 1);
+        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, 1);
         //drive.te(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
 //        if (gamepad2.bWasPressed()) { //shoot 1
 //            shooter.shoot1();
@@ -289,12 +289,7 @@ public class testOp extends OpMode {
 //            //add turret slowMode
 //        }
 
-        if(gamepad2.right_trigger > 0.1){
-            //add shoot 3 in pattern;
-        }
-        if(gamepad1.dpadRightWasPressed()){
-            testDexer.spinToNextManual("front");
-        }
+
         /*OLD CONTROLS ------------------------------------------------------------------------------
         if (gamepad2.yWasPressed()) { // shoot 3
             shooter.shoot3();

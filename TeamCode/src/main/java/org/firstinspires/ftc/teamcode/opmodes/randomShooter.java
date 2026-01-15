@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,9 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 
 @TeleOp(name = "random shitter")
-@Disabled
 public class randomShooter extends OpMode {
 
     public DcMotorEx shooter1;
@@ -20,6 +23,9 @@ public class randomShooter extends OpMode {
     private Servo hood;
     double low = 0;
     double high = 500;
+    int goalX = 0;
+    int goalY = 144;
+
 
     private final double lowPos = .52;
     private final double highPos = .31;
@@ -33,9 +39,14 @@ public class randomShooter extends OpMode {
     double[] stepSizesServo = {0.1, 0.01, 0.001};
     int stepIndex = 0;
     int stepIndexServo = 0;
+    Follower follower;
 
     @Override
     public void init(){
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(new Pose(32, 135,  Math.toRadians(180)));
+        follower.update();
+
         shooter1 = hardwareMap.get(DcMotorEx.class, "sm1");
         shooter2 = hardwareMap.get(DcMotorEx.class, "sm2");
 
@@ -45,7 +56,7 @@ public class randomShooter extends OpMode {
         shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(120, 0, 0, 17.7        );
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(180, 0, 0, 17.7        );
         shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
@@ -59,6 +70,16 @@ public class randomShooter extends OpMode {
 
     @Override
     public void loop(){
+        follower.poseTracker.update();
+        double disX = goalX - follower.getPose().getX();
+        double disY = goalY - follower.getPose().getY();
+        double robotHeading = follower.getHeading(); //will always be something plus that starting of 90
+        double turretXOffset = 3.175*Math.cos(Math.toRadians(robotHeading));
+        double turretYOffset = 3.175*Math.sin(Math.toRadians(robotHeading));
+        disX += turretXOffset;
+        disY += turretYOffset;
+        double goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
+
         if(gamepad1.yWasPressed()){
             if(currTargetVelocity == high){
                 currTargetVelocity= low;
@@ -101,6 +122,7 @@ public class randomShooter extends OpMode {
         telemetry.addData("servoPos", targetServo);
         telemetry.addData("High Vel: ", high);
         telemetry.addData("Step Size: ", stepSizes[stepIndex]);
+        telemetry.addData("distance (RELATIVE TO TURRET): ", goalDist);
 
     }
 }

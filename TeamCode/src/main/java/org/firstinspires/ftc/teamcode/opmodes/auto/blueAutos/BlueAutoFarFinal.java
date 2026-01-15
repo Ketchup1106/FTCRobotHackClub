@@ -35,8 +35,8 @@ public class BlueAutoFarFinal extends LinearOpMode {
     int step = 0;
     int stateVar = 0;
     double targetVel = 0;
-    double goalX = 12;
-    double goalY = 136;
+    double goalX = 0;
+    double goalY = 144;
     double goalDist;
     double goalAngle;
     String order = "null";
