@@ -404,9 +404,9 @@ public class TestDexer {
 //        double iMult = 0;
 //        double iVal = iError * iMult;
         power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult), -1, 1);
-        if(shooting){
-            power /= 1.5;
-        }
+//        if(shooting){
+//            power /= 1.5;
+//        }
 //        if(shooting){
 //            power = Math.abs(power);
 //        }else{

@@ -53,6 +53,8 @@ public class NewBlueFar extends LinearOpMode {
 
     boolean grabbing;
 
+    boolean reset = true;
+
     @Override
     public void runOpMode() {
         int spinPos;
@@ -75,10 +77,19 @@ public class NewBlueFar extends LinearOpMode {
             telemetry.addLine("WAIT");
         }
         spinPos = testDexer.updatePos();
-        while (spinPos < testDexer.getTargetPos() -150){
-            spinPos = testDexer.updatePos();
-            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
-            telemetry.addData("pose", spinPos);
+//        while (spinPos < testDexer.getTargetPos() -150){
+//            spinPos = testDexer.updatePos();
+//            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+//            telemetry.addData("pose", spinPos);
+//        }
+        while(!(MathFunctions.roughlyEquals(spinPos, 0, 130))){
+            testDexer.setPowerToPosition2(,  );
+        }
+        while(reset){
+            if(gamepad1.dpadDownWasPressed()){
+                follower.setStartingPose(new Pose(56, 8,  Math.toRadians(180)));
+                reset = false;
+            }
         }
 
         grabbing = false;
@@ -103,6 +114,7 @@ public class NewBlueFar extends LinearOpMode {
         while (opModeIsActive()) {
             disX = goalX - follower.getPose().getX();
             disY = goalY - follower.getPose().getY();
+
             robotHeading = follower.getHeading(); //will always be something plus that starting of 90
             double turretXOffset = 3.175 * Math.cos((robotHeading));
             double turretYOffset = 3.175*Math.sin((robotHeading));
@@ -113,7 +125,9 @@ public class NewBlueFar extends LinearOpMode {
             desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 
             spinPos = testDexer.updatePos();
-            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+            if(testDexer.getSpinState() != TestDexer.SpinState.SHOOT){
+                testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+            }
             follower.update();
             switch (testDexer.getSpinState()){
                 case MOVE_TO_INTAKE:
@@ -160,13 +174,13 @@ public class NewBlueFar extends LinearOpMode {
             switch (step) {
                 //step 1 - shoot3
                 case 0:
-                    shooter.shoot3();
+//                    shooter.shoot3();
                     step++;
                     break;
                 case 1:
                     if(shooter.isActive){
                         shooter.updateState(targetVel);
-                        if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && testDexer.getSpinState() == TestDexer.SpinState.SHOOT && !launched){
+                        if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
                             testDexer.setSpinState(4);
                         }
                         break;
@@ -177,19 +191,141 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 2:
                     if(!follower.isBusy()){
-                        follower.followPath(park);
+                        follower.followPath(set2);
+                        step++;
+                    }
+                    break;
+                case 3:
+                    if (!follower.isBusy()) {
+                        intake.runReverse();
+                        intakeSide = "front";
+                        testDexer.setSpinState(1);
+                        if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
+                            testDexer.setSpinState(2);
+                        }
+                        else{
+                            break;
+                        }
+                        follower.followPath(grab2);
                         step++;
                     }
                     break;
 
-//                case 4:
-//                    if (!follower.isBusy()) {
-//                        follower.followPath(park);
-//                        step++;
-//                    }
-//                    break;
+                case 4:
+                    if (!follower.isBusy()) {
+                        intake.stop();
+                        follower.followPath(shoot2);
+                        step++;
+                    }
+                    break;
 
+                case 5:
+                    if(shooter.isActive){
+                        shooter.updateState(targetVel);
+                        if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
+                            testDexer.setSpinState(4);
+                        }
+                        break;
+                    }
+                    testDexer.setSpinState(0);
+                    step++;
+                    break;
 
+                case 6:
+                    follower.followPath(set3);
+                    step++;
+                    break;
+
+                case 7:
+                    if (!follower.isBusy()) {
+                        intake.runReverse();
+                        intakeSide = "front";
+                        testDexer.setSpinState(1);
+                        if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
+                            testDexer.setSpinState(2);
+                        }
+                        else{
+                            break;
+                        }
+                        follower.followPath(grab3);
+                        step++;
+                    }
+                    break;
+
+                case 8:
+                    if (!follower.isBusy()) {
+                        intake.stop();
+                        follower.followPath(shoot3);
+                        step++;
+                    }
+                    break;
+
+                case 9:
+                    if(shooter.isActive){
+                        shooter.updateState(targetVel);
+                        if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
+                            testDexer.setSpinState(4);
+                        }
+                        break;
+                    }
+                    testDexer.setSpinState(0);
+                    step++;
+                    break;
+
+                case 10:
+                    if (!follower.isBusy()) {
+                        follower.followPath(set4);
+                        step++;
+                    }
+                    break;
+
+                case 11:
+                    if (!follower.isBusy()) {
+                        intake.runReverse();
+                        intakeSide = "front";
+                        testDexer.setSpinState(1);
+                        if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
+                            testDexer.setSpinState(2);
+                        }
+                        else{
+                            break;
+                        }
+                        follower.followPath(grab4);
+                        step++;
+                    }
+                    break;
+
+                case 12:
+                    if (!follower.isBusy()) {
+                        intake.stop();
+                        follower.followPath(shoot4);
+                        step++;
+                    }
+                    break;
+
+                case 13:
+                    if(shooter.isActive){
+                        shooter.updateState(targetVel);
+                        if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
+                            testDexer.setSpinState(4);
+                        }
+                        break;
+                    }
+                    testDexer.setSpinState(0);
+                    step++;
+                    break;
+
+                case 14:
+                    follower.followPath(park);
+                    step++;
+                    break;
+
+                case 15: //May have to add Parametric Call back if not enough time to reach this
+                    if(!follower.isBusy()) {
+                        desiredTurretAngle = 0;
+                        turret.rotateToGoal(desiredTurretAngle);
+                    }
+                    break;
             }
 
             // Debug Info
@@ -208,12 +344,12 @@ public class NewBlueFar extends LinearOpMode {
     public void buildPaths() {
 
         final Pose startPose = new Pose(56, 8,  Math.toRadians(180));
-        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
+//        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
         final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
         final Pose grabPose1 = new Pose(40, 60, Math.toRadians(180));
         final Pose grabbed1 = new Pose(23, 60, Math.toRadians(180));
-        final Pose rampMid = new Pose(11, 67, Math.toRadians(225));
+        final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
         final Pose ramp = new Pose(15, 70, Math.toRadians(180));
         final Pose grabPose2 = new Pose(40, 36, Math.toRadians(180));
         final Pose grabbed2 = new Pose(23, 36, Math.toRadians(180));
@@ -222,8 +358,8 @@ public class NewBlueFar extends LinearOpMode {
         final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));
 
         preload = follower.pathBuilder()
-                .addPath(new BezierCurve(startPose, shootMid, shootPoseFar))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootMid.getHeading(), shootPoseFar.getHeading())
+                .addPath(new BezierLine(startPose, shootPoseFar))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPoseFar.getHeading())
                 .addParametricCallback(0.75, () -> {shooter.shoot3();})
                 .build();
 
