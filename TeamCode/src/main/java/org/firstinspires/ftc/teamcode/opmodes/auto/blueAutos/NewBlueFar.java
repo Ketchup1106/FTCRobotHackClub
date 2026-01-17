@@ -8,6 +8,7 @@ import com.pedropathing.math.MathFunctions;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -77,14 +78,18 @@ public class NewBlueFar extends LinearOpMode {
             telemetry.addLine("WAIT");
         }
         spinPos = testDexer.updatePos();
+        double differenceFromZero = 8192 - Math.abs(spinPos)%8192;
+        testDexer.targetPos = spinPos - differenceFromZero;
 //        while (spinPos < testDexer.getTargetPos() -150){
 //            spinPos = testDexer.updatePos();
 //            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
 //            telemetry.addData("pose", spinPos);
 //        }
         while(!(MathFunctions.roughlyEquals(spinPos, 0, 130))){
-            testDexer.setPowerToPosition2(,  );
+            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
         }
+        testDexer.encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        testDexer.encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         while(reset){
             if(gamepad1.dpadDownWasPressed()){
                 follower.setStartingPose(new Pose(56, 8,  Math.toRadians(180)));
@@ -122,7 +127,7 @@ public class NewBlueFar extends LinearOpMode {
             disY += turretYOffset;
             goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
             goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-            desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+
 
             spinPos = testDexer.updatePos();
             if(testDexer.getSpinState() != TestDexer.SpinState.SHOOT){
@@ -175,6 +180,8 @@ public class NewBlueFar extends LinearOpMode {
                 //step 1 - shoot3
                 case 0:
 //                    shooter.shoot3();
+                    desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+                    turret.rotateToGoal(desiredTurretAngle);
                     step++;
                     break;
                 case 1:
@@ -191,6 +198,8 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 2:
                     if(!follower.isBusy()){
+                        desiredTurretAngle = 0;
+                        turret.rotateToGoal(desiredTurretAngle);
                         follower.followPath(set2);
                         step++;
                     }
@@ -221,6 +230,8 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 5:
                     if(shooter.isActive){
+                        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+                        turret.rotateToGoal(desiredTurretAngle);
                         shooter.updateState(targetVel);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
                             testDexer.setSpinState(4);
@@ -232,6 +243,8 @@ public class NewBlueFar extends LinearOpMode {
                     break;
 
                 case 6:
+                    desiredTurretAngle = 0;
+                    turret.rotateToGoal(desiredTurretAngle);
                     follower.followPath(set3);
                     step++;
                     break;
@@ -262,6 +275,8 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 9:
                     if(shooter.isActive){
+                        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+                        turret.rotateToGoal(desiredTurretAngle);
                         shooter.updateState(targetVel);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
                             testDexer.setSpinState(4);
@@ -274,6 +289,8 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 10:
                     if (!follower.isBusy()) {
+                        desiredTurretAngle = 0;
+                        turret.rotateToGoal(desiredTurretAngle);
                         follower.followPath(set4);
                         step++;
                     }
@@ -305,6 +322,8 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 13:
                     if(shooter.isActive){
+                        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+                        turret.rotateToGoal(desiredTurretAngle);
                         shooter.updateState(targetVel);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
                             testDexer.setSpinState(4);
@@ -329,11 +348,39 @@ public class NewBlueFar extends LinearOpMode {
             }
 
             // Debug Info
-            telemetry.addData("Step", step);
-            telemetry.addData("Pose", follower.getPose());
-            telemetry.addData("Busy", follower.isBusy());
+            telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
+            telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
+            telemetry.addData("Difference: ", testDexer.difference);
+//        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
+//        telemetry.addData("shooter target velocity: ", targetVel);
+//        telemetry.addData("shootervel: ", shooter.getVelocity1());
+//        telemetry.addData("shooter state: ", shooter.getLauunchState());
             telemetry.addData("spindexer pos", spinPos);
-            telemetry.addData("target", testDexer.getTargetPos());
+            telemetry.addData("spinstate ", testDexer.getSpinState());
+            telemetry.addData("spindexer target ", testDexer.getTargetPos());
+            telemetry.addData("ballcount ", ballCount);
+            telemetry.addData("current order ",testDexer.currentOrder);
+            telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));
+//        telemetry.addData("P: ", P);
+//        telemetry.addData("I: ", I);
+//        telemetry.addData("D: ", D*1000000);
+//        telemetry.addData("stepSize: ", stepSizes[stepIndex] * 1000000);
+
+            //telemetry.addData("tuningservo pos", shooter.getServo());
+//        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
+//        telemetry.addData("Follower X: ", follower.getPose().getX());
+//        telemetry.addData("Follower Y ", follower.getPose().getY());
+//        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
+//        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
+//        telemetry.addData("Goal Dist: ", goalDist);
+//        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
+//        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
+//        telemetry.addData("is turning?", turningToShoot);
+//        telemetry.addData("is busy?", turret.getTurretStatus());
+//        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
+//        telemetry.addData("turret angle: ", turret.getCurrentPos());
+//        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
+
             telemetry.update();
         }
     }

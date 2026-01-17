@@ -101,7 +101,7 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(8, 8,  Math.toRadians(90)));
+        follower.setStartingPose(new Pose(8, 8,  Math.toRadians(180)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
