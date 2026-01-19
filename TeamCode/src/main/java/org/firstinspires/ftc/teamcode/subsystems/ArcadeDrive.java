@@ -12,6 +12,11 @@ public class ArcadeDrive {
     private DcMotorEx frontRightDrive;
     private DcMotorEx backRightDrive;
 
+    double frontLeftPower;
+    double frontRightPower;
+    double backLeftPower;
+    double backRightPower;
+
     public void init(HardwareMap hwMap){
         frontLeftDrive = hwMap.get(DcMotorEx.class, "lf");
         backLeftDrive = hwMap.get(DcMotorEx.class, "lb");
@@ -40,10 +45,10 @@ public class ArcadeDrive {
 
     public void drive(double axial, double lateral, double yaw, double powerMult){
 
-        double frontLeftPower = (axial + lateral + yaw);
-        double frontRightPower = (axial - lateral - yaw);
-        double backLeftPower = (axial - lateral + yaw);
-        double backRightPower = (axial + lateral - yaw);
+        frontLeftPower = (axial + lateral + yaw);
+        frontRightPower = (axial - lateral - yaw);
+        backLeftPower = (axial - lateral + yaw);
+        backRightPower = (axial + lateral - yaw);
 
         double max = 1;
         max = Math.max(max, Math.abs(frontLeftPower));
@@ -62,6 +67,18 @@ public class ArcadeDrive {
         backRightDrive.setPower(powerMult *backRightPower);
 
 
+    }
+    public double getFrontLeftDrive(){
+        return frontLeftPower;
+    }
+    public double getFrontRightDrive(){
+        return frontRightPower;
+    }
+    public double getBackLeftDrive(){
+        return backLeftPower;
+    }
+    public double getBackRightDrive(){
+        return backRightPower;
     }
 
 

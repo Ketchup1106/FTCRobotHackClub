@@ -28,7 +28,7 @@ public class Turret {
         turret.setTargetPosition(0);
         turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);;
-        turret.setVelocityPIDFCoefficients(10, .25, 1, 0);
+        turret.setVelocityPIDFCoefficients(10, 0, 1, 0);
     }
     public int calculateTurnBlue(double goalAngle, double robotAngle) {
         robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));

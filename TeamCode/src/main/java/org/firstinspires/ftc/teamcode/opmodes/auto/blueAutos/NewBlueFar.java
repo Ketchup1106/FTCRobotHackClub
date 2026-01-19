@@ -69,9 +69,9 @@ public class NewBlueFar extends LinearOpMode {
         aprilTagStuff.init(hardwareMap, telemetry);
 
         buildPaths();   // ← ONLY builds, does NOT run anything
-        ElapsedTime runtime = new ElapsedTime();
         testDexer.currentOrder = "PPG";
         //init sequence - get servios up to speed, reset pos, set up for shot
+        runtime.reset();
         while(runtime.seconds() < 3){
             testDexer.s1.setPower(-1);
             testDexer.s2.setPower(-1);
@@ -80,11 +80,11 @@ public class NewBlueFar extends LinearOpMode {
         spinPos = testDexer.updatePos();
         double differenceFromZero = 8192 - Math.abs(spinPos)%8192;
         testDexer.targetPos = spinPos - differenceFromZero;
-//        while (spinPos < testDexer.getTargetPos() -150){
-//            spinPos = testDexer.updatePos();
-//            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
-//            telemetry.addData("pose", spinPos);
-//        }
+        while (spinPos < testDexer.getTargetPos() -150){
+            spinPos = testDexer.updatePos();
+            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+            telemetry.addData("pose", spinPos);
+        }
         while(!(MathFunctions.roughlyEquals(spinPos, 0, 130))){
             testDexer.setPowerToPosition2(spinPos, runtime.seconds());
         }
@@ -121,8 +121,8 @@ public class NewBlueFar extends LinearOpMode {
             disY = goalY - follower.getPose().getY();
 
             robotHeading = follower.getHeading(); //will always be something plus that starting of 90
-            double turretXOffset = 3.175 * Math.cos((robotHeading));
-            double turretYOffset = 3.175*Math.sin((robotHeading));
+            double turretXOffset = 3.175 * Math.sin((robotHeading));
+            double turretYOffset = 3.175*Math.cos((robotHeading));
             disX += turretXOffset;
             disY += turretYOffset;
             goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
@@ -208,7 +208,10 @@ public class NewBlueFar extends LinearOpMode {
                     if (!follower.isBusy()) {
                         intake.runReverse();
                         intakeSide = "front";
-                        testDexer.setSpinState(1);
+                        if(testDexer.getSpinState() == TestDexer.SpinState.IDLE){
+                            testDexer.setSpinState(1);
+                        }
+
                         if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
                             testDexer.setSpinState(2);
                         }
@@ -227,7 +230,6 @@ public class NewBlueFar extends LinearOpMode {
                         step++;
                     }
                     break;
-
                 case 5:
                     if(shooter.isActive){
                         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
@@ -394,12 +396,12 @@ public class NewBlueFar extends LinearOpMode {
 //        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
         final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
-        final Pose grabPose1 = new Pose(40, 60, Math.toRadians(180));
-        final Pose grabbed1 = new Pose(23, 60, Math.toRadians(180));
+        final Pose grabPose1 = new Pose(40, 56, Math.toRadians(180));
+        final Pose grabbed1 = new Pose(23, 56, Math.toRadians(180));
         final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
         final Pose ramp = new Pose(15, 70, Math.toRadians(180));
-        final Pose grabPose2 = new Pose(40, 36, Math.toRadians(180));
-        final Pose grabbed2 = new Pose(23, 36, Math.toRadians(180));
+        final Pose grabPose2 = new Pose(40, 32, Math.toRadians(180));
+        final Pose grabbed2 = new Pose(23, 32, Math.toRadians(180));
         final Pose grabPose3 = new Pose(32, 16, Math.toRadians(180));
         final Pose grabbed3 = new Pose(10, 16, Math.toRadians(180));
         final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));

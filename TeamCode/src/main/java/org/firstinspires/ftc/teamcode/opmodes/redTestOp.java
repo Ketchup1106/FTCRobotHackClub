@@ -35,9 +35,11 @@ public class redTestOp extends OpMode {
     Turret turret = new Turret();
 
     //SpinDexer spindexer = new SpinDexer();
-    double goalX = 132;
+    double goalX = 144;
 
-    double goalY = 136;
+    double goalY = 144;
+    double turretXOffset;
+    double turretYOffset;
 
     double disX;
     double disY;
@@ -54,7 +56,7 @@ public class redTestOp extends OpMode {
     double goalDist;
     double goalAngle;
     public String order = "None yet";
-    double powerSetter = .2;
+    double powerSetter = .75;
     double targetVel = 0;
     int ballCount = 0;
     int shoot = 0;
@@ -99,7 +101,7 @@ public class redTestOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(108, 8,  Math.toRadians(90)));
+        follower.setStartingPose(new Pose(136, 8,  Math.toRadians(180)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
@@ -130,10 +132,14 @@ public class redTestOp extends OpMode {
             doesAprilTimerHaveToReset = false;
         }
 
+
         disX = goalX - follower.getPose().getX();
         disY = goalY - follower.getPose().getY();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 90
-
+        turretXOffset = 3.175*Math.sin((robotHeading));
+        turretYOffset = 3.175*Math.cos((robotHeading));
+        disX += turretXOffset;
+        disY += turretYOffset;
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disY, disX)); //simple inverse trig with compensation for robot's extra 90 degrees
         desiredTurretAngle = turret.calculateTurnRed(goalAngle, robotHeading);
@@ -187,7 +193,7 @@ public class redTestOp extends OpMode {
         }
         telemetry.addData("Order: ", order);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        drive.drive(gamepad1.left_stick_y*.25, -gamepad1.left_stick_x*.25, gamepad1.right_stick_x * .2, 1);
+        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x *.5, 1);
         //drive.te(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
 //        if (gamepad2.bWasPressed()) { //shoot 1
 //            shooter.shoot1();
@@ -195,19 +201,17 @@ public class redTestOp extends OpMode {
 
 
         //NEW CONTROLS _______________________________________________________________________________
-        //step 1 select intake
+
         if(gamepad1.right_trigger > 0.1){
-            intake.run();
-            testDexer.setSpinState(1);
-            intakeSide = "back";
+            intake.runReverse();
+            intakeSide = "front";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
         }
         else if(gamepad1.left_trigger > .1){
-            intake.runReverse();
-            testDexer.setSpinState(1);
-            intakeSide = "front";
+            intake.run();
+            intakeSide = "back";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
@@ -246,11 +250,11 @@ public class redTestOp extends OpMode {
         }
 
         //step 2 sort balls
-        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING){
+        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING && testDexer.power < .1){
             //if intaking and not full, check for color. if color, move to next slot. repeat until full.
             if(ballCount < 3){
                 testDexer.checkForBalls();
-                if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && spindexerDelayTimer.seconds() > .25) { //wait until color
+                if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && spindexerDelayTimer.seconds() > .5) { //wait until color
                     ballCount++;
                     testDexer.spinToNext(intakeSide);
                     spindexerDelayTimer.reset();
@@ -285,12 +289,7 @@ public class redTestOp extends OpMode {
 //            //add turret slowMode
 //        }
 
-        if(gamepad2.right_trigger > 0.1){
-            //add shoot 3 in pattern;
-        }
-        if(gamepad1.dpadRightWasPressed()){
-            testDexer.spinToNextManual("front");
-        }
+
         /*OLD CONTROLS ------------------------------------------------------------------------------
         if (gamepad2.yWasPressed()) { // shoot 3
             shooter.shoot3();
@@ -355,11 +354,11 @@ public class redTestOp extends OpMode {
 //        telemetry.addData("stepSize: ", stepSizes[stepIndex] * 1000000);
 
         //telemetry.addData("tuningservo pos", shooter.getServo());
-        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
-        telemetry.addData("Follower X: ", follower.getPose().getX());
-        telemetry.addData("Follower Y ", follower.getPose().getY());
-        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
-        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
+//        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
+//        telemetry.addData("Follower X: ", follower.getPose().getX());
+//        telemetry.addData("Follower Y ", follower.getPose().getY());
+//        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
+//        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
 //        telemetry.addData("Goal Dist: ", goalDist);
 //        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
 //        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
