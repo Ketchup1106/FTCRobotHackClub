@@ -137,10 +137,10 @@ public class testOp extends OpMode {
         disX = goalX - follower.getPose().getX();
         disY = goalY - follower.getPose().getY();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 90
-        turretXOffset = 3.175*Math.sin((robotHeading));
-        turretYOffset = 3.175*Math.cos((robotHeading));
+        turretXOffset = 3.17582677*Math.sin((robotHeading));
+        turretYOffset = 3.17582677*Math.cos((robotHeading));
         disX += turretXOffset;
-        disY += turretYOffset;
+        disY -= turretYOffset;
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);

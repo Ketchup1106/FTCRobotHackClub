@@ -124,10 +124,11 @@ public class NewBlueFar extends LinearOpMode {
             double turretXOffset = 3.175 * Math.sin((robotHeading));
             double turretYOffset = 3.175*Math.cos((robotHeading));
             disX += turretXOffset;
-            disY += turretYOffset;
+            disY -= turretYOffset;
             goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
             goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-
+            targetVel = shooter.setVel(goalDist);
+            shooter.setHood(goalDist);
 
             spinPos = testDexer.updatePos();
             if(testDexer.getSpinState() != TestDexer.SpinState.SHOOT){
@@ -177,13 +178,19 @@ public class NewBlueFar extends LinearOpMode {
                 //if idle just dont change anything
             }
             switch (step) {
-                //step 1 - shoot3
+                ///////////////////////////////////////////////////////////////////
+                /// Step 1: shoot preload and rotate turret to goal
+                ///////////////////////////////////////////////////////////////////
                 case 0:
 //                    shooter.shoot3();
                     desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
                     turret.rotateToGoal(desiredTurretAngle);
+                    //condition that waits for shooter to turn on
                     step++;
                     break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 2: wait until shooting is done
+                ///////////////////////////////////////////////////////////////////
                 case 1:
                     if(shooter.isActive){
                         shooter.updateState(targetVel);
@@ -195,7 +202,9 @@ public class NewBlueFar extends LinearOpMode {
                     testDexer.setSpinState(0);
                     step++;
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 3: set up for grabbing middle set
+                ///////////////////////////////////////////////////////////////////
                 case 2:
                     if(!follower.isBusy()){
                         desiredTurretAngle = 0;
@@ -204,6 +213,9 @@ public class NewBlueFar extends LinearOpMode {
                         step++;
                     }
                     break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 4: intake set
+                ///////////////////////////////////////////////////////////////////
                 case 3:
                     if (!follower.isBusy()) {
                         intake.runReverse();
@@ -222,7 +234,9 @@ public class NewBlueFar extends LinearOpMode {
                         step++;
                     }
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 5: go back to shoot
+                ///////////////////////////////////////////////////////////////////
                 case 4:
                     if (!follower.isBusy()) {
                         intake.stop();
@@ -230,7 +244,14 @@ public class NewBlueFar extends LinearOpMode {
                         step++;
                     }
                     break;
+                    //add a step for shoot3
+                ///////////////////////////////////////////////////////////////////
+                /// Step 6: wait for shot to finish
+                ///////////////////////////////////////////////////////////////////
                 case 5:
+                    if (follower.isBusy()){
+                        break;
+                    }
                     if(shooter.isActive){
                         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
                         turret.rotateToGoal(desiredTurretAngle);
@@ -243,14 +264,18 @@ public class NewBlueFar extends LinearOpMode {
                     testDexer.setSpinState(0);
                     step++;
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 7: go get set closest to us
+                ///////////////////////////////////////////////////////////////////
                 case 6:
                     desiredTurretAngle = 0;
                     turret.rotateToGoal(desiredTurretAngle);
                     follower.followPath(set3);
                     step++;
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 8: intake
+                ///////////////////////////////////////////////////////////////////
                 case 7:
                     if (!follower.isBusy()) {
                         intake.runReverse();
@@ -266,7 +291,9 @@ public class NewBlueFar extends LinearOpMode {
                         step++;
                     }
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 9: go back to shoot
+                ///////////////////////////////////////////////////////////////////
                 case 8:
                     if (!follower.isBusy()) {
                         intake.stop();
@@ -274,7 +301,9 @@ public class NewBlueFar extends LinearOpMode {
                         step++;
                     }
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 10: wait for shot
+                ///////////////////////////////////////////////////////////////////
                 case 9:
                     if(shooter.isActive){
                         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
@@ -288,7 +317,9 @@ public class NewBlueFar extends LinearOpMode {
                     testDexer.setSpinState(0);
                     step++;
                     break;
-
+                ///////////////////////////////////////////////////////////////////
+                /// Step 11: either get last set or stop here if we want
+                ///////////////////////////////////////////////////////////////////
                 case 10:
                     if (!follower.isBusy()) {
                         desiredTurretAngle = 0;
