@@ -331,7 +331,7 @@ public class testOp extends OpMode {
             powerSetter = 0.75;
         }
         int spinPos = testDexer.updatePos();
-        testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+        //testDexer.setPowerToPosition2(spinPos, runtime.seconds());
         shooter.updateState(targetVel);
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
