@@ -57,7 +57,7 @@ public class BlueAutoClose extends LinearOpMode {
         intake.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
 
-        buildPaths();   // ← ONLY builds, does NOT run anything
+        buildPaths();   // ← ONLY builds, does NOT runFront anything
 
         telemetry.addLine("Ready for start");
         telemetry.update();
@@ -128,7 +128,7 @@ public class BlueAutoClose extends LinearOpMode {
 
                 case 2:
                     if (!follower.isBusy()) {
-                        intake.runReverse();
+                        intake.runFrontReverse();
                         follower.followPath(grab2);
                         step++;
                     }
@@ -136,7 +136,7 @@ public class BlueAutoClose extends LinearOpMode {
 
                 case 3:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        //intake.stop();
                         follower.followPath(shoot2);
                         step++;
                     }
@@ -157,7 +157,7 @@ public class BlueAutoClose extends LinearOpMode {
 
                 case 6:
                     if (!follower.isBusy()) {
-                        intake.runReverse();
+                        intake.runFrontReverse();
                         follower.followPath(grab3);
                         step++;
                     }
@@ -165,7 +165,7 @@ public class BlueAutoClose extends LinearOpMode {
 
                 case 7:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot3);
                         step++;
                     }
@@ -188,7 +188,7 @@ public class BlueAutoClose extends LinearOpMode {
 
                 case 10:
                     if (!follower.isBusy()) {
-                        intake.runReverse();
+                        intake.runFrontReverse();
                         follower.followPath(grab4);
                         step++;
                     }
@@ -196,7 +196,7 @@ public class BlueAutoClose extends LinearOpMode {
 
                 case 11:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot4);
                         step++;
                     }

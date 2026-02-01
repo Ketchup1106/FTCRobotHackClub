@@ -64,7 +64,7 @@ public class RedAutoFarFinal extends LinearOpMode {
         intake.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
 
-        buildPaths();   // ← ONLY builds, does NOT run anything
+        buildPaths();   // ← ONLY builds, does NOT runFront anything
         ElapsedTime runtime = new ElapsedTime();
         testDexer.currentOrder = "PPG";
         //init sequence - get servios up to speed, reset pos, set up for shot

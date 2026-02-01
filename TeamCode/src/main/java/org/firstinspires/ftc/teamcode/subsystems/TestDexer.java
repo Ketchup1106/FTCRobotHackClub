@@ -61,7 +61,7 @@ public class TestDexer {
         s1 = hwMap.get(CRServo.class, "spin1");
         s2 = hwMap.get(CRServo.class, "spin2");
 
-        encoder = hwMap.get(DcMotorEx.class, "intake");
+        encoder = hwMap.get(DcMotorEx.class, "backIntake");
 
         s1.setDirection(CRServo.Direction.FORWARD);
         s2.setDirection(CRServo.Direction.FORWARD);

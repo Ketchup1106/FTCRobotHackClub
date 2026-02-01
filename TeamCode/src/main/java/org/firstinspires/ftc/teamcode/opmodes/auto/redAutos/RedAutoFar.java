@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous(name = "red far", group = "Autonomous")
 @Disabled
@@ -66,7 +65,7 @@ public class RedAutoFar extends LinearOpMode {
         intake.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
 
-        buildPaths();   // ← ONLY builds, does NOT run anything
+        buildPaths();   // ← ONLY builds, does NOT runFront anything
         ElapsedTime runtime = new ElapsedTime();
         testDexer.currentOrder = "PPG";
         //init sequence - get servios up to speed, reset pos, set up for shot
@@ -249,26 +248,26 @@ public class RedAutoFar extends LinearOpMode {
 
                 case 4:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab2One);
                         step++;
                     }
                     break;
                 case 5:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab2Two);
                         step++;
                     }
                 case 6:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab2Three);
                         step++;
                     }
                 case 7:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot2);
                         step++;
                     }
@@ -289,7 +288,7 @@ public class RedAutoFar extends LinearOpMode {
 
 //                case 7:
 //                    if (!follower.isBusy()) {
-//                        intake.runReverse();
+//                        intake.runFrontReverse();
 //                        follower.followPath(grab3);
 //                        step++;
 //                    }
@@ -299,27 +298,27 @@ public class RedAutoFar extends LinearOpMode {
                     step++;
                 case 11:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab3One);
                         step++;
                     }
                     break;
                 case 12:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab3Two);
                         step++;
                     }
                 case 13:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab3Three);
                         step++;
                     }
 
                 case 14:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot3);
                         step++;
                     }
@@ -342,7 +341,7 @@ public class RedAutoFar extends LinearOpMode {
 
 //                case 11:
 //                    if (!follower.isBusy()) {
-//                        intake.runReverse();
+//                        intake.runFrontReverse();
 //                        follower.followPath(grab4);
 //                        step++;
 //                    }
@@ -352,27 +351,27 @@ public class RedAutoFar extends LinearOpMode {
                     step++;
                 case 18:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab4One);
                         step++;
                     }
                     break;
                 case 19:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab4Two);
                         step++;
                     }
                 case 20:
                     if (!follower.isBusy()) {
-                        intake.run();
+                        intake.runFront();
                         follower.followPath(grab4Three);
                         step++;
                     }
 
                 case 21:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot4);
                         step++;
                     }

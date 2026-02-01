@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -105,7 +106,7 @@ public class testOp extends OpMode {
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
-        turret.init(hardwareMap);
+        //turret.init(hardwareMap);
         testDexer.init(hardwareMap);
 
 
@@ -143,13 +144,13 @@ public class testOp extends OpMode {
         disY -= turretYOffset;
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+        //desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 
 
 //        if(gamepad1.dpadDownWasPressed()){ //corner calibration
 //            follower.setPose(new Pose(33, 135, 90));
 //        }
-        turret.rotateToGoal(desiredTurretAngle);
+        //turret.rotateToGoal(desiredTurretAngle);
 
 
 //        velocity = (0.00831624*Math.pow(goalDist, 2)) +
@@ -209,21 +210,30 @@ public class testOp extends OpMode {
         //NEW CONTROLS _______________________________________________________________________________
 
         if(gamepad1.right_trigger > 0.1){
-            intake.runReverse();
+            intake.runFront();
             intakeSide = "front";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
         }
-        else if(gamepad1.left_trigger > .1){
-            intake.run();
+        else if(gamepad1.right_bumper){
+            intake.runFrontReverse();
+        }
+        else{
+            intake.stopFront();
+        }
+        if(gamepad1.left_trigger > .1){
+            intake.runBack();
             intakeSide = "back";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
         }
+        else if(gamepad1.left_bumper){
+            intake.runBackReverse();
+        }
         else{
-            intake.stop();
+            intake.stopBack();
         }
         if(gamepad1.right_stick_button){
             slowMode = !slowMode;
@@ -246,14 +256,15 @@ public class testOp extends OpMode {
         if(intakeSide.equals("front")){
             if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){
                 testDexer.spinToFront(ballCount);
-                testDexer.setSpinState(2);
             }
         }else{
             if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE){ //if we are prepping for shot then dont spin to intake
                 testDexer.spinToBack(ballCount);
-                testDexer.setSpinState(2);
             }
         }
+        if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE && MathFunctions.roughlyEquals(testDexer.difference, 0, 150)){
+            testDexer.setSpinState(2);
+        }//wait until spindexer has moved
 
         //step 2 sort balls
         if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING && testDexer.power < .1){
@@ -305,10 +316,10 @@ public class testOp extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0.1) { //
-            intake.run();
+            intake.runFront();
         }
         else if(gamepad1.left_trigger > 0.1){
-            intake.runReverse();
+            intake.runFrontReverse();
             shooter.setIntakeState();
         }
         else {
@@ -331,7 +342,7 @@ public class testOp extends OpMode {
             powerSetter = 0.75;
         }
         int spinPos = testDexer.updatePos();
-        //testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+        testDexer.setPowerToPosition2(spinPos, runtime.seconds());
         shooter.updateState(targetVel);
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
@@ -348,6 +359,7 @@ public class testOp extends OpMode {
 //        telemetry.addData("shooter target velocity: ", targetVel);
 //        telemetry.addData("shootervel: ", shooter.getVelocity1());
 //        telemetry.addData("shooter state: ", shooter.getLauunchState());
+
         telemetry.addData("spindexer pos", spinPos);
         telemetry.addData("spinstate ", testDexer.getSpinState());
         telemetry.addData("spindexer target ", testDexer.getTargetPos());

@@ -13,20 +13,20 @@ public class turretServo {
 
     double gearRatio = 26/103.0;
 
-    public double posPerDegree = (1 / gearRatio)/360;
-    public double posPerRadian = (1 / gearRatio) /(2 * Math.PI);
+    public double posPerDegree = 1.0/360;
+    public double posPerRadian = 1/(2 * Math.PI);
     double posLimit = 0.6; //manually tune
     public boolean isHomed = true;
     public double turnNeeded;
 
     public void init(HardwareMap hwMap){
-        turret = hwMap.get(Servo.class, "ts");
+        turret = hwMap.get(Servo.class, "turret");
         turret.setDirection(Servo.Direction.REVERSE);
-
+        turret.scaleRange(0, .45);
         turret.setPosition(0);
     }
-    public double calculateTurnBlue(double goalAngle, double robotAngle) {
-        robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
+    public double calculateTurnBlue(double goalAngle, double robotAngle) { //input in rads
+        robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle)); //returns in rads
         turnNeeded = (Math.abs(goalAngle * posPerRadian - robotAngle * posPerRadian));
         if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
             return 0;

@@ -60,7 +60,7 @@ public class spinTuner extends OpMode {
     @Override
     public void init(){
 
-        encoder = hardwareMap.get(DcMotorEx.class, "intake");
+        encoder = hardwareMap.get(DcMotorEx.class, "backIntake");
 
         s1 = hardwareMap.get(CRServo.class, "spin1");
         s2 = hardwareMap.get(CRServo.class, "spin2");

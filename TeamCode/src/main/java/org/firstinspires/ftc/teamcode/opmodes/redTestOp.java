@@ -203,21 +203,21 @@ public class redTestOp extends OpMode {
         //NEW CONTROLS _______________________________________________________________________________
 
         if(gamepad1.right_trigger > 0.1){
-            intake.runReverse();
+            intake.runFrontReverse();
             intakeSide = "front";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
         }
         else if(gamepad1.left_trigger > .1){
-            intake.run();
+            intake.runFront();
             intakeSide = "back";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
         }
         else{
-            intake.stop();
+            intake.stopFront();
         }
         if(gamepad1.right_stick_button){
             slowMode = !slowMode;
@@ -299,14 +299,14 @@ public class redTestOp extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0.1) { //
-            intake.run();
+            intake.runFront();
         }
         else if(gamepad1.left_trigger > 0.1){
-            intake.runReverse();
+            intake.runFrontReverse();
             shooter.setIntakeState();
         }
         else {
-            intake.stop();
+            intake.stopFront();
         }
         if(gamepad2.dpadRightWasPressed()){
             shooter.setFrontOrBack("front");

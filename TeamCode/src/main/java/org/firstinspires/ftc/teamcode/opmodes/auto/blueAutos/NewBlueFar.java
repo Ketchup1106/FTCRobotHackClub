@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous(name = "blue far test", group = "Autonomous")
 public class NewBlueFar extends LinearOpMode {
@@ -68,7 +67,7 @@ public class NewBlueFar extends LinearOpMode {
         intake.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
 
-        buildPaths();   // ← ONLY builds, does NOT run anything
+        buildPaths();   // ← ONLY builds, does NOT runFront anything
         testDexer.currentOrder = "PPG";
         //init sequence - get servios up to speed, reset pos, set up for shot
         runtime.reset();
@@ -218,7 +217,7 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 3:
                     if (!follower.isBusy()) {
-                        intake.runReverse();
+                        intake.runFrontReverse();
                         intakeSide = "front";
                         if(testDexer.getSpinState() == TestDexer.SpinState.IDLE){
                             testDexer.setSpinState(1);
@@ -239,7 +238,7 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 4:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot2);
                         step++;
                     }
@@ -278,7 +277,7 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 7:
                     if (!follower.isBusy()) {
-                        intake.runReverse();
+                        intake.runFrontReverse();
                         intakeSide = "front";
                         testDexer.setSpinState(1);
                         if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
@@ -296,7 +295,7 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 8:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot3);
                         step++;
                     }
@@ -331,7 +330,7 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 11:
                     if (!follower.isBusy()) {
-                        intake.runReverse();
+                        intake.runFrontReverse();
                         intakeSide = "front";
                         testDexer.setSpinState(1);
                         if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
@@ -347,7 +346,7 @@ public class NewBlueFar extends LinearOpMode {
 
                 case 12:
                     if (!follower.isBusy()) {
-                        intake.stop();
+                        intake.stopFront();
                         follower.followPath(shoot4);
                         step++;
                     }

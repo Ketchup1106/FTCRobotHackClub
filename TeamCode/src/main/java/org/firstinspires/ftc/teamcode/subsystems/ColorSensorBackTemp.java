@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class ColorSensorBackTemp {
     NormalizedColorSensor colorSensor2;
@@ -18,28 +20,41 @@ public class ColorSensorBackTemp {
 
     public void init(HardwareMap hwMap){
         colorSensor2 = hwMap.get(NormalizedColorSensor.class, "color2");
-        colorSensor2.setGain(50);
+        colorSensor2.setGain(250);
     }
+
+    float normRed, normGreen, normBlue;
 
     public detectedColor getDetectedColor(){
         NormalizedRGBA colors = colorSensor2.getNormalizedColors();
 
-        float normRed, normGreen, normBlue;
-
-        normRed = colors.red/colors.alpha;
-        normGreen = colors.green/colors.alpha;
-        normBlue = colors.blue/colors.alpha;
+        normRed = colors.red;
+        normGreen = colors.green;
+        normBlue = colors.blue;
 
 
-        if(normRed < 0.3 && normBlue < 0.67  && normBlue > 0.5 && normGreen > 0.7){
+        if(normRed < .2861 && normRed > .1526 && normBlue < .8011  && normBlue > .3586 && normGreen > .4616 && (getDist() < 2)){
             return detectedColor.GREEN;
         }
-        else if(normRed > .3 && normRed < .41 && normBlue > .58 && normBlue < .72 && normGreen > .37 && normGreen < .52){
+        else if(normRed < .4959 && normRed > .2174 && normBlue < .9499 && normBlue > .4005 && normGreen < .6065 && normGreen > .3052 && (getDist() < 2)){
             return detectedColor.PURPLE;
         }
         else{
             return detectedColor.UNKNOWN;
         }
+    }
+
+    public float getRed(){
+        return normRed;
+    }
+    public float getBlue(){
+        return normBlue;
+    }
+    public float getGreen(){
+        return normGreen;
+    }
+    public double getDist(){
+        return ((DistanceSensor)colorSensor2).getDistance(DistanceUnit.INCH);
     }
 
 }

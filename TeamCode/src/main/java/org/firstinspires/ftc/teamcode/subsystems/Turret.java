@@ -18,11 +18,11 @@ public class Turret {
     double subtractionAmount = 0;
     public boolean isHomed = true;
     public int turnNeeded;
-    TouchySensor turretLimitSwitch = new TouchySensor();
+    //TouchySensor turretLimitSwitch = new TouchySensor();
 
     public void init(HardwareMap hwMap){
         turret = hwMap.get(DcMotorEx.class, "tm");
-        turretLimitSwitch.init(hwMap);
+        //turretLimitSwitch.init(hwMap);
         turret.setDirection(DcMotorSimple.Direction.REVERSE);
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setTargetPosition(0);

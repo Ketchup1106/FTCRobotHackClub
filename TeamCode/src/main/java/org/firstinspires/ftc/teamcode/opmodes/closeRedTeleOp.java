@@ -197,7 +197,7 @@ public class closeRedTeleOp extends OpMode {
         //NEW CONTROLS _______________________________________________________________________________
         //step 1 select intake
         if(gamepad1.right_trigger > 0.1){
-            intake.run();
+            intake.runFront();
             testDexer.setSpinState(1);
             intakeSide = "back";
             if(ballCount < 3){
@@ -205,7 +205,7 @@ public class closeRedTeleOp extends OpMode {
             }
         }
         else if(gamepad1.left_trigger > .1){
-            intake.runReverse();
+            intake.runFrontReverse();
             testDexer.setSpinState(1);
             intakeSide = "front";
             if(ballCount < 3){
@@ -213,7 +213,7 @@ public class closeRedTeleOp extends OpMode {
             }
         }
         else{
-            intake.stop();
+            intake.stopFront();
         }
         if(gamepad1.right_stick_button){
             slowMode = !slowMode;
@@ -300,14 +300,14 @@ public class closeRedTeleOp extends OpMode {
         }
 
         if (gamepad1.right_trigger > 0.1) { //
-            intake.run();
+            intake.runFront();
         }
         else if(gamepad1.left_trigger > 0.1){
-            intake.runReverse();
+            intake.runFrontReverse();
             shooter.setIntakeState();
         }
         else {
-            intake.stop();
+            intake.stopFront();
         }
         if(gamepad2.dpadRightWasPressed()){
             shooter.setFrontOrBack("front");

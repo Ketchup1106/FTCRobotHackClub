@@ -108,14 +108,14 @@ public class teleOp extends OpMode {
             shooter.shoot3();
         }
         if (gamepad1.right_trigger > 0.1) { //
-            intake.run();
+            intake.runFront();
         } else {
-            intake.stop();
+            //intake.stop();
         }
         if (gamepad1.left_trigger > 0.1) { //
-            intake.runReverse();
+            intake.runFrontReverse();
         } else {
-            intake.stop();
+            //intake.stop();
         }
         if (gamepad1.leftBumperWasPressed()) {
             slowMode = !slowMode;
