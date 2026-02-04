@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,7 +15,7 @@ public class turretServo {
     double gearRatio = 26/103.0;
 
     public double posPerDegree = 1.0/360;
-    public double posPerRadian = 1/(2 * Math.PI);
+    public double posPerRadian = 1/( Math.PI);
     double posLimit = 0.6; //manually tune
     public boolean isHomed = true;
     public double turnNeeded;
@@ -26,11 +27,9 @@ public class turretServo {
         turret.setPosition(0);
     }
     public double calculateTurnBlue(double goalAngle, double robotAngle) { //input in rads
-        robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle)); //returns in rads
-        turnNeeded = (Math.abs(goalAngle * posPerRadian - robotAngle * posPerRadian));
-        if(robotAngle < (goalAngle - Math.toRadians(10)) || robotAngle > (goalAngle + Math.toRadians(180))){
-            return 0;
-        }
+        robotAngle = fixNegativeHeading((robotAngle)); //returns in rads
+        turnNeeded = ((robotAngle * posPerRadian - goalAngle * posPerRadian));
+
         return turnNeeded;
     }
     public double calculateTurnRed(double goalAngle, double robotAngle) {
@@ -41,7 +40,7 @@ public class turretServo {
         }
         return turnNeeded;
     }
-    public void rotateToGoal(int turn){
+    public void rotateToGoal(double turn){
         turret.setPosition(turn);
     }
 
@@ -70,9 +69,6 @@ public class turretServo {
         turret.setPosition((int)(turret.getPosition() + (-2 * posPerDegree)));
     }
     public double fixNegativeHeading(double angle){
-        if(angle < 0){
-            angle = (180 - Math.abs(angle)) + 180;
-        }
-        return Math.toRadians(angle);
+        return MathFunctions.normalizeAngle(angle);
     }
 }

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
+import org.firstinspires.ftc.teamcode.subsystems.turretServo;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import android.util.Log;
 
@@ -33,7 +34,7 @@ public class testOp extends OpMode {
     Follower follower;
     testShooter shooter = new testShooter();
     TestDexer testDexer = new TestDexer();
-    Turret turret = new Turret();
+    turretServo turret = new turretServo();
 
     //SpinDexer spindexer = new SpinDexer();
     double goalX = 0;
@@ -65,7 +66,7 @@ public class testOp extends OpMode {
     double hoodAngle;
     double velocity;
 
-    int desiredTurretAngle;
+    double desiredTurretAngle;
     String intakeSide = "front";
 
     double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001};
@@ -78,6 +79,9 @@ public class testOp extends OpMode {
     //10 - 0.000001
     //1 - 0.0000001
     //0.1 - 0.00000001
+
+    // 8 clicks to go to lowest
+    //increased by 6 at 8 clicks
 
     //P - 1.4
     //I - 0
@@ -102,11 +106,11 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(8, 8,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(8.95, 8.5965,  Math.toRadians(180)));
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
-        //turret.init(hardwareMap);
+        turret.init(hardwareMap);
         testDexer.init(hardwareMap);
 
 
@@ -133,24 +137,26 @@ public class testOp extends OpMode {
             aprilTimer.reset();
             doesAprilTimerHaveToReset = false;
         }
+        robotHeading = follower.getHeading(); //will always be something plus that starting of 180
+        double poseX = follower.getPose().getX(); //get robot pose
+        double poseY = follower.getPose().getY();
+        turretXOffset = 3.17582677*Math.sin((robotHeading)); //calculate offset of turret
+        turretYOffset = -3.17582677*Math.cos((robotHeading));
+        poseX += turretXOffset; //add that offset to robot
+        poseY += turretYOffset;
+        disX = goalX - poseX; //calculate difference
+        disY = goalY - poseY;
 
 
-        disX = goalX - follower.getPose().getX();
-        disY = goalY - follower.getPose().getY();
-        robotHeading = follower.getHeading(); //will always be something plus that starting of 90
-        turretXOffset = 3.17582677*Math.sin((robotHeading));
-        turretYOffset = 3.17582677*Math.cos((robotHeading));
-        disX += turretXOffset;
-        disY -= turretYOffset;
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
-        goalAngle = Math.abs(Math.atan2(disX, disY)) + Math.toRadians(90); //simple inverse trig with compensation for robot's extra 90 degrees
-        //desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+        goalAngle = (Math.atan2(disY, disX)); //inverse trig
+        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 
 
 //        if(gamepad1.dpadDownWasPressed()){ //corner calibration
 //            follower.setPose(new Pose(33, 135, 90));
 //        }
-        //turret.rotateToGoal(desiredTurretAngle);
+        turret.rotateToGoal(desiredTurretAngle);
 
 
 //        velocity = (0.00831624*Math.pow(goalDist, 2)) +
@@ -343,8 +349,9 @@ public class testOp extends OpMode {
         }
         int spinPos = testDexer.updatePos();
         testDexer.setPowerToPosition2(spinPos, runtime.seconds());
-        shooter.updateState(targetVel);
         targetVel = shooter.setVel(goalDist);
+
+        shooter.updateState(targetVel);
         shooter.setHood(goalDist);
 
 
@@ -353,7 +360,10 @@ public class testOp extends OpMode {
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
         telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
+        telemetry.addData("robot pose: ", follower.getPose());
         telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
+        telemetry.addData("turret pos ", desiredTurretAngle);
+        telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
         telemetry.addData("Difference: ", testDexer.difference);
 //        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
 //        telemetry.addData("shooter target velocity: ", targetVel);

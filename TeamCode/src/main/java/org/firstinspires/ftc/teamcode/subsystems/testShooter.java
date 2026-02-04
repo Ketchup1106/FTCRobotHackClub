@@ -97,7 +97,7 @@ public class testShooter {
                 break;
             case SPIN_UP:
                 spinUp(velocity);
-                if ((Math.abs(shooter1.getVelocity()) > velocity - 21)){ //this will now wait for the motors BEFORE moving to launch
+                if ((Math.abs(shooter1.getVelocity()) > velocity - 21) && Math.abs(shooter1.getVelocity()) < velocity + 21){ //this will now wait for the motors BEFORE moving to launch
                     launchState = LaunchState.LAUNCH;
                     feederTimer.reset();
                 }

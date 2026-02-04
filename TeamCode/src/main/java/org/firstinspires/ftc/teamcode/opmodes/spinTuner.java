@@ -48,13 +48,13 @@ public class spinTuner extends OpMode {
     double shootStartingAtSpot2 = 210* encoderFactor;
     double shootStartingAtSpot3 = -30* encoderFactor;
 
-    double I = 0;
-    double P = 1;
+    double F = .057;
+    double P = .75;
     double D = 0;
 
     ElapsedTime runtime = new ElapsedTime();
 
-    double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
+    double[] stepSizes= {10.0, 1.0, 0.1, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001};;
     int stepIndex = 0;
 
     @Override
@@ -67,6 +67,7 @@ public class spinTuner extends OpMode {
 
         s1.setDirection(CRServo.Direction.FORWARD);
         s2.setDirection(CRServo.Direction.FORWARD);
+        encoder.setDirection(DcMotor.Direction.REVERSE);
 
         telemetry.addLine("Init Complete");
 
@@ -89,10 +90,10 @@ public class spinTuner extends OpMode {
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
         if(gamepad1.dpadLeftWasPressed()){
-            I -= stepSizes[stepIndex];
+            F -= stepSizes[stepIndex];
         }
         if(gamepad1.dpadRightWasPressed()){
-            I += stepSizes[stepIndex];
+            F += stepSizes[stepIndex];
         }
         if(gamepad1.dpadUpWasPressed()){
             P += stepSizes[stepIndex];
@@ -126,7 +127,7 @@ public class spinTuner extends OpMode {
         telemetry.addData("Error ", error1);
 
         telemetry.addData("Tuning P: ", P);
-        telemetry.addData("Tuning I: ", I);
+        telemetry.addData("Tuning F: ", F);
         telemetry.addData("Tuning D: ", D);
         telemetry.addData("Step Size: ", stepSizes[stepIndex]);
         telemetry.addLine("Y: switches target pose\nB: increase step size");
@@ -137,7 +138,7 @@ public class spinTuner extends OpMode {
     }
     public void setPowerToPosition3(double curr, double currentTime){
         double pMult = P;
-        difference = targetPos - Math.abs(curr);
+        difference = targetPos - (curr);
         double fullPowerTicks = 8192/2;
         double pVal = difference/fullPowerTicks;
 
@@ -146,10 +147,14 @@ public class spinTuner extends OpMode {
         double dVal = (currError - pastError)/(currentTime - previousTime);
         double dMult = D; //.00001;
 
-        iError += currError*(currTime-previousTime);
-        double iMult = I; //0/00001
-        double iVal = iError * iMult;
-        double power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + iVal , -1, 1);
+//        iError += currError*(currTime-previousTime);
+//        double iMult = F; //0/00001
+//        double iVal = iError * iMult;
+        double fMult= F*Math.signum(pVal);
+        if(MathFunctions.roughlyEquals(difference, 0, 30)){
+            fMult = 0;
+        }
+        double power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + fMult , -1, 1);
         s1.setPower(power);
         s2.setPower(power);
         previousTime = currTime;
