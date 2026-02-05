@@ -48,9 +48,9 @@ public class spinTuner extends OpMode {
     double shootStartingAtSpot2 = 210* encoderFactor;
     double shootStartingAtSpot3 = -30* encoderFactor;
 
-    double F = .057;
+    double F = .058;
     double P = .75;
-    double D = 0;
+    double D = 0.000015;
 
     ElapsedTime runtime = new ElapsedTime();
 
@@ -153,6 +153,8 @@ public class spinTuner extends OpMode {
         double fMult= F*Math.signum(pVal);
         if(MathFunctions.roughlyEquals(difference, 0, 30)){
             fMult = 0;
+            pMult = 0;
+            dMult = 0;
         }
         double power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + fMult , -1, 1);
         s1.setPower(power);

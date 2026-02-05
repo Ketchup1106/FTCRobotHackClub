@@ -389,7 +389,7 @@ public class TestDexer {
 //        }
     }
     public void setPowerToPosition2(double curr, double currentTime){
-        double pMult = 1.4;
+        double pMult = 0.75;
         difference = targetPos - curr;
         double fullPowerTicks = 8192/2;
         double pVal = difference/fullPowerTicks;
@@ -398,12 +398,15 @@ public class TestDexer {
         currTime = currentTime;
         currError = difference;
         double dVal = (currError - pastError)/(currentTime - previousTime);
-        double dMult = 0.00002593;
+        double dMult = 0.000015;
+
+        double F = .058;
+        double fMult= F*Math.signum(pVal);
 
 //        iError += currError*(currTime-previousTime);
 //        double iMult = 0;
 //        double iVal = iError * iMult;
-        power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult), -1, 1);
+        power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + fMult, -1, 1);
 //        if(shooting){
 //            power /= 1.5;
 //        }
