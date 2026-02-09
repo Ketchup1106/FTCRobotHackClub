@@ -77,6 +77,7 @@ public class spinTuner extends OpMode {
     @Override
     public void loop(){
         double currPos = encoder.getCurrentPosition();
+
         if(gamepad1.yWasPressed()){
             if(targetPos == frontPos){
                 targetPos = frontSecondIntakePos;

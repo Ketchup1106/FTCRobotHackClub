@@ -31,9 +31,9 @@ public class TestDexer {
     public double backPos = -4050;
     public double backSecondIntakePos = -6790;
     public double backThirdIntakePos = -9522;
-    public double shootStartingAtSpot1 = -11759;
-    public double shootStartingAtSpot2 = -14573;
-    public double shootStartingAtSpot3 = -17294;
+    public double shootStartingAtSpot1 = -10069; //subtracted 210
+    public double shootStartingAtSpot2 = -14803;
+    public double shootStartingAtSpot3 = -17524;
     double shootRotator; //will depend on whats being shot first
     public double targetPos = frontPos;
     double currentPos = 0;
@@ -43,20 +43,15 @@ public class TestDexer {
     double pastError = 0;
 
     public boolean shooting;
-    //the gear ratio has to increase for this to work
 
-    //all positions are in degrees divided by 250 (the maximum degrees in one direction given the gear ratio
     String spot1 = "U";
     String spot2 = "U";
     String spot3 = "U";
     int checkingNumber = 1;
     public String currentOrder = "UUU";
     String gamePattern;
-    String side;
-    String intakeSide = "waiting";
     public double power = 1;
-    double iError = 0;
-    ElapsedTime intakeTimer = new ElapsedTime();
+    public double lastTargetPos = frontPos;
     public void init(HardwareMap hwMap){
         s1 = hwMap.get(CRServo.class, "spin1");
         s2 = hwMap.get(CRServo.class, "spin2");
@@ -87,7 +82,8 @@ public class TestDexer {
         MOVE_TO_INTAKE,
         INTAKING,
         PREPARE_FOR_SHOT,
-        SHOOT
+        SHOOT,
+        MANUAL_OVERRIDE
     }
     private SpinState spinState;
     public SpinState getSpinState(){
@@ -96,7 +92,6 @@ public class TestDexer {
 
     public int updatePos(){
         int currentPos = encoder.getCurrentPosition();
-        //currentPos = ((currentPos % 8192) + 8192) % 8192;
         return currentPos;
     }
     /*
@@ -273,6 +268,13 @@ public class TestDexer {
         spot2 = "U";
         spot3 = "U";
     }
+    //optional step: go back to previous pose (ONLY IF MANUAL OVERRIDE)
+    public void goBack(SpinState state, int ballCount, double cuurent){
+        if(state == SpinState.MOVE_TO_INTAKE && ballCount > 0){ //this indicates spinning to next
+            lastTargetPos = targetPos;
+            targetPos = cuurent + 500;
+        }
+    }
 
     //helper methods
     public void assignColorToPosition(){
@@ -359,35 +361,6 @@ public class TestDexer {
     public void setGameOrder(String order){ //will be used in teleop once the camera picks up the apriltags
         gamePattern = order;
     }
-    public void setPowerToPosition(double curr){
-        double ticksPerDegree = 8192/360.0;
-        difference = targetPos - curr*ticksPerDegree;
-        if(difference > 20 * ticksPerDegree){
-            s1.setPower(1);
-            s2.setPower(1);
-        }
-        else if(difference <-20*ticksPerDegree){
-            s1.setPower(-1);
-            s2.setPower(-1);
-        }
-        else if(difference > 3*ticksPerDegree){
-            s1.setPower(.07);
-            s2.setPower(.07);
-        }
-        else if(difference < -3*ticksPerDegree){
-            s1.setPower(-.07);
-            s2.setPower(-.07);
-        }
-        s1.setPower(0);
-        s2.setPower(0);
-//        if(shooting && Math.abs(difference) > 2 * ticksPerDegree){
-//            return 1;
-//        }
-//        //maybe consider if we need to retreat or add an angle wrap
-//        else if(Math.abs(difference) > 2 * ticksPerDegree){
-//            return -1;
-//        }
-    }
     public void setPowerToPosition2(double curr, double currentTime){
         double pMult = 0.75;
         difference = targetPos - curr;
@@ -400,12 +373,15 @@ public class TestDexer {
         double dVal = (currError - pastError)/(currentTime - previousTime);
         double dMult = 0.000015;
 
-        double F = .058;
+        double F = .053; //.048 if no oscillations needed
         double fMult= F*Math.signum(pVal);
 
 //        iError += currError*(currTime-previousTime);
 //        double iMult = 0;
 //        double iVal = iError * iMult;
+        if(MathFunctions.roughlyEquals(difference, 0, 30)){
+            fMult = 0;
+        }
         power = MathFunctions.clamp((pVal*pMult) + (dVal*dMult) + fMult, -1, 1);
 //        if(shooting){
 //            power /= 1.5;
@@ -415,6 +391,7 @@ public class TestDexer {
 //        }else{
 //            power = -Math.abs(power);
 //        }
+
         s1.setPower(power);
         s2.setPower(power);
         previousTime = currTime;
@@ -441,9 +418,14 @@ public class TestDexer {
             spinState = SpinState.PREPARE_FOR_SHOT;
         }else if(desiredState == 4){
             spinState = SpinState.SHOOT;
+        }else if(desiredState == 5){
+            spinState = SpinState.MANUAL_OVERRIDE;
         }else if(desiredState == 0){
             spinState = SpinState.IDLE;
         }
+    }
+    public void goToLastState(SpinState state){
+        spinState = state;
     }
 
     public double getTargetPos(){

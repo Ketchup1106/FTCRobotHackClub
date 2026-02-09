@@ -20,7 +20,7 @@ public class ColorSensorBackTemp {
 
     public void init(HardwareMap hwMap){
         colorSensor2 = hwMap.get(NormalizedColorSensor.class, "color2");
-        colorSensor2.setGain(250);
+        colorSensor2.setGain(200);
     }
 
     float normRed, normGreen, normBlue;

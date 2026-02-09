@@ -7,9 +7,11 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -19,9 +21,11 @@ import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.teamcode.subsystems.turretServo;
-@Disabled
-@Autonomous(name = "blue far test", group = "Autonomous")
-public class NewBlueFar extends LinearOpMode {
+import android.util.Log;
+
+@Autonomous(name = "blue far test", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
+
+public class BlueFar extends OpMode {
 
     Follower follower;
     ElapsedTime spindexerDelayTimer = new ElapsedTime();
@@ -55,10 +59,12 @@ public class NewBlueFar extends LinearOpMode {
     boolean grabbing;
 
     boolean reset = true;
+    int spinPos;
+    ElapsedTime aprilTimer = new ElapsedTime();
 
     @Override
-    public void runOpMode() {
-        int spinPos;
+    public void init() {
+
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(56.95, 8.5965,  Math.toRadians(180)));
@@ -70,50 +76,32 @@ public class NewBlueFar extends LinearOpMode {
 
         buildPaths();   // ← ONLY builds, does NOT runFront anything
         testDexer.currentOrder = "PPG";
-        //init sequence - get servios up to speed, reset pos, set up for shot
         runtime.reset();
-//        while(runtime.seconds() < 3){
-//            testDexer.s1.setPower(-1);
-//            testDexer.s2.setPower(-1);
-//            telemetry.addLine("WAIT");
-//        }
-        spinPos = testDexer.updatePos();
-
-//        while (spinPos < testDexer.getTargetPos() -150){
-//            spinPos = testDexer.updatePos();
-//            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
-//            telemetry.addData("pose", spinPos);
-//        }
-//        while(!(MathFunctions.roughlyEquals(spinPos, 0, 130))){
-//            testDexer.setPowerToPosition2(spinPos, runtime.seconds());
-//        }
-//        while(reset){
-//            if(gamepad1.dpadDownWasPressed()){
-//                follower.setStartingPose(new Pose(56, 8,  Math.toRadians(180)));
-//                reset = false;
-//            }
-//        }
-
         grabbing = false;
-        testDexer.s1.setPower(0);
-        testDexer.s2.setPower(0);
-        testDexer.currentOrder = "PPG";
         telemetry.addLine("Ready for start");
         telemetry.update();
+        testDexer.setUpForShooting("blah");
+        testDexer.encoder.setDirection(DcMotorEx.Direction.REVERSE);
+    }
+    public void init_loop(){
+        testDexer.setPowerToPosition2(testDexer.updatePos(), runtime.seconds());
+        telemetry.addData("Difference: ", testDexer.difference);
+        telemetry.addData("spindexer pos", testDexer.updatePos());
+        telemetry.addData("spinstate ", testDexer.getSpinState());
+        telemetry.addData("spindexer target ", testDexer.getTargetPos());
+        telemetry.addData("power", testDexer.power);
 
-
-        ElapsedTime aprilTimer = new ElapsedTime();
-        waitForStart();
-
-        if (isStopRequested()) return;
-
-        // Start first path
+    }
+    public void start(){
         follower.followPath(preload);
-
+        runtime.reset();
         aprilTimer.reset();
-
         spindexerDelayTimer.reset();
-        while (opModeIsActive()) {
+    }
+
+    public void loop(){
+            Log.v("Spin State", testDexer.getSpinState().toString());
+            follower.update();
             robotHeading = follower.getHeading(); //will always be something plus that starting of 180
             double poseX = follower.getPose().getX(); //get robot pose
             double poseY = follower.getPose().getY();
@@ -130,18 +118,19 @@ public class NewBlueFar extends LinearOpMode {
             turret.rotateToGoal(desiredTurretAngle);
             targetVel = shooter.setVel(goalDist);
             spinPos = testDexer.updatePos();
-            follower.update();
+            shooter.setHood(goalDist);
+
             switch (testDexer.getSpinState()){
                 case IDLE:
                     break;
                 case MOVE_TO_INTAKE:
                     if(intakeSide.equals("front")){
                         testDexer.spinToFront(ballCount);
-                        testDexer.setSpinState(2);
                     }else{
                         testDexer.spinToBack(ballCount);
+                    }
+                    if(MathFunctions.roughlyEquals(testDexer.difference, 0, 80)){
                         testDexer.setSpinState(2);
-
                     }
                     break;
                 case INTAKING:
@@ -182,8 +171,7 @@ public class NewBlueFar extends LinearOpMode {
                 /// Step 1: shoot preload and rotate turret to goal
                 ///////////////////////////////////////////////////////////////////
                 case 0:
-
-                    //condition that waits for shooter to turn on
+                    //condition that waits for shooter to turn on from para callback
                     if(follower.isBusy()){
                         break;
                     }
@@ -218,20 +206,7 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 3:
                     if (!follower.isBusy()) {
-//                        follower.setMaxPower(0.5);
-//                        intake.runFrontReverse();
-//                        intakeSide = "front";
-//                        if(testDexer.getSpinState() == TestDexer.SpinState.IDLE){
-//                            testDexer.setSpinState(1);
-//                        }
-//
-//                        if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 30)){
-//                            testDexer.setSpinState(2);
-//                        }
-//                        else{
-//                            break;
-//                        }
-                        follower.setMaxPower(0.3);
+                        follower.setMaxPower(0.25);
                         follower.followPath(grab2);
                         step++;
                     }
@@ -241,25 +216,19 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 4:
 
-                    intake.runFrontReverse();
+                    intake.runFront();
                     intakeSide = "front";
                     if(testDexer.getSpinState() == TestDexer.SpinState.IDLE){
                         testDexer.setSpinState(1);
                     }
-
-                    if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 30)){
-                        testDexer.setSpinState(2);
-                    }
-                    else{
-                        break;
-                    }
                     if (!follower.isBusy()) {
                         intake.stopFront();
+                        follower.setMaxPower(1);
                         follower.followPath(shoot2);
                         step++;
                     }
                     break;
-                    //add a step for shoot3
+                //add a step for shoot3
                 ///////////////////////////////////////////////////////////////////
                 /// Step 6: wait for shot to finish
                 ///////////////////////////////////////////////////////////////////
@@ -290,15 +259,10 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 case 7:
                     if (!follower.isBusy()) {
-                        intake.runFrontReverse();
+                        intake.runFront();
                         intakeSide = "front";
                         testDexer.setSpinState(1);
-                        if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 30)){
-                            testDexer.setSpinState(2);
-                        }
-                        else{
-                            break;
-                        }
+                        follower.setMaxPower(0.25);
                         follower.followPath(grab3);
                         step++;
                     }
@@ -309,6 +273,7 @@ public class NewBlueFar extends LinearOpMode {
                 case 8:
                     if (!follower.isBusy()) {
                         intake.stopFront();
+                        follower.setMaxPower(1);
                         follower.followPath(shoot3);
                         step++;
                     }
@@ -317,8 +282,13 @@ public class NewBlueFar extends LinearOpMode {
                 /// Step 10: wait for shot
                 ///////////////////////////////////////////////////////////////////
                 case 9:
+                    if(follower.isBusy()){
+                        break;
+                    }
+                    step++;
+                    break;
+                case 10:
                     if(shooter.isActive){
-
                         shooter.updateState(targetVel);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
                             testDexer.setSpinState(4);
@@ -331,7 +301,7 @@ public class NewBlueFar extends LinearOpMode {
                 ///////////////////////////////////////////////////////////////////
                 /// Step 11: either get last set or stop here if we want
                 ///////////////////////////////////////////////////////////////////
-                case 10:
+                case 11:
                     if (!follower.isBusy()) {
 
                         follower.followPath(set4);
@@ -339,33 +309,34 @@ public class NewBlueFar extends LinearOpMode {
                     }
                     break;
 
-                case 11:
+                case 12:
                     if (!follower.isBusy()) {
                         intake.runFrontReverse();
                         intakeSide = "front";
                         testDexer.setSpinState(1);
-                        if(MathFunctions.roughlyEquals(spinPos, testDexer.getTargetPos(), 130)){
-                            testDexer.setSpinState(2);
-                        }
-                        else{
-                            break;
-                        }
+                        follower.setMaxPower(.25);
                         follower.followPath(grab4);
                         step++;
                     }
                     break;
 
-                case 12:
+                case 13:
                     if (!follower.isBusy()) {
                         intake.stopFront();
+                        follower.setMaxPower(1);
                         follower.followPath(shoot4);
                         step++;
                     }
                     break;
+                case 14:
+                    if(follower.isBusy()){
+                        break;
+                    }
+                    step++;
+                    break;
 
-                case 13:
+                case 15:
                     if(shooter.isActive){
-
                         shooter.updateState(targetVel);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
                             testDexer.setSpinState(4);
@@ -376,14 +347,14 @@ public class NewBlueFar extends LinearOpMode {
                     step++;
                     break;
 
-                case 14:
+                case 16:
                     follower.followPath(park);
                     step++;
                     break;
 
-                case 15: //May have to add Parametric Call back if not enough time to reach this
+                case 17: //May have to add Parametric Call back if not enough time to reach this
                     if(!follower.isBusy()) {
-
+                        terminateOpModeNow();
                     }
                     break;
             }
@@ -424,9 +395,7 @@ public class NewBlueFar extends LinearOpMode {
 //        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
 
             telemetry.update();
-        }
     }
-
     // ---------------------------------------------------------------------
     // PATH GENERATION
     // ---------------------------------------------------------------------
@@ -436,12 +405,12 @@ public class NewBlueFar extends LinearOpMode {
 //        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
         final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
-        final Pose grabPose1 = new Pose(40, 56, Math.toRadians(180));
-        final Pose grabbed1 = new Pose(23, 56, Math.toRadians(180));
+        final Pose grabPose1 = new Pose(48, 56, Math.toRadians(180));
+        final Pose grabbed1 = new Pose(20, 56, Math.toRadians(180));
         final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
         final Pose ramp = new Pose(15, 70, Math.toRadians(180));
-        final Pose grabPose2 = new Pose(40, 32, Math.toRadians(180));
-        final Pose grabbed2 = new Pose(23, 32, Math.toRadians(180));
+        final Pose grabPose2 = new Pose(48, 32, Math.toRadians(180));
+        final Pose grabbed2 = new Pose(20, 32, Math.toRadians(180));
         final Pose grabPose3 = new Pose(32, 16, Math.toRadians(180));
         final Pose grabbed3 = new Pose(10, 16, Math.toRadians(180));
         final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));

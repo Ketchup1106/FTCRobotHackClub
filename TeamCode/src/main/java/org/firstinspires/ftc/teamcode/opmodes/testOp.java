@@ -65,6 +65,7 @@ public class testOp extends OpMode {
     public double robotHeading;
     double hoodAngle;
     double velocity;
+    boolean locked = false;
 
     double desiredTurretAngle;
     String intakeSide = "front";
@@ -97,6 +98,8 @@ public class testOp extends OpMode {
     boolean doesAprilTimerHaveToReset = true;
     boolean homing = false;
     boolean launched = false;
+    boolean wentBack = false;
+    TestDexer.SpinState lastSpinState;
 
 
     @Override
@@ -156,7 +159,7 @@ public class testOp extends OpMode {
 //        if(gamepad1.dpadDownWasPressed()){ //corner calibration
 //            follower.setPose(new Pose(33, 135, 90));
 //        }
-        turret.rotateToGoal(desiredTurretAngle);
+
 
 
 //        velocity = (0.00831624*Math.pow(goalDist, 2)) +
@@ -229,14 +232,14 @@ public class testOp extends OpMode {
             intake.stopFront();
         }
         if(gamepad1.left_trigger > .1){
-            intake.runBack();
+            intake.runBackReverse();
             intakeSide = "back";
             if(ballCount < 3){
                 testDexer.setSpinState(1);
             }
         }
         else if(gamepad1.left_bumper){
-            intake.runBackReverse();
+            intake.runBack();
         }
         else{
             intake.stopBack();
@@ -268,16 +271,21 @@ public class testOp extends OpMode {
                 testDexer.spinToBack(ballCount);
             }
         }
-        if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE && MathFunctions.roughlyEquals(testDexer.difference, 0, 150)){
+        if(testDexer.getSpinState() == TestDexer.SpinState.MOVE_TO_INTAKE && MathFunctions.roughlyEquals(testDexer.difference, 0, 50)){
             testDexer.setSpinState(2);
         }//wait until spindexer has moved
 
         //step 2 sort balls
-        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING && testDexer.power < .1){
+        if(testDexer.getSpinState() == TestDexer.SpinState.INTAKING){
             //if intaking and not full, check for color. if color, move to next slot. repeat until full.
             if(ballCount < 3){
                 testDexer.checkForBalls();
                 if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && spindexerDelayTimer.seconds() > .5) { //wait until color
+                    ballCount++;
+                    testDexer.spinToNext(intakeSide);
+                    spindexerDelayTimer.reset();
+                }
+                if(gamepad2.dpadRightWasPressed()){ //manual in case of failure in sensor
                     ballCount++;
                     testDexer.spinToNext(intakeSide);
                     spindexerDelayTimer.reset();
@@ -287,6 +295,7 @@ public class testOp extends OpMode {
                 testDexer.setSpinState(3);
             }
         }
+
         //step 3 set up for shot
         if(testDexer.getSpinState() == TestDexer.SpinState.PREPARE_FOR_SHOT){
             testDexer.setUpForShooting(order);
@@ -305,6 +314,21 @@ public class testOp extends OpMode {
             ballCount = 0;
             launched = false;
         }
+        if(gamepad2.dpadLeftWasPressed() && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
+            lastSpinState = testDexer.getSpinState();
+            testDexer.setSpinState(5);
+        }
+        if(testDexer.getSpinState() == TestDexer.SpinState.MANUAL_OVERRIDE){ //cant let this run more than once
+            if(!wentBack) {
+                testDexer.goBack(testDexer.getSpinState(), ballCount, testDexer.updatePos());
+                wentBack = true;
+            }
+        }
+        if(gamepad2.dpadUpWasPressed() && testDexer.getSpinState() == TestDexer.SpinState.MANUAL_OVERRIDE){ //exit manual override
+            wentBack = false;
+            testDexer.goToLastState(lastSpinState);
+        }
+
         //        if(gamepad2.right_stick_x > 0){ not necessary due to auto tracking
 //            turret.rotate(gamepad2.right_stick_x);
 //        }
@@ -347,12 +371,29 @@ public class testOp extends OpMode {
         else{
             powerSetter = 0.75;
         }
+        if(gamepad2.dpadDownWasPressed()){ //corner calib
+            EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION();
+        }
+
         int spinPos = testDexer.updatePos();
         testDexer.setPowerToPosition2(spinPos, runtime.seconds());
+//        if(!locked){
         targetVel = shooter.setVel(goalDist);
-
         shooter.updateState(targetVel);
         shooter.setHood(goalDist);
+        turret.rotateToGoal(desiredTurretAngle);
+//        }
+//        else{ //shoot from close
+//            targetVel = 1200;
+//            shooter.setHood(.5);
+//            turret.rotateToGoal(0);
+//        }
+//        if(gamepad2.aWasPressed()){ //Should not have to do this if you home
+//            lockShooter();
+//        }
+
+
+
 
 
 
@@ -365,6 +406,7 @@ public class testOp extends OpMode {
         telemetry.addData("turret pos ", desiredTurretAngle);
         telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
         telemetry.addData("Difference: ", testDexer.difference);
+        telemetry.addData("power", testDexer.power);
 //        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
 //        telemetry.addData("shooter target velocity: ", targetVel);
 //        telemetry.addData("shootervel: ", shooter.getVelocity1());
@@ -397,6 +439,12 @@ public class testOp extends OpMode {
 //        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
 
         telemetry.update();
-    }//
+    }
+    public void EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION(){
+        follower.setPose(new Pose(8.95, 8.5965,  Math.toRadians(180))); //change later
+    }
+    public void lockShooter(){ //should never have to be used
+        locked = !locked;
+    }
 
 }
