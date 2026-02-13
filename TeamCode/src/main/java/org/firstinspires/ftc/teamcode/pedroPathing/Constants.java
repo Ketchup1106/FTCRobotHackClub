@@ -20,13 +20,13 @@ public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(robotMass)
-            .forwardZeroPowerAcceleration(-48.00159491442884)
+            .forwardZeroPowerAcceleration(-39.40384573134978)
             //-39.518659987366554
-            .lateralZeroPowerAcceleration(-87.1897718646598)
-            .translationalPIDFCoefficients(new PIDFCoefficients(.125, 0, .009, .069))
-            .headingPIDFCoefficients(new PIDFCoefficients(.75, 0, .001, .05))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.1, 0, .004, .00001, 0))
-            .centripetalScaling(.0005);
+            .lateralZeroPowerAcceleration(-77.82867265634674)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.018, 0.026))
+            .headingPIDFCoefficients(new PIDFCoefficients(1.1, 0, 0.021, 0.027))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.01, 0, 0, .00001, 0))
+            .centripetalScaling(0.0005);
 
     //-72.120129850281270
     //p .75 d .029
@@ -51,7 +51,7 @@ public class Constants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .xVelocity(75.04637758750616)
-            .yVelocity(60.86815252829725);
+            .yVelocity(61.03938353531004);
 
 
 

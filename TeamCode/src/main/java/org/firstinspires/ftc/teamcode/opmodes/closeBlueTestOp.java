@@ -327,7 +327,7 @@ public class closeBlueTestOp extends OpMode {
         }
         int spinPos = testDexer.updatePos();
         testDexer.setPowerToPosition2(spinPos, runtime.seconds());
-        shooter.updateState(targetVel);
+        shooter.updateState(targetVel, spinPos, testDexer.targetPos);
         targetVel = shooter.setVel(goalDist);
         shooter.setHood(goalDist);
 

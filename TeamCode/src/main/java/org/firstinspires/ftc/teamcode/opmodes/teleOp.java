@@ -137,7 +137,7 @@ public class teleOp extends OpMode {
 
 
         if (shooter.isActive) {
-            shooter.updateState(targetVel);
+            //shooter.updateState(targetVel, tes, spindexer.targetPos);
         }
 
 //        if(spindexer.frontTouchyActive()){

@@ -38,25 +38,25 @@ public class testShooter {
         
         //transferServo = hwMap.get(Servo.class, "transferServo");
         hoodAngle = hwMap.get(Servo.class, "hoodAngle");
-        shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooter1.setDirection(DcMotorEx.Direction.REVERSE);
+        shooter2.setDirection(DcMotorEx.Direction.FORWARD);
         
         //transferServo.setDirection(Servo.Direction.FORWARD);
 
-        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         this.telemetry = telemetry;
-        shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        shooter2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooter1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        shooter2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         hoodAngle.setDirection(Servo.Direction.REVERSE);
 
 
 
-        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+        shooter1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
                 180, 0, 0, 17.7
         )); // 2.75 10
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+        shooter2.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
                 180    , 0, 0, 17.7
         )); //2.75 10
 
@@ -85,14 +85,14 @@ public class testShooter {
     }
     private LaunchState launchState;
 
-    public void updateState(double velocity){
+    public void updateState(double velocity, double spinPos, double targetPos){
 
         switch(launchState){
 
             case IDLE:
+                spinUp(1300);
                 if(isActive) {
                     isActive = false;
-                    stopAll();
                 }
                 break;
             case SPIN_UP:
@@ -104,12 +104,11 @@ public class testShooter {
                 break;
             case LAUNCH:
                 //transferServo.setPosition(lowPos);
-                if(feederTimer.seconds()>2.5) {
+                if(MathFunctions.roughlyEquals(spinPos, targetPos, 100)) {
                     launchState = LaunchState.RECOVER;
                 }
                 break;
             case RECOVER:
-                stopAll();
                 launchState = LaunchState.IDLE;
                 break;
         }

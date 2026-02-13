@@ -60,7 +60,7 @@ public class ArcadeDrive {
         frontRightPower /= max;
         backLeftPower /= max;
         backRightPower /= max;
-        powerMult = .4;
+
         frontLeftDrive.setPower(powerMult *frontLeftPower);
         frontRightDrive.setPower(powerMult *frontRightPower);
         backLeftDrive.setPower(powerMult *backLeftPower);

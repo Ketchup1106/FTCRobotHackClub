@@ -32,11 +32,13 @@ public class ColorSensorBackTemp {
         normGreen = colors.green;
         normBlue = colors.blue;
 
-
-        if(normRed < .2861 && normRed > .1526 && normBlue < .8011  && normBlue > .3586 && normGreen > .4616 && (getDist() < 2)){
-            return detectedColor.GREEN;
-        }
-        else if(normRed < .4959 && normRed > .2174 && normBlue < .9499 && normBlue > .4005 && normGreen < .6065 && normGreen > .3052 && (getDist() < 2)){
+        if(getDist() < 1.8){
+            if(normRed < .2861 && normRed > .1526 && normBlue < .8011  && normBlue > .3586 && normGreen > .4616){
+                return detectedColor.GREEN;
+            }
+//            else if(normRed < .4959 && normRed > .2174 && normBlue < .9499 && normBlue > .4005 && normGreen < .6065 && normGreen > .3052){
+//                return detectedColor.PURPLE;
+//            }
             return detectedColor.PURPLE;
         }
         else{

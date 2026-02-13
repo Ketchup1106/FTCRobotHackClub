@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import android.util.Log;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -269,11 +267,10 @@ public class TestDexer {
         spot3 = "U";
     }
     //optional step: go back to previous pose (ONLY IF MANUAL OVERRIDE)
-    public void goBack(SpinState state, int ballCount, double cuurent){
-        if(state == SpinState.MOVE_TO_INTAKE && ballCount > 0){ //this indicates spinning to next
-            lastTargetPos = targetPos;
-            targetPos = cuurent + 500;
-        }
+    public void goBack(double cuurent){
+        lastTargetPos = targetPos;
+        targetPos = cuurent + 500;
+
     }
 
     //helper methods

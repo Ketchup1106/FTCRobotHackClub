@@ -39,18 +39,21 @@ public class ColorSensorFrontTemp {
             if(normRed < .2022 && normRed > .1355 && normBlue < .6256 && normBlue > .3815 && normGreen < .7439 && normGreen > .4807){
                 return detectedColor.GREEN;
             }
-            else if(normRed < .3777 && normRed > .2174 && normBlue < .9384 && normBlue > .5188 && normGreen < .5188 && normGreen > .3281){
-                return detectedColor.PURPLE;
-            }
+//            else if(normRed < .3777 && normRed > .2174 && normBlue < .9384 && normBlue > .5188 && normGreen < .5188 && normGreen > .3281){
+//                return detectedColor.PURPLE;
+//            }
+            return detectedColor.PURPLE;
         }
         else if(getDist() > 1.6 && getDist() < 2.5){ //further balls
             if(normRed < .1355 && normRed > .0916 && normBlue < .2747 && normBlue > .1755 && normGreen < .4349 && normGreen > .2213){
                 return detectedColor.GREEN;
             }
-            else if(normRed < .2365 && normRed > .1259 && normBlue < .5417 && normBlue > .2747 && normGreen < .3433 && normGreen > .2022){
-                return detectedColor.PURPLE;
-            }
-        }return detectedColor.UNKNOWN;
+//            else if(normRed < .2365 && normRed > .1259 && normBlue < .5417 && normBlue > .2747 && normGreen < .3433 && normGreen > .2022){
+//                return detectedColor.PURPLE;
+//            }
+            return detectedColor.PURPLE;
+        }
+        return detectedColor.UNKNOWN;
     }
     public float getRed(){
         return normRed;
