@@ -148,6 +148,14 @@ public class testOp extends OpMode {
         turretYOffset = -3.17582677*Math.cos((robotHeading));
         poseX += turretXOffset; //add that offset to robot
         poseY += turretYOffset;
+        if((Math.atan2(144 - follower.getPose().getY(), 0 - follower.getPose().getX())) > Math.toRadians(135)){
+            goalX = 0;
+            goalY = 135.5;
+        }
+        else{
+            goalX = 8.5;
+            goalY = 144;
+        }
         disX = goalX - poseX; //calculate difference
         disY = goalY - poseY;
 
