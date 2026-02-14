@@ -45,8 +45,8 @@ public class BlueFar extends OpMode {
 
     int step = 0;
     double targetVel = 0;
-    double goalX = 0;
-    double goalY = 144;
+    double goalX = 6;
+    double goalY = 138;
     double goalDist;
     double goalAngle;
     String order = "null";
@@ -126,7 +126,7 @@ public class BlueFar extends OpMode {
         RobotConstants.order = order;
         runtime.reset();
         spindexerDelayTimer.reset();
-
+        RobotConstants.side = "blue";
     }
 
     public void loop(){
@@ -245,7 +245,12 @@ public class BlueFar extends OpMode {
                     }
                     break;
                 case 5:
-                    if(!follower.isBusy() && spindexerDelayTimer.seconds() > 1){
+//                    if(!follower.isBusy() && spindexerDelayTimer.seconds() > 1){
+//                        follower.followPath(jerk2Two);
+//                        step++;
+//                        spindexerDelayTimer.reset();
+//                    }
+                    if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
                         follower.followPath(jerk2Two);
                         step++;
                         spindexerDelayTimer.reset();
@@ -255,7 +260,11 @@ public class BlueFar extends OpMode {
                 /// Step 4: intake set
                 ///////////////////////////////////////////////////////////////////
                 case 6:
-                    if (!follower.isBusy() && spindexerDelayTimer.seconds() > 1) {
+//                    if (!follower.isBusy() && spindexerDelayTimer.seconds() > 1) {
+//                        follower.followPath(grab2);
+//                        step++;
+//                    }
+                    if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
                         follower.followPath(grab2);
                         step++;
                     }
@@ -317,7 +326,7 @@ public class BlueFar extends OpMode {
                 /// Step 8: intake
                 ///////////////////////////////////////////////////////////////////
                 case 12:
-                    if(!follower.isBusy()){
+                    if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
                         follower.followPath(jerk3Two);
                         step++;
                     }
@@ -326,7 +335,7 @@ public class BlueFar extends OpMode {
                 /// Step 9: go back to shoot
                 ///////////////////////////////////////////////////////////////////
                 case 13:
-                    if (!follower.isBusy()) {
+                    if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
                         follower.followPath(grab3);
                         step++;
                     }
@@ -419,6 +428,7 @@ public class BlueFar extends OpMode {
                     }
                     break;
             }
+            RobotConstants.autoEnd = follower.getPose();
 
             // Debug Info
             telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());

@@ -103,7 +103,7 @@ public class testOp extends OpMode {
     @Override
     public void init(){
         if(RobotConstants.side.equals("red")){
-            goalX = 144;
+            goalX = 138;
         }
         drive.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -187,7 +187,7 @@ public class testOp extends OpMode {
         }
         telemetry.addData("Order: ", order);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x , powerSetter);
+        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x * .5, powerSetter);
 
         Log.d("Drive Motor Power", "FrontLeftMotor: " + drive.getFrontLeftDrive());
         Log.d("Drive Motor Power", "FrontRightMotor: " + drive.getFrontRightDrive());
@@ -230,7 +230,7 @@ public class testOp extends OpMode {
             shooter.shoot3();
             testDexer.setSpinState(4);
         }
-        if(gamepad2.dpadLeftWasPressed()){
+        if(gamepad2.xWasPressed()){
             if(!wentBack){
                 lastSpinState = testDexer.getSpinState();
                 testDexer.lastTargetPos = testDexer.targetPos;
@@ -258,7 +258,7 @@ public class testOp extends OpMode {
                         testDexer.spinToNext(intakeSide);
                         spindexerDelayTimer.reset();
                     }
-                    if (gamepad2.dpadRightWasPressed()) { //manual in case of failure in sensor
+                    if (gamepad2.bWasPressed()) { //manual in case of failure in sensor
                         ballCount++;
                         testDexer.spinToNext(intakeSide);
                         spindexerDelayTimer.reset();
@@ -288,7 +288,7 @@ public class testOp extends OpMode {
                     testDexer.goBack(testDexer.updatePos());
                     wentBack = true;
                 }
-                if(gamepad2.dpadUpWasPressed()){ //exit manual override, go back to pose
+                if(gamepad2.rightBumperWasPressed()){ //exit manual override, go back to pose
                     wentBack = false;
                     testDexer.targetPos = testDexer.lastTargetPos;
                     testDexer.goToLastState(lastSpinState);

@@ -44,14 +44,14 @@ public class randomShooter extends OpMode {
     @Override
     public void init(){
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(32, 135,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(32.8, 135.4035,  Math.toRadians(180)));
         follower.update();
 
         shooter1 = hardwareMap.get(DcMotorEx.class, "sm1");
         shooter2 = hardwareMap.get(DcMotorEx.class, "sm2");
 
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
 
         shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
