@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -69,6 +68,8 @@ public class testOp extends OpMode {
 
     double desiredTurretAngle;
     String intakeSide = "front";
+
+    boolean manualSpin = false; //this is not manual override
 
     //double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001};
     //10000000 - 10
@@ -148,14 +149,14 @@ public class testOp extends OpMode {
         turretYOffset = -3.17582677*Math.cos((robotHeading));
         poseX += turretXOffset; //add that offset to robot
         poseY += turretYOffset;
-        if((Math.atan2(144 - follower.getPose().getY(), 0 - follower.getPose().getX())) > Math.toRadians(135)){
-            goalX = 0;
-            goalY = 135.5;
-        }
-        else{
-            goalX = 8.5;
-            goalY = 144;
-        }
+//        if((Math.atan2(144 - follower.getPose().getY(), 0 - follower.getPose().getX())) > Math.toRadians(135)){
+//            goalX = 0;
+//            goalY = 135.5;
+//        }
+//        else{
+//            goalX = 8.5;
+//            goalY = 144;
+//        }
         disX = goalX - poseX; //calculate difference
         disY = goalY - poseY;
 
@@ -208,7 +209,7 @@ public class testOp extends OpMode {
         if(gamepad1.right_trigger > 0.1){
             intake.runFront();
             intakeSide = "front";
-            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
+            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK){
                 testDexer.setSpinState(1);
             }
         }
@@ -221,7 +222,7 @@ public class testOp extends OpMode {
         if(gamepad1.left_trigger > .1){
             intake.runBackReverse();
             intakeSide = "back";
-            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
+            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK){
                 testDexer.setSpinState(1);
             }
         }
@@ -237,14 +238,19 @@ public class testOp extends OpMode {
         if(gamepad2.yWasPressed()){
             shooter.shoot3();
             testDexer.setSpinState(4);
+            wentBack = false;
+            manualSpin = false;
         }
-        if(gamepad2.xWasPressed()){
+        if(gamepad2.leftBumperWasPressed()){
             if(!wentBack){
                 lastSpinState = testDexer.getSpinState();
                 testDexer.lastTargetPos = testDexer.targetPos;
+                testDexer.setSpinState(5);
             }
+        }
+        if(gamepad2.rightBumperWasPressed() && !manualSpin){
             testDexer.setSpinState(5);
-
+            manualSpin = true;
         }
         switch (testDexer.getSpinState()){
             case MOVE_TO_INTAKE:
@@ -291,18 +297,42 @@ public class testOp extends OpMode {
                     launched = false;
                 }
                 break;
-            case MANUAL_OVERRIDE:
+            case GO_BACK:
                 if(!wentBack) {
                     testDexer.goBack(testDexer.updatePos());
                     wentBack = true;
                 }
-                if(gamepad2.rightBumperWasPressed()){ //exit manual override, go back to pose
+                if(gamepad2.leftBumperWasPressed()){ //exit manual override, go back to pose
                     wentBack = false;
                     testDexer.targetPos = testDexer.lastTargetPos;
                     testDexer.goToLastState(lastSpinState);
                 }
                 break;
-
+            case MANUAL_OVERRIDE:
+                if(gamepad2.aWasPressed()){
+                    if(intakeSide.equals("front")){
+                        testDexer.targetPos = testDexer.frontPos;
+                    }
+                    if(intakeSide.equals("back")){
+                        testDexer.targetPos = testDexer.backPos;
+                    }
+                }
+                else if(gamepad2.xWasPressed()){
+                    if(intakeSide.equals("front")){
+                        testDexer.targetPos = testDexer.frontSecondIntakePos;
+                    }
+                    if(intakeSide.equals("back")){
+                        testDexer.targetPos = testDexer.backSecondIntakePos;
+                    }
+                }
+                else if(gamepad2.bWasPressed()){
+                    if(intakeSide.equals("front")){
+                        testDexer.targetPos = testDexer.frontThirdIntakePos;
+                    }
+                    if(intakeSide.equals("back")){
+                        testDexer.targetPos = testDexer.backThirdIntakePos;
+                    }
+                }
         }
 
         if(slowMode){

@@ -81,6 +81,7 @@ public class TestDexer {
         INTAKING,
         PREPARE_FOR_SHOT,
         SHOOT,
+        GO_BACK,
         MANUAL_OVERRIDE
     }
     private SpinState spinState;
@@ -416,6 +417,8 @@ public class TestDexer {
         }else if(desiredState == 4){
             spinState = SpinState.SHOOT;
         }else if(desiredState == 5){
+            spinState = SpinState.GO_BACK;
+        }else if(desiredState == 6){
             spinState = SpinState.MANUAL_OVERRIDE;
         }else if(desiredState == 0){
             spinState = SpinState.IDLE;
