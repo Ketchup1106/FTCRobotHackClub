@@ -165,19 +165,17 @@ public class testShooter {
 
     public double setVel(double distance){
         return MathFunctions.clamp(
-                (0.00320771*Math.pow(distance, 2)) +
-                        (5.16681*distance) +
-                        (833.26389)
-                ,0, 1800);
+                (6.25175*distance)+726.08392
+                ,0, 2000);
     }
     public void setHood(double distance){
         hoodAngle.setPosition(
                 MathFunctions.clamp(
-                (-(5.97813*(1/(Math.pow(10, 8)))) * Math.pow(distance, 4)) +
-                (0.0000204064* Math.pow(distance, 3)) -
-                (0.00250008*Math.pow(distance, 2)) +
-                (0.141251*distance) -
-                (2.8031),
+                ((3.32168*(1/(Math.pow(10, 8)))) * Math.pow(distance, 4)) -
+                (0.0000116822* Math.pow(distance, 3)) +
+                (0.00132861*Math.pow(distance, 2)) -
+                (0.0435148*distance) +
+                (0.350932),
                 0, 1));
     }
 }
