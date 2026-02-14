@@ -233,7 +233,7 @@ public class BlueFar extends OpMode {
                     if (!follower.isBusy()) {
                         intake.runFront();
                         intakeSide = "front";
-                        testDexer.setSpinState(1);
+//                        testDexer.setSpinState(1);
                         step++;
                     }
                     break;
@@ -250,8 +250,12 @@ public class BlueFar extends OpMode {
 //                        step++;
 //                        spindexerDelayTimer.reset();
 //                    }
+                    if(!follower.isBusy() && testDexer.getTargetPos() == testDexer.frontPos){
+                        testDexer.setTargetPos(testDexer.frontSecondIntakePos);
+                    }
                     if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
                         follower.followPath(jerk2Two);
+                        intake.runFront();
                         step++;
                         spindexerDelayTimer.reset();
                     }
@@ -264,8 +268,12 @@ public class BlueFar extends OpMode {
 //                        follower.followPath(grab2);
 //                        step++;
 //                    }
+                    if(!follower.isBusy() && testDexer.getTargetPos() == testDexer.frontSecondIntakePos){
+                        testDexer.setTargetPos(testDexer.frontThirdIntakePos);
+                    }
                     if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
                         follower.followPath(grab2);
+                        intake.runFront();
                         step++;
                     }
                     break;
@@ -477,14 +485,14 @@ public class BlueFar extends OpMode {
         final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
         final Pose grabPose1 = new Pose(48, 58, Math.toRadians(180));
-        final Pose grabPose1One = new Pose(39, 58, Math.toRadians(180));
-        final Pose grabPose1Two = new Pose(30, 58, Math.toRadians(180));
+        final Pose grabPose1One = new Pose(40, 58, Math.toRadians(180));
+        final Pose grabPose1Two = new Pose(31, 58, Math.toRadians(180));
         final Pose grabbed1 = new Pose(20, 58, Math.toRadians(180));
         final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
         final Pose ramp = new Pose(15, 70, Math.toRadians(180));
         final Pose grabPose2 = new Pose(48, 34, Math.toRadians(180));
-        final Pose grabPose2One = new Pose(39, 34, Math.toRadians(180));
-        final Pose grabPose2Two = new Pose(30, 34, Math.toRadians(180));
+        final Pose grabPose2One = new Pose(40, 34, Math.toRadians(180));
+        final Pose grabPose2Two = new Pose(31, 34, Math.toRadians(180));
         final Pose grabbed2 = new Pose(20, 34, Math.toRadians(180));
         final Pose grabPose3 = new Pose(32, 16, Math.toRadians(180));
         final Pose grabbed3 = new Pose(10, 16, Math.toRadians(180));
