@@ -168,7 +168,7 @@ public class TestDexer {
             else if(targetPos == frontSecondIntakePos){
                 targetPos = frontThirdIntakePos;
             }
-            else if(targetPos == frontThirdIntakePos){
+            else if(targetPos == frontThirdIntakePos || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3){
                 targetPos = frontPos;
             }
         }
@@ -179,7 +179,7 @@ public class TestDexer {
             else if(targetPos == backSecondIntakePos){
                 targetPos = backThirdIntakePos;
             }
-            else if(targetPos == backThirdIntakePos){
+            else if(targetPos == backThirdIntakePos || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3){
                 targetPos = backPos;
             }
         }
@@ -420,7 +420,7 @@ public class TestDexer {
             spinState = SpinState.GO_BACK;
         }else if(desiredState == 6){
             spinState = SpinState.MANUAL_OVERRIDE;
-        }else if(desiredState == 0){
+        } else if(desiredState == 0){
             spinState = SpinState.IDLE;
         }
     }
@@ -457,6 +457,9 @@ public class TestDexer {
         else{
             return "unknown";
         }
+    }
+    public boolean isBusy(){
+        return power > .1;
     }
 
     public void setTargetPos(double pos){

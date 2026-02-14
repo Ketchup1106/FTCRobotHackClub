@@ -31,20 +31,26 @@ public class ColorSensorBackTemp {
         normRed = colors.red;
         normGreen = colors.green;
         normBlue = colors.blue;
-
-        if(getDist() < 1.8){
-            if(normRed < .2861 && normRed > .1526 && normBlue < .8011  && normBlue > .3586 && normGreen > .4616){
+        if(getDist() < 1.3) {
+            if (normRed < .3143 && normRed > .1526 && normBlue < .8881 && normBlue > .6226 && normGreen > .8) {
                 return detectedColor.GREEN;
+            } else if (normRed < .4959 && normRed > .3021 && normBlue < .9499 && normBlue > .5676 && normGreen < .6165 && normGreen > .3052) {
+                return detectedColor.PURPLE;
             }
-//            else if(normRed < .4959 && normRed > .2174 && normBlue < .9499 && normBlue > .4005 && normGreen < .6065 && normGreen > .3052){
-//                return detectedColor.PURPLE;
-//            }
-            return detectedColor.PURPLE;
+            //return detectedColor.PURPLE;
+            //}
         }
-        else{
-            return detectedColor.UNKNOWN;
+        else if(getDist() > 1.3 && getDist() < 2){
+            if (normRed < .2014 && normRed > .1343 && normBlue < .4913 && normBlue > .3052 && normGreen < .647 && normGreen > .3052) {
+                return detectedColor.GREEN;
+            } else if (normRed < .4059 && normRed > .2174 && normBlue < .7782 && normBlue > .4005 && normGreen < .5219 && normGreen > .3052) {
+                return detectedColor.PURPLE;
+            }
         }
+        return detectedColor.UNKNOWN;
+
     }
+
 
     public float getRed(){
         return normRed;

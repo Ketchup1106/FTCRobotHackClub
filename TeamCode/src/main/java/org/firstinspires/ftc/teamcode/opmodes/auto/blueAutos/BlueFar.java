@@ -61,6 +61,7 @@ public class BlueFar extends OpMode {
     double desiredTurretAngle;
 
     boolean grabbing;
+    boolean gottenBall = false;
 
     boolean reset = true;
     int spinPos;
@@ -167,10 +168,11 @@ public class BlueFar extends OpMode {
                     //if intaking and not full, check for color. if color, move to next slot. repeat until full.
                     if(ballCount < 3){
                         testDexer.checkForBalls();
-                        if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && spindexerDelayTimer.seconds() > .5) { //wait until color
+                        if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && !gottenBall ) { //wait until color
                             ballCount++;
                             testDexer.spinToNext(intakeSide);
                             spindexerDelayTimer.reset();
+                            gottenBall = true;
                         }
                     }
                     else{
@@ -198,7 +200,7 @@ public class BlueFar extends OpMode {
             testDexer.setPowerToPosition2(spinPos, runtime.seconds());
             switch(step) {
                 ///////////////////////////////////////////////////////////////////
-                /// Step 1: shoot preload and rotate turret to goal
+                /// Step 1: shoot preload
                 ///////////////////////////////////////////////////////////////////
                 case 0:
                     shooter.shoot3();
@@ -229,14 +231,20 @@ public class BlueFar extends OpMode {
                         step++;
                     }
                     break;
+                ///////////////////////////////////////////
+                /// step 4: start intake, prep spindexer
+                //////////////////////////////////////
                 case 3:
                     if (!follower.isBusy()) {
                         intake.runFront();
                         intakeSide = "front";
-//                        testDexer.setSpinState(1);
+                        testDexer.setSpinState(1);
                         step++;
                     }
                     break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 5: ball 1
+                ///////////////////////////////////////////////////////////////////
                 case 4:
                     if(!follower.isBusy()){
                         follower.followPath(jerk2One);
@@ -244,43 +252,61 @@ public class BlueFar extends OpMode {
                         spindexerDelayTimer.reset();
                     }
                     break;
-                case 5:
-//                    if(!follower.isBusy() && spindexerDelayTimer.seconds() > 1){
-//                        follower.followPath(jerk2Two);
-//                        step++;
-//                        spindexerDelayTimer.reset();
-//                    }
-                    if(!follower.isBusy() && testDexer.getTargetPos() == testDexer.frontPos){
-                        testDexer.setTargetPos(testDexer.frontSecondIntakePos);
+                ///////////////////////////////////////////////////////////////////
+                /// Step 6: wait for the dexer to move or if an error has occurred, move to next step
+                ///////////////////////////////////////////////////////////////////
+                case 5: //wait for the dexer to move or if an error has occurred, move to next step
+                    if(!follower.isBusy()) {
+                        if (MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)) {
+                            step++;
+                        }else if(spindexerDelayTimer.seconds() > .5 && !gottenBall){
+                            step++;
+                            ballCount++;
+                            testDexer.spinToNext(intakeSide);
+                            gottenBall = true;
+                        }
                     }
-                    if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                    break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 7: ball 2
+                ///////////////////////////////////////////////////////////////////
+                case 6:
+                    if(!follower.isBusy()){
                         follower.followPath(jerk2Two);
-                        intake.runFront();
                         step++;
+                        gottenBall = false;
                         spindexerDelayTimer.reset();
                     }
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 4: intake set
+                /// Step 8: wait for the dexer to move or if an error has occurred, move to next step
                 ///////////////////////////////////////////////////////////////////
-                case 6:
-//                    if (!follower.isBusy() && spindexerDelayTimer.seconds() > 1) {
-//                        follower.followPath(grab2);
-//                        step++;
-//                    }
-                    if(!follower.isBusy() && testDexer.getTargetPos() == testDexer.frontSecondIntakePos){
-                        testDexer.setTargetPos(testDexer.frontThirdIntakePos);
+                case 7: //wait for the dexer to move or if an error has occurred, move to next step
+                    if(!follower.isBusy()) {
+                        if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                            step++;
+                        }else if(spindexerDelayTimer.seconds() > .5 && !gottenBall){
+                            step++;
+                            ballCount++;
+                            testDexer.spinToNext(intakeSide);
+                            gottenBall = true;
+                        }
                     }
-                    if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                    break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 9: ball 3
+                ///////////////////////////////////////////////////////////////////
+                case 8:
+                    if (!follower.isBusy()) {
                         follower.followPath(grab2);
-                        intake.runFront();
+                        gottenBall = false;
                         step++;
                     }
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 5: go back to shoot
+                /// Step 10: go back to shoot
                 ///////////////////////////////////////////////////////////////////
-                case 7:
+                case 9:
                     if (!follower.isBusy()) {
                         intake.stopFront();
                         follower.setMaxPower(1);
@@ -290,9 +316,9 @@ public class BlueFar extends OpMode {
                     break;
                 //add a step for shoot3
                 ///////////////////////////////////////////////////////////////////
-                /// Step 6: wait for shot to finish
+                /// Step 11: wait for shot to finish
                 ///////////////////////////////////////////////////////////////////
-                case 8:
+                case 10:
                     if (follower.isBusy()){
                         break;
                     }
@@ -307,23 +333,27 @@ public class BlueFar extends OpMode {
                     step++;
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 7: go get set closest to us
+                /// Step 12: go get set closest to us
                 ///////////////////////////////////////////////////////////////////
-                case 9:
-
+                case 11:
                     follower.followPath(set3);
                     step++;
                     break;
-                case 10:
+                ///////////////////////////////////////////////////////////////////
+                /// Step 13: start intake, prep spindexer
+                ///////////////////////////////////////////////////////////////////
+                case 12:
                     if (!follower.isBusy()) {
                         intake.runFront();
                         intakeSide = "front";
                         testDexer.setSpinState(1);
                         step++;
                     }
-
                     break;
-                case 11:
+                ///////////////////////////////////////////////////////////////////
+                /// Step 14: ball 4
+                ///////////////////////////////////////////////////////////////////
+                case 13:
                     if(!follower.isBusy()){
                         follower.followPath(jerk3One);
                         step++;
@@ -331,23 +361,56 @@ public class BlueFar extends OpMode {
 
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 8: intake
+                /// Step 15: wait for the dexer to move or if an error has occurred, move to next step
                 ///////////////////////////////////////////////////////////////////
-                case 12:
-                    if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                case 14: //wait for the dexer to move or if an error has occurred, move to next step
+                    if(!follower.isBusy()) {
+                        if (MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)) {
+                            step++;
+                        }else if(spindexerDelayTimer.seconds() > .5){
+                            step++;
+                            ballCount++;
+                            testDexer.spinToNext(intakeSide);
+                        }
+                    }
+                    break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 16: ball 5
+                ///////////////////////////////////////////////////////////////////
+                case 15:
+                    if(!follower.isBusy()){
                         follower.followPath(jerk3Two);
                         step++;
                     }
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 9: go back to shoot
+                /// Step 17: wait for the dexer to move or if an error has occurred, move to next step
                 ///////////////////////////////////////////////////////////////////
-                case 13:
+                case 16: //wait for the dexer to move or if an error has occurred, move to next step
+                    if(!follower.isBusy()) {
+                        if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                            step++;
+                        }else if(spindexerDelayTimer.seconds() > .5){
+                            step++;
+                            ballCount++;
+                            testDexer.spinToNext(intakeSide);
+                        }
+                    }
+                    break;
+
+                ///////////////////////////////////////////////////////////////////
+                /// Step 18: ball 6
+                ///////////////////////////////////////////////////////////////////
+                case 17:
                     if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
                         follower.followPath(grab3);
                         step++;
                     }
-                case 14:
+                    break;
+                ///////////////////////////////////////////////////////////////////
+                /// Step 19: go back to shoot
+                ///////////////////////////////////////////////////////////////////
+                case 18:
                     if (!follower.isBusy()) {
                         intake.stopFront();
                         follower.setMaxPower(1);
@@ -356,15 +419,18 @@ public class BlueFar extends OpMode {
                     }
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 10: wait for shot
+                /// Step 20: wait for shot
                 ///////////////////////////////////////////////////////////////////
-                case 15:
+                case 19:
                     if(follower.isBusy()){
                         break;
                     }
                     step++;
                     break;
-                case 16:
+                ///////////////////////////////////////////////////////////////////
+                /// Step 21: finish shot
+                ///////////////////////////////////////////////////////////////////
+                case 20:
                     if(shooter.isActive){
                         shooter.updateState(targetVel, spinPos, testDexer.targetPos);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
@@ -376,28 +442,26 @@ public class BlueFar extends OpMode {
                     step++;
                     break;
                 ///////////////////////////////////////////////////////////////////
-                /// Step 11: either get last set or stop here if we want
+                /// Step 22: either get last set or stop here if we want
                 ///////////////////////////////////////////////////////////////////
-                case 17:
+                case 21:
                     if (!follower.isBusy()) {
-
                         follower.followPath(set4);
                         step++;
                     }
                     break;
 
-                case 18:
+                case 22:
                     if (!follower.isBusy()) {
                         intake.runFront();
                         intakeSide = "front";
                         testDexer.setSpinState(1);
-                        follower.setMaxPower(.3);
                         follower.followPath(grab4);
                         step++;
                     }
                     break;
 
-                case 19:
+                case 23:
                     if (!follower.isBusy()) {
                         intake.stopFront();
                         follower.setMaxPower(1);
@@ -405,14 +469,14 @@ public class BlueFar extends OpMode {
                         step++;
                     }
                     break;
-                case 20:
+                case 24:
                     if(follower.isBusy()){
                         break;
                     }
                     step++;
                     break;
 
-                case 21:
+                case 25:
                     if(shooter.isActive){
                         shooter.updateState(targetVel, spinPos, testDexer.targetPos);
                         if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
@@ -424,12 +488,12 @@ public class BlueFar extends OpMode {
                     step++;
                     break;
 
-                case 22:
+                case 26:
                     follower.followPath(park);
                     step++;
                     break;
 
-                case 23: //May have to add Parametric Call back if not enough time to reach this
+                case 27: //May have to add Parametric Call back if not enough time to reach this
                     if(!follower.isBusy()) {
                         RobotConstants.autoEnd = follower.getPose();
                         terminateOpModeNow();

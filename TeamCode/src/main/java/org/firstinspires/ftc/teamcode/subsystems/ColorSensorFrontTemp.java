@@ -20,7 +20,7 @@ public class ColorSensorFrontTemp {
 
     public void init(HardwareMap hwMap){
         colorSensor1 = hwMap.get(NormalizedColorSensor.class, "color1");
-        colorSensor1.setGain(250);
+        colorSensor1.setGain(140);
     }
 
     float normRed, normGreen, normBlue;
@@ -35,23 +35,23 @@ public class ColorSensorFrontTemp {
         normBlue = colors.blue;
 
 
-        if(getDist() < 1.6){ // close
-            if(normRed < .2022 && normRed > .1355 && normBlue < .6256 && normBlue > .3815 && normGreen < .7439 && normGreen > .4807){
+        if(getDist() < 1.35){ // close
+            if(normRed < .267 && normRed > .1355 && normBlue < .5682 && normBlue > .8588 && normGreen <= 1 && normGreen > .752){
                 return detectedColor.GREEN;
             }
-//            else if(normRed < .3777 && normRed > .2174 && normBlue < .9384 && normBlue > .5188 && normGreen < .5188 && normGreen > .3281){
-//                return detectedColor.PURPLE;
-//            }
-            return detectedColor.PURPLE;
+            else if(normRed < .5362 && normRed > .3653 && normBlue < .6708 && normBlue > .4486 && normGreen < .5896 && normGreen > .4059){
+                return detectedColor.PURPLE;
+            }
+            //return detectedColor.PURPLE;
         }
-        else if(getDist() > 1.6 && getDist() < 2.5){ //further balls
-            if(normRed < .1355 && normRed > .0916 && normBlue < .2747 && normBlue > .1755 && normGreen < .4349 && normGreen > .2213){
+        else if(getDist() > 1.35 && getDist() < 2.5){ //further balls
+            if(normRed < .1431 && normRed > .0897 && normBlue < .2841 && normBlue > .1645 && normGreen < .5042 && normGreen > .2841){
                 return detectedColor.GREEN;
             }
-//            else if(normRed < .2365 && normRed > .1259 && normBlue < .5417 && normBlue > .2747 && normGreen < .3433 && normGreen > .2022){
-//                return detectedColor.PURPLE;
-//            }
-            return detectedColor.PURPLE;
+            else if(normRed < .3781 && normRed > .1559 && normBlue < .455 && normBlue > .1944 && normGreen < .4443 && normGreen > .1987){
+                return detectedColor.PURPLE;
+            }
+            //return detectedColor.PURPLE;
         }
         return detectedColor.UNKNOWN;
     }

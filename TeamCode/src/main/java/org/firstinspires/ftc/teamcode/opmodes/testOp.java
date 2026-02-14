@@ -68,9 +68,6 @@ public class testOp extends OpMode {
 
     double desiredTurretAngle;
     String intakeSide = "front";
-
-    boolean manualSpin = false; //this is not manual override
-
     //double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001};
     //10000000 - 10
     //1000000 - 1
@@ -98,7 +95,9 @@ public class testOp extends OpMode {
     ElapsedTime spindexerDelayTimer = new ElapsedTime();
     boolean launched = false;
     boolean wentBack = false;
+
     TestDexer.SpinState lastSpinState;
+
 
 
     @Override
@@ -111,7 +110,7 @@ public class testOp extends OpMode {
         intake.init(hardwareMap);
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
-        follower.setStartingPose(new Pose(8.95, 8.5965,  Math.toRadians(180)));
+        follower.setStartingPose(RobotConstants.autoEnd);
         follower.update();
         //touchy1.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
@@ -127,16 +126,6 @@ public class testOp extends OpMode {
 
     @Override
     public void loop(){
-//        if(gamepad1.dpadRightWasPressed()){
-//            automatedDrive = true;
-//        }
-
-//        if(gamepad1.dpadRightWasReleased()){
-//            automatedDrive = false;
-//        }
-//        if(automatedDrive){
-//            automatedDrive(follower.getPose());
-//        }
         Log.d(tag, "power" + testDexer.power);
         Log.d("Target Pos", "target Pos: " + testDexer.getTargetPos());
 
@@ -196,8 +185,7 @@ public class testOp extends OpMode {
         }
         telemetry.addData("Order: ", order);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x * .5, powerSetter);
-
+        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
         Log.d("Drive Motor Power", "FrontLeftMotor: " + drive.getFrontLeftDrive());
         Log.d("Drive Motor Power", "FrontRightMotor: " + drive.getFrontRightDrive());
         Log.d("Drive Motor Power", "BackLeftMotor: " + drive.getBackLeftDrive());
@@ -209,7 +197,7 @@ public class testOp extends OpMode {
         if(gamepad1.right_trigger > 0.1){
             intake.runFront();
             intakeSide = "front";
-            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK){
+            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
                 testDexer.setSpinState(1);
             }
         }
@@ -222,7 +210,7 @@ public class testOp extends OpMode {
         if(gamepad1.left_trigger > .1){
             intake.runBackReverse();
             intakeSide = "back";
-            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK){
+            if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
                 testDexer.setSpinState(1);
             }
         }
@@ -239,9 +227,9 @@ public class testOp extends OpMode {
             shooter.shoot3();
             testDexer.setSpinState(4);
             wentBack = false;
-            manualSpin = false;
+
         }
-        if(gamepad2.leftBumperWasPressed()){
+        if(gamepad2.xWasPressed()){
             if(!wentBack){
                 lastSpinState = testDexer.getSpinState();
                 testDexer.lastTargetPos = testDexer.targetPos;
@@ -254,9 +242,8 @@ public class testOp extends OpMode {
                 testDexer.goToLastState(lastSpinState);
             }
         }
-        if(gamepad2.rightBumperWasPressed() && !manualSpin){
-            testDexer.setSpinState(5);
-            manualSpin = true;
+        if(gamepad2.aWasPressed() && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
+            testDexer.setSpinState(6);
         }
         switch (testDexer.getSpinState()){
             case MOVE_TO_INTAKE:
@@ -278,7 +265,7 @@ public class testOp extends OpMode {
                         testDexer.spinToNext(intakeSide);
                         spindexerDelayTimer.reset();
                     }
-                    if (gamepad2.bWasPressed()) { //manual in case of failure in sensor
+                    else if (gamepad2.bWasPressed()) { //manual in case of failure in sensor
                         ballCount++;
                         testDexer.spinToNext(intakeSide);
                         spindexerDelayTimer.reset();
@@ -308,32 +295,10 @@ public class testOp extends OpMode {
                     testDexer.goBack(testDexer.updatePos());
                     wentBack = true;
                 }
-
                 break;
             case MANUAL_OVERRIDE:
                 if(gamepad2.aWasPressed()){
-                    if(intakeSide.equals("front")){
-                        testDexer.targetPos = testDexer.frontPos;
-                    }
-                    if(intakeSide.equals("back")){
-                        testDexer.targetPos = testDexer.backPos;
-                    }
-                }
-                else if(gamepad2.xWasPressed()){
-                    if(intakeSide.equals("front")){
-                        testDexer.targetPos = testDexer.frontSecondIntakePos;
-                    }
-                    if(intakeSide.equals("back")){
-                        testDexer.targetPos = testDexer.backSecondIntakePos;
-                    }
-                }
-                else if(gamepad2.bWasPressed()){
-                    if(intakeSide.equals("front")){
-                        testDexer.targetPos = testDexer.frontThirdIntakePos;
-                    }
-                    if(intakeSide.equals("back")){
-                        testDexer.targetPos = testDexer.backThirdIntakePos;
-                    }
+                    testDexer.spinToNextManual(intakeSide);
                 }
         }
 

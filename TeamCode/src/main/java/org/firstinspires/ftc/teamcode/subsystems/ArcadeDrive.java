@@ -44,6 +44,9 @@ public class ArcadeDrive {
 
 
     public void drive(double axial, double lateral, double yaw, double powerMult){
+        if(Math.abs(yaw) < .2){
+            yaw = 0;
+        }
 
         frontLeftPower = (axial + lateral + yaw);
         frontRightPower = (axial - lateral - yaw);
