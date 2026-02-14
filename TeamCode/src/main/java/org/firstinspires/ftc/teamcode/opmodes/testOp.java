@@ -247,6 +247,12 @@ public class testOp extends OpMode {
                 testDexer.lastTargetPos = testDexer.targetPos;
                 testDexer.setSpinState(5);
             }
+            else{
+                 //exit manual override, go back to pose
+                wentBack = false;
+                testDexer.targetPos = testDexer.lastTargetPos;
+                testDexer.goToLastState(lastSpinState);
+            }
         }
         if(gamepad2.rightBumperWasPressed() && !manualSpin){
             testDexer.setSpinState(5);
@@ -302,11 +308,7 @@ public class testOp extends OpMode {
                     testDexer.goBack(testDexer.updatePos());
                     wentBack = true;
                 }
-                if(gamepad2.leftBumperWasPressed()){ //exit manual override, go back to pose
-                    wentBack = false;
-                    testDexer.targetPos = testDexer.lastTargetPos;
-                    testDexer.goToLastState(lastSpinState);
-                }
+
                 break;
             case MANUAL_OVERRIDE:
                 if(gamepad2.aWasPressed()){
