@@ -31,7 +31,7 @@ public class turretServo {
         robotAngle = fixNegativeHeading((robotAngle)); //returns in rads
         turnNeeded = ((robotAngle * posPerRadian - goalAngle * posPerRadian));
 
-        turnNeeded -= (goalAngle - (Math.PI*3)/4) * turrConst * posPerRadian;
+//        turnNeeded -= (goalAngle - (Math.PI*3)/4) * turrConst * posPerRadian;
 
         return turnNeeded;
     }
