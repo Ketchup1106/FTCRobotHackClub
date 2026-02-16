@@ -128,6 +128,7 @@ public class testOp extends OpMode {
     public void loop(){
         Log.d(tag, "power" + testDexer.power);
         Log.d("Target Pos", "target Pos: " + testDexer.getTargetPos());
+        Log.d("looptime/s", "loop time" + runtime.seconds());
 
         follower.poseTracker.update();
 
@@ -332,29 +333,26 @@ public class testOp extends OpMode {
 
 
 
-
-
-
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
-        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
-        telemetry.addData("robot pose: ", follower.getPose());
-        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
-        telemetry.addData("turret pos ", desiredTurretAngle);
-        telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
-        telemetry.addData("Difference: ", testDexer.difference);
-        telemetry.addData("power", testDexer.power);
+//        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
+//        telemetry.addData("robot pose: ", follower.getPose());
+//        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
+//        telemetry.addData("turret pos ", desiredTurretAngle);
+//        telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
+//        telemetry.addData("Difference: ", testDexer.difference);
+//        telemetry.addData("power", testDexer.power);
 //        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
 //        telemetry.addData("shooter target velocity: ", targetVel);
 //        telemetry.addData("shootervel: ", shooter.getVelocity1());
 //        telemetry.addData("shooter state: ", shooter.getLauunchState());
 
-        telemetry.addData("spindexer pos", spinPos);
-        telemetry.addData("spinstate ", testDexer.getSpinState());
-        telemetry.addData("spindexer target ", testDexer.getTargetPos());
-        telemetry.addData("ballcount ", ballCount);
-        telemetry.addData("current order ",testDexer.currentOrder);
-        telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));
+//        telemetry.addData("spindexer pos", spinPos);
+//        telemetry.addData("spinstate ", testDexer.getSpinState());
+//        telemetry.addData("spindexer target ", testDexer.getTargetPos());
+//        telemetry.addData("ballcount ", ballCount);
+//        telemetry.addData("current order ",testDexer.currentOrder);
+//        telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));
 //        telemetry.addData("P: ", P);
 //        telemetry.addData("I: ", I);
 //        telemetry.addData("D: ", D*1000000);
@@ -375,7 +373,7 @@ public class testOp extends OpMode {
 //        telemetry.addData("turret angle: ", turret.getCurrentPos());
 //        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
 
-        telemetry.update();
+//        telemetry.update();
     }
     public void EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION(){
         follower.setPose(new Pose(8.95, 8.5965,  Math.toRadians(180))); //change later

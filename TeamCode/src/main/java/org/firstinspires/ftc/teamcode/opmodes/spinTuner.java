@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.util.Log;
+
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -48,9 +50,9 @@ public class spinTuner extends OpMode {
     double shootStartingAtSpot2 = 210* encoderFactor;
     double shootStartingAtSpot3 = -30* encoderFactor;
 
-    double F = .058;
-    double P = .75;
-    double D = 0.000015;
+    double F = .048;
+    double P = 1;
+    double D = 0.00002;
 
     ElapsedTime runtime = new ElapsedTime();
 
@@ -126,7 +128,8 @@ public class spinTuner extends OpMode {
         telemetry.addData("Current pos: ", currPos);
 
         telemetry.addData("Error ", error1);
-
+        Log.d("looptime/s", "loop time" + runtime.seconds());
+        Log.v("difference", System.out.printf("%f", difference).toString());
         telemetry.addData("Tuning P: ", P);
         telemetry.addData("Tuning F: ", F);
         telemetry.addData("Tuning D: ", D);

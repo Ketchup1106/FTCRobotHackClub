@@ -163,24 +163,24 @@ public class TestDexer {
     public void spinToNextManual(String frontOrBack){
         if(frontOrBack.equals("front")){
             if(targetPos == frontPos){
-                targetPos = frontSecondIntakePos;
+                targetPos = frontSecondIntakePos - 16384;
             }
             else if(targetPos == frontSecondIntakePos){
-                targetPos = frontThirdIntakePos;
+                targetPos = frontThirdIntakePos - 16384;
             }
             else if(targetPos == frontThirdIntakePos || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3){
-                targetPos = frontPos;
+                targetPos = frontPos - 16384;
             }
         }
         else if(frontOrBack.equals("back")){
             if(targetPos == backPos){
-                targetPos = backSecondIntakePos;
+                targetPos = backSecondIntakePos - 16384;
             }
             else if(targetPos == backSecondIntakePos){
-                targetPos = backThirdIntakePos;
+                targetPos = backThirdIntakePos - 16384;
             }
             else if(targetPos == backThirdIntakePos || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3){
-                targetPos = backPos;
+                targetPos = backPos - 16384;
             }
         }
     }
@@ -360,7 +360,7 @@ public class TestDexer {
         gamePattern = order;
     }
     public void setPowerToPosition2(double curr, double currentTime){
-        double pMult = 0.75;
+        double pMult = 1; //0.75
         difference = targetPos - curr;
         double fullPowerTicks = 8192/2;
         double pVal = difference/fullPowerTicks;
@@ -369,9 +369,9 @@ public class TestDexer {
         currTime = currentTime;
         currError = difference;
         double dVal = (currError - pastError)/(currentTime - previousTime);
-        double dMult = 0.000015;
+        double dMult = 0.00002; //.000015
 
-        double F = .053; //.048 if no oscillations needed
+        double F = .048; //.048 if no oscillations needed .053 before
         double fMult= F*Math.signum(pVal);
 
 //        iError += currError*(currTime-previousTime);

@@ -44,7 +44,7 @@ public class ArcadeDrive {
 
 
     public void drive(double axial, double lateral, double yaw, double powerMult){
-        if(Math.abs(yaw) < .2){
+        if(Math.abs(yaw) < .05){
             yaw = 0;
         }
 

@@ -132,6 +132,7 @@ public class BlueFar extends OpMode {
 
     public void loop(){
             Log.v("Spin State", testDexer.getSpinState().toString());
+            Log.d("difference %f", "diff" + testDexer.difference);
             follower.update();
             robotHeading = follower.getHeading(); //will always be something plus that starting of 180
             double poseX = follower.getPose().getX(); //get robot pose
@@ -218,7 +219,7 @@ public class BlueFar extends OpMode {
                         }
                         break;
                     }
-                    testDexer.setSpinState(0);
+                    testDexer.setSpinState(1);
                     step++;
                     break;
                 ///////////////////////////////////////////////////////////////////
@@ -238,7 +239,6 @@ public class BlueFar extends OpMode {
                     if (!follower.isBusy()) {
                         intake.runFront();
                         intakeSide = "front";
-                        testDexer.setSpinState(1);
                         step++;
                     }
                     break;
@@ -259,7 +259,7 @@ public class BlueFar extends OpMode {
                     if(!follower.isBusy()) {
                         if (MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)) {
                             step++;
-                        }else if(spindexerDelayTimer.seconds() > .5 && !gottenBall){
+                        }else if(spindexerDelayTimer.seconds() > 1 && !gottenBall){
                             step++;
                             ballCount++;
                             testDexer.spinToNext(intakeSide);
@@ -285,7 +285,7 @@ public class BlueFar extends OpMode {
                     if(!follower.isBusy()) {
                         if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
                             step++;
-                        }else if(spindexerDelayTimer.seconds() > .5 && !gottenBall){
+                        }else if(spindexerDelayTimer.seconds() > 1 && !gottenBall){
                             step++;
                             ballCount++;
                             testDexer.spinToNext(intakeSide);
@@ -367,7 +367,7 @@ public class BlueFar extends OpMode {
                     if(!follower.isBusy()) {
                         if (MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)) {
                             step++;
-                        }else if(spindexerDelayTimer.seconds() > .5){
+                        }else if(spindexerDelayTimer.seconds() > 1){
                             step++;
                             ballCount++;
                             testDexer.spinToNext(intakeSide);
