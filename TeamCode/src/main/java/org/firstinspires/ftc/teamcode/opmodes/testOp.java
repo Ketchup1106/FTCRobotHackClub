@@ -126,9 +126,9 @@ public class testOp extends OpMode {
 
     @Override
     public void loop(){
-        Log.d(tag, "power" + testDexer.power);
-        Log.d("Target Pos", "target Pos: " + testDexer.getTargetPos());
-        Log.d("looptime/s", "loop time" + runtime.seconds());
+//        Log.d(tag, "power" + testDexer.power);
+//        Log.d("Target Pos", "target Pos: " + testDexer.getTargetPos());
+//        Log.d("looptime/s", "loop time" + runtime.seconds());
 
         follower.poseTracker.update();
 
@@ -187,10 +187,10 @@ public class testOp extends OpMode {
         telemetry.addData("Order: ", order);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
-        Log.d("Drive Motor Power", "FrontLeftMotor: " + drive.getFrontLeftDrive());
-        Log.d("Drive Motor Power", "FrontRightMotor: " + drive.getFrontRightDrive());
-        Log.d("Drive Motor Power", "BackLeftMotor: " + drive.getBackLeftDrive());
-        Log.d("Drive Motor Power", "BackRightMotor: " + drive.getBackRightDrive());
+//        Log.d("Drive Motor Power", "FrontLeftMotor: " + drive.getFrontLeftDrive());
+//        Log.d("Drive Motor Power", "FrontRightMotor: " + drive.getFrontRightDrive());
+//        Log.d("Drive Motor Power", "BackLeftMotor: " + drive.getBackLeftDrive());
+//        Log.d("Drive Motor Power", "BackRightMotor: " + drive.getBackRightDrive());
 
 
         //NEW CONTROLS _______________________________________________________________________________
@@ -242,9 +242,6 @@ public class testOp extends OpMode {
                 testDexer.targetPos = testDexer.lastTargetPos;
                 testDexer.goToLastState(lastSpinState);
             }
-        }
-        if(gamepad2.aWasPressed() && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
-            testDexer.setSpinState(6);
         }
         switch (testDexer.getSpinState()){
             case MOVE_TO_INTAKE:
@@ -298,9 +295,13 @@ public class testOp extends OpMode {
                 }
                 break;
             case MANUAL_OVERRIDE:
-                if(gamepad2.aWasPressed()){
+                if(gamepad2.leftBumperWasPressed()){
                     testDexer.spinToNextManual(intakeSide);
                 }
+                break;
+        }
+        if(gamepad2.aWasPressed() && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
+            testDexer.setSpinState(6);
         }
 
         if(slowMode){
@@ -333,6 +334,7 @@ public class testOp extends OpMode {
 
 
 
+        telemetry.addData("Testdexer Target Pos", "Target Pos: " + testDexer.getTargetPos());
         ;
         //telemetry.addData("Button status: ", touchy1.detectTouch());
 //        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
@@ -340,14 +342,14 @@ public class testOp extends OpMode {
 //        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
 //        telemetry.addData("turret pos ", desiredTurretAngle);
 //        telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
-//        telemetry.addData("Difference: ", testDexer.difference);
+          telemetry.addData("Difference: ", testDexer.difference);
 //        telemetry.addData("power", testDexer.power);
 //        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
 //        telemetry.addData("shooter target velocity: ", targetVel);
 //        telemetry.addData("shootervel: ", shooter.getVelocity1());
 //        telemetry.addData("shooter state: ", shooter.getLauunchState());
 
-//        telemetry.addData("spindexer pos", spinPos);
+          telemetry.addData("spindexer pos", spinPos);
 //        telemetry.addData("spinstate ", testDexer.getSpinState());
 //        telemetry.addData("spindexer target ", testDexer.getTargetPos());
 //        telemetry.addData("ballcount ", ballCount);
