@@ -24,8 +24,9 @@ public class turretServo {
 
     public void init(HardwareMap hwMap){
         turret = hwMap.get(Servo.class, "turret");
+        turret.scaleRange(0.545, .95);
         turret.setDirection(Servo.Direction.REVERSE);
-        turret.scaleRange(0, .45);
+
     }
     public double calculateTurnBlue(double goalAngle, double robotAngle) { //input in rads
         robotAngle = fixNegativeHeading((robotAngle)); //returns in rads

@@ -294,14 +294,12 @@ public class testOp extends OpMode {
                     wentBack = true;
                 }
                 break;
-            case MANUAL_OVERRIDE:
-                if(gamepad2.leftBumperWasPressed()){
-                    testDexer.spinToNextManual(intakeSide);
-                }
-                break;
         }
         if(gamepad2.aWasPressed() && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
             testDexer.setSpinState(6);
+        }
+        if(gamepad2.leftBumperWasPressed() && testDexer.getSpinState() == TestDexer.SpinState.MANUAL_OVERRIDE){
+            testDexer.spinToNextManual(intakeSide);
         }
 
         if(slowMode){
@@ -350,7 +348,7 @@ public class testOp extends OpMode {
 //        telemetry.addData("shooter state: ", shooter.getLauunchState());
 
           telemetry.addData("spindexer pos", spinPos);
-//        telemetry.addData("spinstate ", testDexer.getSpinState());
+        telemetry.addData("spinstate ", testDexer.getSpinState());
 //        telemetry.addData("spindexer target ", testDexer.getTargetPos());
 //        telemetry.addData("ballcount ", ballCount);
 //        telemetry.addData("current order ",testDexer.currentOrder);

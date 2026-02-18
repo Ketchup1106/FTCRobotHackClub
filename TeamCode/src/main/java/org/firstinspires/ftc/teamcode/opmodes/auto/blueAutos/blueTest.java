@@ -254,7 +254,7 @@ public class blueTest extends OpMode {
             case 5: //wait for the dexer to move or if an error has occurred, move to next step
                 if(!follower.isBusy()) {
 
-                    if(spindexerDelayTimer.seconds() > 1){
+                    if(spindexerDelayTimer.seconds() > .7){
                         step++;
                         ballCount++;
                         testDexer.spinToNext(intakeSide);
@@ -277,7 +277,7 @@ public class blueTest extends OpMode {
             case 7: //wait for the dexer to move or if an error has occurred, move to next step
                 if(!follower.isBusy()) {
 
-                    if(spindexerDelayTimer.seconds() > 1){
+                    if(spindexerDelayTimer.seconds() > .7){
                         step++;
                         ballCount++;
                         testDexer.spinToNext(intakeSide);
@@ -360,7 +360,7 @@ public class blueTest extends OpMode {
             case 14: //wait for the dexer to move or if an error has occurred, move to next step
                 if(!follower.isBusy()) {
 
-                    if(spindexerDelayTimer.seconds() > 1){
+                    if(spindexerDelayTimer.seconds() > .7){
                         step++;
                         ballCount++;
                         testDexer.spinToNext(intakeSide);
@@ -383,7 +383,7 @@ public class blueTest extends OpMode {
             case 16: //wait for the dexer to move or if an error has occurred, move to next step
                 if(!follower.isBusy()) {
 
-                    if(spindexerDelayTimer.seconds() > 1){
+                    if(spindexerDelayTimer.seconds() > .7){
                         step++;
                         ballCount++;
                         testDexer.spinToNext(intakeSide);
@@ -448,7 +448,7 @@ public class blueTest extends OpMode {
 
             case 22:
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.2);
+                    follower.setMaxPower(0.4);
                     intake.runFront();
                     intakeSide = "front";
                     testDexer.setSpinState(1);
@@ -461,23 +461,24 @@ public class blueTest extends OpMode {
 
             case 23:
                 if(!gottenBall){
-                    if(spindexerDelayTimer.seconds() > 0.8 && ballCount == 0){
+                    if(spindexerDelayTimer.seconds() > 0.7 && ballCount == 0){
                         testDexer.spinToNext("front");
+                        ballCount++;
                     }
-                    if(spindexerDelayTimer.seconds() > 1.6 && ballCount  == 1){
+                    if(spindexerDelayTimer.seconds() > 1.4 && ballCount  == 1){
                         testDexer.spinToNext("front");
+                        ballCount++;
                     }
-                    if(spindexerDelayTimer.seconds() > 2.4 && ballCount == 3){
+                    if(spindexerDelayTimer.seconds() > 2.1 && ballCount == 2){
                         gottenBall = true;
                     }
                     break;
                 }
-                if (!follower.isBusy()) {
-                    intake.stopFront();
-                    follower.setMaxPower(1);
-                    follower.followPath(shoot4);
-                    step++;
-                }
+                intake.stopFront();
+                follower.setMaxPower(1);
+                follower.followPath(shoot4);
+                step++;
+
                 break;
             case 24:
                 if(follower.isBusy()){

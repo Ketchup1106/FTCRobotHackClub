@@ -7,7 +7,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,8 +27,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import android.util.Log;
 
-@Autonomous(name = "BLUE CLOSE", group = "Autonomous", preselectTeleOp = "teleOp")
-@Disabled
+@Autonomous(name = "BLUE CLOSE TIPO", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
+
 public class BlueClose extends OpMode {
 
     Follower follower;
@@ -62,6 +61,7 @@ public class BlueClose extends OpMode {
     double desiredTurretAngle;
 
     boolean grabbing;
+    boolean gottenBall = false;
 
     boolean reset = true;
     int spinPos;
@@ -72,7 +72,7 @@ public class BlueClose extends OpMode {
 
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56.95, 8.5965,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(16.482237, 110.092481,  Math.toRadians(180)));
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -83,11 +83,12 @@ public class BlueClose extends OpMode {
         testDexer.currentOrder = "PPG";
         runtime.reset();
         grabbing = false;
-        telemetry.addLine("Ready for start");
+
         telemetry.update();
         testDexer.setUpForShooting("blah");
         testDexer.encoder.setDirection(DcMotorEx.Direction.REVERSE);
-        turret.turret.setPosition(0);
+        turret.rotateToGoal(0.38);
+
     }
     public void init_loop(){
         spinPos = testDexer.updatePos();
@@ -113,13 +114,7 @@ public class BlueClose extends OpMode {
             order = "PPG";
         }
 
-        telemetry.addData("Order: ", order);
-        telemetry.addData("Difference: ", testDexer.difference);
-        telemetry.addData("spindexer pos", testDexer.updatePos());
-        telemetry.addData("spinstate ", testDexer.getSpinState());
-        telemetry.addData("spindexer target ", testDexer.getTargetPos());
-        telemetry.addData("power", testDexer.power);
-        telemetry.update();
+
 
     }
     public void start(){
@@ -131,7 +126,7 @@ public class BlueClose extends OpMode {
     }
 
     public void loop(){
-        Log.v("Spin State", testDexer.getSpinState().toString());
+        Log.v("loop", "ginder");
         follower.update();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 180
         double poseX = follower.getPose().getX(); //get robot pose
@@ -146,7 +141,7 @@ public class BlueClose extends OpMode {
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-        turret.rotateToGoal(desiredTurretAngle);
+//        turret.rotateToGoal(desiredTurretAngle);
         targetVel = shooter.setVel(goalDist);
         spinPos = testDexer.updatePos();
         shooter.setHood(goalDist);
@@ -167,12 +162,13 @@ public class BlueClose extends OpMode {
             case INTAKING:
                 //if intaking and not full, check for color. if color, move to next slot. repeat until full.
                 if(ballCount < 3){
-                    testDexer.checkForBalls();
-                    if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && spindexerDelayTimer.seconds() > .5) { //wait until color
-                        ballCount++;
-                        testDexer.spinToNext(intakeSide);
-                        spindexerDelayTimer.reset();
-                    }
+//                    testDexer.checkForBalls();
+//                    if((testDexer.checkForColorAtSpot('P', ballCount +1) || testDexer.checkForColorAtSpot('G', ballCount +1)) && !gottenBall ) { //wait until color
+//                        ballCount++;
+//                        testDexer.spinToNext(intakeSide);
+//                        spindexerDelayTimer.reset();
+//                        gottenBall = true;
+//                    }
                 }
                 else{
                     testDexer.setSpinState(3);
@@ -199,7 +195,7 @@ public class BlueClose extends OpMode {
         testDexer.setPowerToPosition2(spinPos, runtime.seconds());
         switch(step) {
             ///////////////////////////////////////////////////////////////////
-            /// Step 1: shoot preload and rotate turret to goal
+            /// Step 1: shoot preload
             ///////////////////////////////////////////////////////////////////
             case 0:
                 shooter.shoot3();
@@ -217,7 +213,8 @@ public class BlueClose extends OpMode {
                     }
                     break;
                 }
-                testDexer.setSpinState(0);
+                intakeSide = "front";
+                testDexer.setSpinState(1);
                 step++;
                 break;
             ///////////////////////////////////////////////////////////////////
@@ -230,14 +227,20 @@ public class BlueClose extends OpMode {
                     step++;
                 }
                 break;
+            ///////////////////////////////////////////
+            /// step 4: start intake, prep spindexer
+            //////////////////////////////////////
             case 3:
                 if (!follower.isBusy()) {
                     intake.runFront();
                     intakeSide = "front";
-                    testDexer.setSpinState(1);
+//                    testDexer.spinToNext(intakeSide);
                     step++;
                 }
                 break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 5: ball 1
+            ///////////////////////////////////////////////////////////////////
             case 4:
                 if(!follower.isBusy()){
                     follower.followPath(jerk2One);
@@ -245,37 +248,66 @@ public class BlueClose extends OpMode {
                     spindexerDelayTimer.reset();
                 }
                 break;
-            case 5:
-//                    if(!follower.isBusy() && spindexerDelayTimer.seconds() > 1){
-//                        follower.followPath(jerk2Two);
-//                        step++;
-//                        spindexerDelayTimer.reset();
-//                    }
-                if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+            ///////////////////////////////////////////////////////////////////
+            /// Step 6: wait for the dexer to move or if an error has occurred, move to next step
+            ///////////////////////////////////////////////////////////////////
+            case 5: //wait for the dexer to move or if an error has occurred, move to next step
+                if(!follower.isBusy()) {
+
+                    if(spindexerDelayTimer.seconds() > .7){
+                        step++;
+                        ballCount++;
+                        testDexer.spinToNext(intakeSide);
+                    }
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 7: ball 2
+            ///////////////////////////////////////////////////////////////////
+            case 6:
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
                     follower.followPath(jerk2Two);
                     step++;
                     spindexerDelayTimer.reset();
                 }
                 break;
             ///////////////////////////////////////////////////////////////////
-            /// Step 4: intake set
+            /// Step 8: wait for the dexer to move or if an error has occurred, move to next step
             ///////////////////////////////////////////////////////////////////
-            case 6:
-//                    if (!follower.isBusy() && spindexerDelayTimer.seconds() > 1) {
-//                        follower.followPath(grab2);
-//                        step++;
-//                    }
+            case 7: //wait for the dexer to move or if an error has occurred, move to next step
+                if(!follower.isBusy()) {
+
+                    if(spindexerDelayTimer.seconds() > .7){
+                        step++;
+                        ballCount++;
+                        testDexer.spinToNext(intakeSide);
+                    }
+
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 9: ball 3
+            ///////////////////////////////////////////////////////////////////
+            case 8:
                 if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
                     follower.followPath(grab2);
                     step++;
                 }
                 break;
             ///////////////////////////////////////////////////////////////////
-            /// Step 5: go back to shoot
+            /// Step 10: go back to shoot
             ///////////////////////////////////////////////////////////////////
-            case 7:
+            case 9:
+                if (!follower.isBusy()) {
+                    follower.followPath(emptyRamp);
+                    step++;
+                }
+                break;
+
+            case 10:
                 if (!follower.isBusy()) {
                     intake.stopFront();
+                    testDexer.setSpinState(3);
                     follower.setMaxPower(1);
                     follower.followPath(shoot2);
                     step++;
@@ -283,9 +315,10 @@ public class BlueClose extends OpMode {
                 break;
             //add a step for shoot3
             ///////////////////////////////////////////////////////////////////
-            /// Step 6: wait for shot to finish
+            /// Step 11: wait for shot to finish
             ///////////////////////////////////////////////////////////////////
-            case 8:
+            case 11:
+                turret.rotateToGoal(.37);
                 if (follower.isBusy()){
                     break;
                 }
@@ -300,111 +333,105 @@ public class BlueClose extends OpMode {
                 step++;
                 break;
             ///////////////////////////////////////////////////////////////////
-            /// Step 7: go get set closest to us
+            /// Step 12: go get set closest to us
             ///////////////////////////////////////////////////////////////////
-            case 9:
-
+            case 12:
                 follower.followPath(set3);
                 step++;
                 break;
-            case 10:
+            ///////////////////////////////////////////////////////////////////
+            /// Step 13: start intake, prep spindexer
+            ///////////////////////////////////////////////////////////////////
+            case 13:
                 if (!follower.isBusy()) {
                     intake.runFront();
                     intakeSide = "front";
                     testDexer.setSpinState(1);
                     step++;
                 }
-
                 break;
-            case 11:
+            ///////////////////////////////////////////////////////////////////
+            /// Step 14: ball 4
+            ///////////////////////////////////////////////////////////////////
+            case 14:
                 if(!follower.isBusy()){
                     follower.followPath(jerk3One);
                     step++;
+                    spindexerDelayTimer.reset();
                 }
 
                 break;
             ///////////////////////////////////////////////////////////////////
-            /// Step 8: intake
+            /// Step 15: wait for the dexer to move or if an error has occurred, move to next step
             ///////////////////////////////////////////////////////////////////
-            case 12:
-                if(!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+            case 15: //wait for the dexer to move or if an error has occurred, move to next step
+                if(!follower.isBusy()) {
+
+                    if(spindexerDelayTimer.seconds() > .7){
+                        step++;
+                        ballCount++;
+                        testDexer.spinToNext(intakeSide);
+                    }
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 16: ball 5
+            ///////////////////////////////////////////////////////////////////
+            case 16:
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
                     follower.followPath(jerk3Two);
+                    step++;
+                    spindexerDelayTimer.reset();
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 17: wait for the dexer to move or if an error has occurred, move to next step
+            ///////////////////////////////////////////////////////////////////
+            case 17: //wait for the dexer to move or if an error has occurred, move to next step
+                if(!follower.isBusy()) {
+
+                    if(spindexerDelayTimer.seconds() > .7){
+                        step++;
+                        ballCount++;
+                        testDexer.spinToNext(intakeSide);
+                    }
+
+                }
+                break;
+
+            ///////////////////////////////////////////////////////////////////
+            /// Step 18: ball 6
+            ///////////////////////////////////////////////////////////////////
+            case 18:
+                if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                    follower.followPath(grab3);
                     step++;
                 }
                 break;
             ///////////////////////////////////////////////////////////////////
-            /// Step 9: go back to shoot
+            /// Step 19: go back to shoot
             ///////////////////////////////////////////////////////////////////
-            case 13:
-                if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
-                    follower.followPath(grab3);
-                    step++;
-                }
-            case 14:
+            case 19:
                 if (!follower.isBusy()) {
                     intake.stopFront();
+                    testDexer.setSpinState(3);
                     follower.setMaxPower(1);
                     follower.followPath(shoot3);
                     step++;
                 }
                 break;
             ///////////////////////////////////////////////////////////////////
-            /// Step 10: wait for shot
+            /// Step 20: wait for shot
             ///////////////////////////////////////////////////////////////////
-            case 15:
-                if(follower.isBusy()){
-                    break;
-                }
-                step++;
-                break;
-            case 16:
-                if(shooter.isActive){
-                    shooter.updateState(targetVel, spinPos, testDexer.targetPos);
-                    if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
-                        testDexer.setSpinState(4);
-                    }
-                    break;
-                }
-                testDexer.setSpinState(0);
-                step++;
-                break;
-            ///////////////////////////////////////////////////////////////////
-            /// Step 11: either get last set or stop here if we want
-            ///////////////////////////////////////////////////////////////////
-            case 17:
-                if (!follower.isBusy()) {
-
-                    follower.followPath(set4);
-                    step++;
-                }
-                break;
-
-            case 18:
-                if (!follower.isBusy()) {
-                    intake.runFront();
-                    intakeSide = "front";
-                    testDexer.setSpinState(1);
-                    follower.setMaxPower(.3);
-                    follower.followPath(grab4);
-                    step++;
-                }
-                break;
-
-            case 19:
-                if (!follower.isBusy()) {
-                    intake.stopFront();
-                    follower.setMaxPower(1);
-                    follower.followPath(shoot4);
-                    step++;
-                }
-                break;
             case 20:
                 if(follower.isBusy()){
                     break;
                 }
                 step++;
                 break;
-
+            ///////////////////////////////////////////////////////////////////
+            /// Step 21: finish shot
+            ///////////////////////////////////////////////////////////////////
             case 21:
                 if(shooter.isActive){
                     shooter.updateState(targetVel, spinPos, testDexer.targetPos);
@@ -416,13 +443,75 @@ public class BlueClose extends OpMode {
                 testDexer.setSpinState(0);
                 step++;
                 break;
-
+            ///////////////////////////////////////////////////////////////////
+            /// Step 22: either get last set or stop here if we want
+            ///////////////////////////////////////////////////////////////////
             case 22:
+                if (!follower.isBusy()) {
+                    follower.followPath(set4);
+                    step++;
+                }
+                break;
+
+            case 23:
+                if (!follower.isBusy()) {
+                    follower.setMaxPower(0.4);
+                    intake.runFront();
+                    intakeSide = "front";
+                    testDexer.setSpinState(1);
+                    follower.followPath(grab4);
+                    spindexerDelayTimer.reset();
+                    gottenBall = false;
+                    step++;
+                }
+                break;
+
+            case 24:
+                if(!gottenBall){
+                    if(spindexerDelayTimer.seconds() > 0.7 && ballCount == 0){
+                        testDexer.spinToNext("front");
+                        ballCount++;
+                    }
+                    if(spindexerDelayTimer.seconds() > 1.4 && ballCount  == 1){
+                        testDexer.spinToNext("front");
+                        ballCount++;
+                    }
+                    if(spindexerDelayTimer.seconds() > 2.1 && ballCount == 2){
+                        gottenBall = true;
+                    }
+                    break;
+                }
+                intake.stopFront();
+                follower.setMaxPower(1);
+                follower.followPath(shoot4);
+                step++;
+
+                break;
+            case 25:
+                if(follower.isBusy()){
+                    break;
+                }
+                step++;
+                break;
+
+            case 26:
+                if(shooter.isActive){
+                    shooter.updateState(targetVel, spinPos, testDexer.targetPos);
+                    if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
+                        testDexer.setSpinState(4);
+                    }
+                    break;
+                }
+                testDexer.setSpinState(0);
+                step++;
+                break;
+
+            case 27:
                 follower.followPath(park);
                 step++;
                 break;
 
-            case 23: //May have to add Parametric Call back if not enough time to reach this
+            case 28: //May have to add Parametric Call back if not enough time to reach this
                 if(!follower.isBusy()) {
                     RobotConstants.autoEnd = follower.getPose();
                     terminateOpModeNow();
@@ -430,64 +519,30 @@ public class BlueClose extends OpMode {
                 break;
         }
         RobotConstants.autoEnd = follower.getPose();
-
-        // Debug Info
-        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
-        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
-        telemetry.addData("Difference: ", testDexer.difference);
-        telemetry.addData("runtime", runtime.seconds());
-//        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
-//        telemetry.addData("shooter target velocity: ", targetVel);
-//        telemetry.addData("shootervel: ", shooter.getVelocity1());
-//        telemetry.addData("shooter state: ", shooter.getLauunchState());
-        telemetry.addData("spindexer pos", spinPos);
-        telemetry.addData("spinstate ", testDexer.getSpinState());
-        telemetry.addData("spindexer target ", testDexer.getTargetPos());
-        telemetry.addData("ballcount ", ballCount);
-        telemetry.addData("current order ",testDexer.currentOrder);
-        telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));
-//        telemetry.addData("P: ", P);
-//        telemetry.addData("I: ", I);
-//        telemetry.addData("D: ", D*1000000);
-//        telemetry.addData("stepSize: ", stepSizes[stepIndex] * 1000000);
-
-        //telemetry.addData("tuningservo pos", shooter.getServo());
-//        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
-//        telemetry.addData("Follower X: ", follower.getPose().getX());
-//        telemetry.addData("Follower Y ", follower.getPose().getY());
-//        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
-//        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
-//        telemetry.addData("Goal Dist: ", goalDist);
-//        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
-//        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
-//        telemetry.addData("is turning?", turningToShoot);
-//        telemetry.addData("is busy?", turret.getTurretStatus());
-//        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
-//        telemetry.addData("turret angle: ", turret.getCurrentPos());
-//        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
-
-        telemetry.update();
     }
     // ---------------------------------------------------------------------
     // PATH GENERATION
     // ---------------------------------------------------------------------
     public void buildPaths() {
 
-        final Pose startPose = new Pose(32.8, 135.4035,  Math.toRadians(180));
+        final Pose startPose = new Pose(16.482237, 110.092481,  Math.toRadians(180));
+//        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
         final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
-        final Pose shootPoseFar = new Pose(48, 96, Math.toRadians(180)); //Change Coordinates
-        final Pose grabPose1 = new Pose(48, 58, Math.toRadians(180));
-        final Pose grabPose1One = new Pose(39, 58, Math.toRadians(180));
-        final Pose grabPose1Two = new Pose(30, 58, Math.toRadians(180));
+        final Pose shootPoseFar = new Pose(24, 96, Math.toRadians(180)); //Change Coordinates
+        final Pose grabPose1 = new Pose(46, 58, Math.toRadians(180));
+        final Pose grabPose1One = new Pose(38, 58, Math.toRadians(180));
+        final Pose grabPose1Two = new Pose(31, 58, Math.toRadians(180));
         final Pose grabbed1 = new Pose(20, 58, Math.toRadians(180));
         final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
         final Pose ramp = new Pose(15, 70, Math.toRadians(180));
-        final Pose grabPose2 = new Pose(48, 34, Math.toRadians(180));
-        final Pose grabPose2One = new Pose(39, 34, Math.toRadians(180));
-        final Pose grabPose2Two = new Pose(30, 34, Math.toRadians(180));
+        final Pose grabPose2 = new Pose(46, 34, Math.toRadians(180));
+        final Pose grabPose2One = new Pose(38, 34, Math.toRadians(180));
+        final Pose grabPose2Two = new Pose(31, 34, Math.toRadians(180));
         final Pose grabbed2 = new Pose(20, 34, Math.toRadians(180));
-        final Pose grabPose3 = new Pose(32, 16, Math.toRadians(180));
-        final Pose grabbed3 = new Pose(10, 16, Math.toRadians(180));
+        final Pose grabPose3 = new Pose(12, 20, Math.toRadians(200));
+        final Pose grabPose3One = new Pose(12, 18, Math.toRadians(200));
+        final Pose grabPose3Two = new Pose(12, 11, Math.toRadians(200));
+        final Pose grabbed3 = new Pose(12, 10, Math.toRadians(180));
         final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));
 
         preload = follower.pathBuilder()
