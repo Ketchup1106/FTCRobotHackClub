@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.blueAutos;
+package org.firstinspires.ftc.teamcode.opmodes.auto.redAutos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.pedropathing.follower.Follower;
@@ -47,14 +47,14 @@ public class RedFar extends OpMode {
 
     int step = 0;
     double targetVel = 0;
-    double goalX = 6;
+    double goalX = 138;
     double goalY = 138;
     double goalDist;
     double goalAngle;
     String order = "null";
     double disX;
     double disY;
-    String intakeSide = "front";
+    String intakeSide = "back";
     int ballCount = 3;
     boolean launched = false;
 
@@ -74,14 +74,14 @@ public class RedFar extends OpMode {
 
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56.95, 8.5965,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(56.95, 8.5965, Math.toRadians(180)));
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
         intake.init(hardwareMap);
         aprilTagStuff.init(hardwareMap, telemetry);
 
-        buildPaths();   // ← ONLY builds, does NOT runFront anything
+        buildPaths();   // ← ONLY builds, does NOT runBack anything
         testDexer.currentOrder = "PPG";
         runtime.reset();
         grabbing = false;
@@ -124,7 +124,7 @@ public class RedFar extends OpMode {
         RobotConstants.order = order;
         runtime.reset();
         spindexerDelayTimer.reset();
-        RobotConstants.side = "blue";
+        RobotConstants.side = "red";
     }
 
     public void loop(){
@@ -215,7 +215,7 @@ public class RedFar extends OpMode {
                     }
                     break;
                 }
-                intakeSide = "front";
+                intakeSide = "back";
                 testDexer.setSpinState(1);
                 step++;
                 break;
@@ -234,8 +234,8 @@ public class RedFar extends OpMode {
             //////////////////////////////////////
             case 3:
                 if (!follower.isBusy()) {
-                    intake.runFront();
-                    intakeSide = "front";
+                    intake.runBack();
+                    intakeSide = "back";
 //                    testDexer.spinToNext(intakeSide);
                     step++;
                 }
@@ -339,8 +339,8 @@ public class RedFar extends OpMode {
             ///////////////////////////////////////////////////////////////////
             case 12:
                 if (!follower.isBusy()) {
-                    intake.runFront();
-                    intakeSide = "front";
+                    intake.runBack();
+                    intakeSide = "back";
                     testDexer.setSpinState(1);
                     step++;
                 }
@@ -451,8 +451,8 @@ public class RedFar extends OpMode {
             case 22:
                 if (!follower.isBusy()) {
                     follower.setMaxPower(0.4);
-                    intake.runFront();
-                    intakeSide = "front";
+                    intake.runBack();
+                    intakeSide = "back";
                     testDexer.setSpinState(1);
                     follower.followPath(grab4);
                     spindexerDelayTimer.reset();
@@ -464,11 +464,11 @@ public class RedFar extends OpMode {
             case 23:
                 if(!gottenBall){
                     if(spindexerDelayTimer.seconds() > 0.7 && ballCount == 0){
-                        testDexer.spinToNext("front");
+                        testDexer.spinToNext("back");
                         ballCount++;
                     }
                     if(spindexerDelayTimer.seconds() > 1.4 && ballCount  == 1){
-                        testDexer.spinToNext("front");
+                        testDexer.spinToNext("back");
                         ballCount++;
                     }
                     if(spindexerDelayTimer.seconds() > 2.1 && ballCount == 2){
@@ -520,25 +520,26 @@ public class RedFar extends OpMode {
     // ---------------------------------------------------------------------
     public void buildPaths() {
 
-        final Pose startPose = new Pose(56.95, 8.5965,  Math.toRadians(180));
-//        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
-        final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
-        final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
-        final Pose grabPose1 = new Pose(46, 58, Math.toRadians(180));
-        final Pose grabPose1One = new Pose(38, 58, Math.toRadians(180));
-        final Pose grabPose1Two = new Pose(31, 58, Math.toRadians(180));
-        final Pose grabbed1 = new Pose(20, 58, Math.toRadians(180));
-        final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
-        final Pose ramp = new Pose(15, 70, Math.toRadians(180));
-        final Pose grabPose2 = new Pose(46, 34, Math.toRadians(180));
-        final Pose grabPose2One = new Pose(38, 34, Math.toRadians(180));
-        final Pose grabPose2Two = new Pose(31, 34, Math.toRadians(180));
-        final Pose grabbed2 = new Pose(20, 34, Math.toRadians(180));
-        final Pose grabPose3 = new Pose(12, 20, Math.toRadians(200));
-        final Pose grabPose3One = new Pose(12, 18, Math.toRadians(200));
-        final Pose grabPose3Two = new Pose(12, 11, Math.toRadians(200));
-        final Pose grabbed3 = new Pose(12, 10, Math.toRadians(180));
-        final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));
+        final Pose startPose = new Pose(87.05, 8.5965,  Math.toRadians(180));
+// final Pose shootMid = new Pose(84, 8,  Math.toRadians(180));
+        final Pose shootMid2 = new Pose(94, 50,  Math.toRadians(180));
+        final Pose shootPoseFar = new Pose(84, 16, Math.toRadians(180));
+        final Pose grabPose1 = new Pose(98, 58, Math.toRadians(180));
+        final Pose grabPose1One = new Pose(106, 58, Math.toRadians(180));
+        final Pose grabPose1Two = new Pose(113, 58, Math.toRadians(180));
+        final Pose grabbed1 = new Pose(124, 58, Math.toRadians(180));
+        final Pose rampMid = new Pose(122, 67, Math.toRadians(225));
+        final Pose ramp = new Pose(129, 70, Math.toRadians(180));
+        final Pose grabPose2 = new Pose(98, 34, Math.toRadians(180));
+        final Pose grabPose2One = new Pose(106, 34, Math.toRadians(180));
+        final Pose grabPose2Two = new Pose(113, 34, Math.toRadians(180));
+        final Pose grabbed2 = new Pose(124, 34, Math.toRadians(180));
+        final Pose grabPose3 = new Pose(132, 20, Math.toRadians(150));
+        final Pose grabPose3One = new Pose(132, 18, Math.toRadians(150));
+        final Pose grabPose3Two = new Pose(132, 11, Math.toRadians(150));
+        final Pose grabbed3 = new Pose(132, 10, Math.toRadians(180));
+        final Pose parkPose = new Pose(120, 70,   Math.toRadians(180));
+
 
         preload = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, startPose))
