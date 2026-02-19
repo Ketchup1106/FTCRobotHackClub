@@ -54,10 +54,10 @@ public class testShooter {
 
 
         shooter1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                180, 0, 0, 17.7
+                100, 0, 0, 16.8
         )); // 2.75 10
         shooter2.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                180    , 0, 0, 17.7
+                100    , 0, 0, 16.8
         )); //2.75 10
 
         intake.init(hwMap);
@@ -90,7 +90,7 @@ public class testShooter {
         switch(launchState){
 
             case IDLE:
-                spinUp(1300);
+                spinUp(velocity);
                 if(isActive) {
                     isActive = false;
                 }
@@ -165,17 +165,19 @@ public class testShooter {
 
     public double setVel(double distance){
         return MathFunctions.clamp(
-                (6.25175*distance)+726.08392
+                (0.00372448*Math.pow(distance, 2) +
+                (4.41519*distance)+
+                774.65528)
                 ,0, 2000);
     }
     public void setHood(double distance){
         hoodAngle.setPosition(
                 MathFunctions.clamp(
-                ((3.32168*(1/(Math.pow(10, 8)))) * Math.pow(distance, 4)) -
-                (0.0000116822* Math.pow(distance, 3)) +
-                (0.00132861*Math.pow(distance, 2)) -
-                (0.0435148*distance) +
-                (0.350932),
+                (-(8.95363*(1/(Math.pow(10, 9)))) * Math.pow(distance, 4)) +
+                (0.00000475784* Math.pow(distance, 3)) -
+                (0.000940881*Math.pow(distance, 2)) +
+                (0.0851894*distance) -
+                (2.16805),
                 0, 1));
     }
 }

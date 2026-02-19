@@ -123,10 +123,11 @@ public class blueTest extends OpMode {
         runtime.reset();
         spindexerDelayTimer.reset();
         RobotConstants.side = "blue";
+        targetVel = shooter.setVel(147.69020004518);
+        shooter.setHood(147.69020004518);
     }
 
     public void loop(){
-        Log.v("loop", "ginder");
         follower.update();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 180
         double poseX = follower.getPose().getX(); //get robot pose
@@ -142,9 +143,12 @@ public class blueTest extends OpMode {
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 //        turret.rotateToGoal(desiredTurretAngle);
-        targetVel = shooter.setVel(goalDist);
-        spinPos = testDexer.updatePos();
+        if(step > 4){
+            targetVel = shooter.setVel(142.03986147294617);
+        }
         shooter.setHood(goalDist);
+        spinPos = testDexer.updatePos();
+
 
         switch (testDexer.getSpinState()){
             case IDLE:
@@ -311,7 +315,7 @@ public class blueTest extends OpMode {
             /// Step 11: wait for shot to finish
             ///////////////////////////////////////////////////////////////////
             case 10:
-                turret.rotateToGoal(.37);
+                turret.rotateToGoal(.34);
                 if (follower.isBusy()){
                     break;
                 }

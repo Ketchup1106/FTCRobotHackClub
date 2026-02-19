@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.teamcode.subsystems.turretServo;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import android.util.Log;
 
 
 @TeleOp(name = "FAR Blue Teleop")
@@ -49,7 +48,7 @@ public class testOp extends OpMode {
     Intake intake = new Intake();
 
     //TouchySensor touchy1 = new TouchySensor();
-    AprilTagStuff aprilTagStuff = new AprilTagStuff();
+    //AprilTagStuff aprilTagStuff = new AprilTagStuff();
 
 
     boolean automatedDrive = false;
@@ -113,7 +112,6 @@ public class testOp extends OpMode {
         follower.setStartingPose(RobotConstants.autoEnd);
         follower.update();
         //touchy1.init(hardwareMap);
-        aprilTagStuff.init(hardwareMap, telemetry);
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
 
@@ -121,7 +119,6 @@ public class testOp extends OpMode {
     }
     public void start(){
         shooter.spinUp(1200);
-        aprilTimer.reset();
     }
 
     @Override
@@ -150,47 +147,12 @@ public class testOp extends OpMode {
         disX = goalX - poseX; //calculate difference
         disY = goalY - poseY;
 
-
+        int spinPos = testDexer.updatePos();
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-
-        if (isCheckingForApril){
-            aprilTagStuff.update();
-            AprilTagDetection id21 = aprilTagStuff.getTagById(21); //gpp
-            aprilTagStuff.displayDetection(id21);
-            AprilTagDetection id22 = aprilTagStuff.getTagById(22); //pgp
-            aprilTagStuff.displayDetection(id22);
-            AprilTagDetection id23 = aprilTagStuff.getTagById(23); //ppg
-            aprilTagStuff.displayDetection(id23);
-        }
-        if (aprilTagStuff.patternID == 21) {
-            isCheckingForApril = false;
-            order = "GPP";
-            aprilTagStuff.stop();
-        }
-        if (aprilTagStuff.patternID == 22) {
-            isCheckingForApril = false;
-            order = "PGP";
-            aprilTagStuff.stop();
-        }
-        if (aprilTagStuff.patternID == 23) {
-            isCheckingForApril = false;
-            order = "PPG";
-            aprilTagStuff.stop();
-        }
-        if(aprilTimer.seconds() > 15 && isCheckingForApril){
-            isCheckingForApril = false;
-            order = "No order was detected within 15 seconds!";
-            aprilTagStuff.stop();
-        }
-        telemetry.addData("Order: ", order);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
-//        Log.d("Drive Motor Power", "FrontLeftMotor: " + drive.getFrontLeftDrive());
-//        Log.d("Drive Motor Power", "FrontRightMotor: " + drive.getFrontRightDrive());
-//        Log.d("Drive Motor Power", "BackLeftMotor: " + drive.getBackLeftDrive());
-//        Log.d("Drive Motor Power", "BackRightMotor: " + drive.getBackRightDrive());
 
 
         //NEW CONTROLS _______________________________________________________________________________
@@ -263,11 +225,6 @@ public class testOp extends OpMode {
                         testDexer.spinToNext(intakeSide);
                         spindexerDelayTimer.reset();
                     }
-                    else if (gamepad2.bWasPressed()) { //manual in case of failure in sensor
-                        ballCount++;
-                        testDexer.spinToNext(intakeSide);
-                        spindexerDelayTimer.reset();
-                    }
                 }
                 else{
                     testDexer.setSpinState(3);
@@ -295,12 +252,14 @@ public class testOp extends OpMode {
                 }
                 break;
         }
-        if(gamepad2.aWasPressed() && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
-            testDexer.setSpinState(6);
+        if(gamepad2.aWasPressed()){
+            if( testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE) {
+                testDexer.setSpinState(6);
+            }
+            testDexer.spinToNextManual(intakeSide, spinPos);
+
         }
-        if(gamepad2.leftBumperWasPressed() && testDexer.getSpinState() == TestDexer.SpinState.MANUAL_OVERRIDE){
-            testDexer.spinToNextManual(intakeSide);
-        }
+
 
         if(slowMode){
             powerSetter = 0.6;
@@ -312,7 +271,7 @@ public class testOp extends OpMode {
             EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION();
         }
 
-        int spinPos = testDexer.updatePos();
+
         testDexer.setPowerToPosition2(spinPos, runtime.seconds());
 //        if(!locked){
         targetVel = shooter.setVel(goalDist);
@@ -332,48 +291,48 @@ public class testOp extends OpMode {
 
 
 
-        telemetry.addData("Testdexer Target Pos", "Target Pos: " + testDexer.getTargetPos());
-        ;
-        //telemetry.addData("Button status: ", touchy1.detectTouch());
-//        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
-//        telemetry.addData("robot pose: ", follower.getPose());
-//        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
-//        telemetry.addData("turret pos ", desiredTurretAngle);
-//        telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
-          telemetry.addData("Difference: ", testDexer.difference);
-//        telemetry.addData("power", testDexer.power);
-//        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
-//        telemetry.addData("shooter target velocity: ", targetVel);
-//        telemetry.addData("shootervel: ", shooter.getVelocity1());
-//        telemetry.addData("shooter state: ", shooter.getLauunchState());
-
+//        telemetry.addData("Testdexer Target Pos", "Target Pos: " + testDexer.getTargetPos());
+//        ;
+//        //telemetry.addData("Button status: ", touchy1.detectTouch());
+////        telemetry.addData("detectedColor Front: ", testDexer.getDetectedColorFront());
+////        telemetry.addData("robot pose: ", follower.getPose());
+////        telemetry.addData("detectedColor Back: ", testDexer.getDetectedColorBack());
+////        telemetry.addData("turret pos ", desiredTurretAngle);
+////        telemetry.addData("goalangle ", Math.toDegrees(goalAngle));
+//          telemetry.addData("Difference: ", testDexer.difference);
+////        telemetry.addData("power", testDexer.power);
+////        telemetry.addData("angle difference from goal", Math.toDegrees(goalAngle) - Math.toDegrees(follower.getHeading()));
+////        telemetry.addData("shooter target velocity: ", targetVel);
+////        telemetry.addData("shootervel: ", shooter.getVelocity1());
+////        telemetry.addData("shooter state: ", shooter.getLauunchState());
+//
           telemetry.addData("spindexer pos", spinPos);
         telemetry.addData("spinstate ", testDexer.getSpinState());
-//        telemetry.addData("spindexer target ", testDexer.getTargetPos());
+        telemetry.addData("spindexer target ", testDexer.getTargetPos());
 //        telemetry.addData("ballcount ", ballCount);
-//        telemetry.addData("current order ",testDexer.currentOrder);
-//        telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));
-//        telemetry.addData("P: ", P);
-//        telemetry.addData("I: ", I);
-//        telemetry.addData("D: ", D*1000000);
-//        telemetry.addData("stepSize: ", stepSizes[stepIndex] * 1000000);
-
-        //telemetry.addData("tuningservo pos", shooter.getServo());
-//        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
-//        telemetry.addData("Follower X: ", follower.getPose().getX());
-//        telemetry.addData("Follower Y ", follower.getPose().getY());
-//        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
-//        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
-//        telemetry.addData("Goal Dist: ", goalDist);
-//        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
-//        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
-//        telemetry.addData("is turning?", turningToShoot);
-//        telemetry.addData("is busy?", turret.getTurretStatus());
-//        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
-//        telemetry.addData("turret angle: ", turret.getCurrentPos());
-//        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
-
-//        telemetry.update();
+////        telemetry.addData("current order ",testDexer.currentOrder);
+////        telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));
+////        telemetry.addData("P: ", P);
+////        telemetry.addData("I: ", I);
+////        telemetry.addData("D: ", D*1000000);
+////        telemetry.addData("stepSize: ", stepSizes[stepIndex] * 1000000);
+//
+//        //telemetry.addData("tuningservo pos", shooter.getServo());
+////        telemetry.addData("Amount to Shoot: ", shooter.getAmountTOShoot());
+////        telemetry.addData("Follower X: ", follower.getPose().getX());
+////        telemetry.addData("Follower Y ", follower.getPose().getY());
+////        telemetry.addData("Follower heading rads ", follower.getPose().getHeading());
+////        telemetry.addData("Follower heading degs ", Math.toDegrees(follower.getPose().getHeading()));
+////        telemetry.addData("Goal Dist: ", goalDist);
+////        telemetry.addData("difference of turret to goal", Math.toDegrees(goalAngle) - Math.toDegrees(turret.getPosWithoutSubtractionFactor()) + 90 );
+////        telemetry.addData("angle from robot to goal", Math.toDegrees(goalAngle));
+////        telemetry.addData("is turning?", turningToShoot);
+////        telemetry.addData("is busy?", turret.getTurretStatus());
+////        telemetry.addData("turret angle: ", turret.getCurrentPos()/turret.ticksPerDegree);
+////        telemetry.addData("turret angle: ", turret.getCurrentPos());
+////        telemetry.addData("turnneeded", Math.toDegrees(turret.turnNeeded/turret.ticksPerRadian));
+//
+////        telemetry.update();
     }
     public void EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION(){
         follower.setPose(new Pose(8.95, 8.5965,  Math.toRadians(180))); //change later

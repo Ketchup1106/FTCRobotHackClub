@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.turretServo;
 
 
 @TeleOp(name = "random shitter")
@@ -32,7 +33,7 @@ public class randomShooter extends OpMode {
     boolean tuningservo = false;
     double targetServo = 0;
 
-
+    turretServo turret = new turretServo();
     double currTargetVelocity = high;
 
     double[] stepSizes = {100, 10, 1};
@@ -64,6 +65,7 @@ public class randomShooter extends OpMode {
 
         hood.setDirection(Servo.Direction.REVERSE);
         hood.setPosition(0);
+        turret.init(hardwareMap);
         telemetry.addLine("Init Complete");
 
     }
@@ -80,6 +82,7 @@ public class randomShooter extends OpMode {
         disY += turretYOffset;
         double goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
 
+        turret.rotateToGoal(0);
         if(gamepad1.yWasPressed()){
             if(currTargetVelocity == high){
                 currTargetVelocity= low;

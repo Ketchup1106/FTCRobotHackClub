@@ -22,7 +22,7 @@ public class servoBoostTest extends OpMode {
     @Override
     public void init(){
         test = hardwareMap.get(Servo.class, "turret");
-        test.scaleRange(0.545, .95-.0667);
+        test.scaleRange(0.56, .95);
         test.setDirection(Servo.Direction.REVERSE);
     }
 

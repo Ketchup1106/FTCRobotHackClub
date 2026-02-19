@@ -25,7 +25,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 @TeleOp(name = "shoter pid tuner")
-@Disabled
 public class shooterPIDTunerOp extends OpMode {
 
     public DcMotorEx shooter1;
@@ -33,8 +32,8 @@ public class shooterPIDTunerOp extends OpMode {
 
     public Servo hoodAngle;
 
-    double low = 600;
-    double high = 1200;
+    double low = 1000;
+    double high = 1600;
 
     double hoodAnglePos = 0;
 
@@ -55,7 +54,7 @@ public class shooterPIDTunerOp extends OpMode {
         hoodAngle = hardwareMap.get(Servo.class, "hoodAngle");
 
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
 
         shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -128,6 +127,7 @@ public class shooterPIDTunerOp extends OpMode {
         telemetry.addData("Tuning F: ", F);
         telemetry.addData("Step Size: ", stepSizes[stepIndex]);
         telemetry.addLine("Y: switches velocity\nB: increase step size");
+        telemetry.update();
 
         //P 75
 

@@ -24,7 +24,7 @@ public class turretServo {
 
     public void init(HardwareMap hwMap){
         turret = hwMap.get(Servo.class, "turret");
-        turret.scaleRange(0.545, .95);
+        turret.scaleRange(.56, .95);
         turret.setDirection(Servo.Direction.REVERSE);
 
     }

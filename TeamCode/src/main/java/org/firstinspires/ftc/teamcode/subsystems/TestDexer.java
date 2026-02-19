@@ -160,27 +160,31 @@ public class TestDexer {
             }
         }
     }
-    public void spinToNextManual(String frontOrBack){
+    public void spinToNextManual(String frontOrBack, int spinPos){
+        int subtractor = 0;
+        if(Math.abs(spinPos/8192) >= 1){
+            subtractor = 16384;
+        }
         if(frontOrBack.equals("front")){
             if(targetPos == frontPos || targetPos == -16384){
-                targetPos = frontSecondIntakePos - 16384;
+                targetPos = frontSecondIntakePos - subtractor;
             }
             else if(targetPos == frontSecondIntakePos || targetPos == frontSecondIntakePos - 16384){
-                targetPos = frontThirdIntakePos - 16384;
+                targetPos = frontThirdIntakePos - subtractor;
             }
-            else if(targetPos == frontThirdIntakePos || targetPos == frontThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3){
-                targetPos = frontPos - 16384;
+            else if(targetPos == frontThirdIntakePos || targetPos == frontThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3 || targetPos == shootStartingAtSpot1 + 13000 || targetPos == shootStartingAtSpot2 + 13000 || targetPos == shootStartingAtSpot3 + 13000){
+                targetPos = frontPos - subtractor;
             }
         }
         else if(frontOrBack.equals("back")){
             if(targetPos == backPos || targetPos == backPos-16384){
-                targetPos = backSecondIntakePos - 16384;
+                targetPos = backSecondIntakePos - subtractor;
             }
             else if(targetPos == backSecondIntakePos || targetPos == backSecondIntakePos - 16384){
-                targetPos = backThirdIntakePos - 16384;
+                targetPos = backThirdIntakePos - subtractor;
             }
-            else if(targetPos == backThirdIntakePos ||  targetPos == backThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3){
-                targetPos = backPos - 16384;
+            else if(targetPos == backThirdIntakePos ||  targetPos == backThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3  || targetPos == shootStartingAtSpot1 + 13000 || targetPos == shootStartingAtSpot2 + 13000 || targetPos == shootStartingAtSpot3 + 13000){
+                targetPos = backPos - subtractor;
             }
         }
     }

@@ -289,7 +289,7 @@ public class closeBlueTestOp extends OpMode {
             //add shoot 3 in pattern;
         }
         if(gamepad1.dpadRightWasPressed()){
-            testDexer.spinToNextManual("front");
+           // testDexer.spinToNextManual("front", spinPos);
         }
         /*OLD CONTROLS ------------------------------------------------------------------------------
         if (gamepad2.yWasPressed()) { // shoot 3
