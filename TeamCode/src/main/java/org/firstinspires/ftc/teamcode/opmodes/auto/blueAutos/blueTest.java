@@ -27,7 +27,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import android.util.Log;
 
-@Autonomous(name = "BLUE TEST LOOPTIME", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
+@Autonomous(name = "Blue Far Regular", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
 
 public class blueTest extends OpMode {
 

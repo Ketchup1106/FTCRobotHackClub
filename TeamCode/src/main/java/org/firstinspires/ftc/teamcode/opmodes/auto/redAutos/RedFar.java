@@ -29,7 +29,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import android.util.Log;
 
 @Disabled
-@Autonomous(name = "BLUE CLOSE TIPO", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
+@Autonomous(name = "Red Far Regular", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
 
 public class RedFar extends OpMode {
 
@@ -89,7 +89,7 @@ public class RedFar extends OpMode {
         telemetry.update();
         testDexer.setUpForShooting("blah");
         testDexer.encoder.setDirection(DcMotorEx.Direction.REVERSE);
-        turret.rotateToGoal(0.38);
+        turret.rotateToGoal(0.7);
 
     }
     public void init_loop(){
@@ -313,7 +313,7 @@ public class RedFar extends OpMode {
             /// Step 11: wait for shot to finish
             ///////////////////////////////////////////////////////////////////
             case 10:
-                turret.rotateToGoal(.37);
+                turret.rotateToGoal(.7);
                 if (follower.isBusy()){
                     break;
                 }
