@@ -111,7 +111,7 @@ public class testOp extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         //follower.setStartingPose(new Pose(32, 135.5,  Math.toRadians(90)));
         follower.setStartingPose(RobotConstants.autoEnd);
-        follower.update();
+        follower.poseTracker.update();
         //touchy1.init(hardwareMap);
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);

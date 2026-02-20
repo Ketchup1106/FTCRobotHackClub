@@ -203,8 +203,10 @@ public class BlueCloseActual extends OpMode {
             /// Step 1: shoot preload
             ///////////////////////////////////////////////////////////////////
             case 0:
-                shooter.shoot3();
-                step++;
+                if(!follower.isBusy()){
+                    shooter.shoot3();
+                    step++;
+                }
                 break;
             ///////////////////////////////////////////////////////////////////
             /// Step 2: wait until shooting is done

@@ -479,8 +479,4 @@ public class TestDexer {
         targetPos = pos;
     }
 
-    public void resetEncoder(){
-        encoder.setMode()
-    }
-
 }
