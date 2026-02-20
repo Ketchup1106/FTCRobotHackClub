@@ -45,8 +45,8 @@ public class blueTest extends OpMode {
 
     int step = 0;
     double targetVel = 0;
-    double goalX = 6;
-    double goalY = 138;
+    double goalX = 0;
+    double goalY = 144;
     double goalDist;
     double goalAngle;
     String order = "null";
@@ -87,7 +87,7 @@ public class blueTest extends OpMode {
         telemetry.update();
         testDexer.setUpForShooting("blah");
         testDexer.encoder.setDirection(DcMotorEx.Direction.REVERSE);
-        turret.rotateToGoal(0.38);
+//        turret.rotateToGoal(0.4);
 
     }
     public void init_loop(){
@@ -123,7 +123,7 @@ public class blueTest extends OpMode {
         runtime.reset();
         spindexerDelayTimer.reset();
         RobotConstants.side = "blue";
-        targetVel = shooter.setVel(147.69020004518);
+        targetVel = shooter.setVel(147.69020004518); //
         shooter.setHood(147.69020004518);
     }
 
@@ -142,11 +142,11 @@ public class blueTest extends OpMode {
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-//        turret.rotateToGoal(desiredTurretAngle);
+        turret.rotateToGoal(desiredTurretAngle);
         if(step > 4){
-            targetVel = shooter.setVel(142.03986147294617);
+            targetVel = shooter.setVel(144); //142.03986147294617
         }
-        shooter.setHood(goalDist);
+        shooter.setHood(goalDist + 4);
         spinPos = testDexer.updatePos();
 
 
@@ -269,7 +269,7 @@ public class blueTest extends OpMode {
             /// Step 7: ball 2
             ///////////////////////////////////////////////////////////////////
             case 6:
-                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 30)){
                     follower.followPath(jerk2Two);
                     step++;
                     spindexerDelayTimer.reset();
@@ -293,7 +293,7 @@ public class blueTest extends OpMode {
             /// Step 9: ball 3
             ///////////////////////////////////////////////////////////////////
             case 8:
-                if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 30)) {
                     follower.followPath(grab2);
                     step++;
                 }
@@ -315,7 +315,7 @@ public class blueTest extends OpMode {
             /// Step 11: wait for shot to finish
             ///////////////////////////////////////////////////////////////////
             case 10:
-                turret.rotateToGoal(.34);
+//                turret.rotateToGoal(.38);
                 if (follower.isBusy()){
                     break;
                 }
@@ -375,7 +375,7 @@ public class blueTest extends OpMode {
             /// Step 16: ball 5
             ///////////////////////////////////////////////////////////////////
             case 15:
-                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 30)){
                     follower.followPath(jerk3Two);
                     step++;
                     spindexerDelayTimer.reset();
@@ -400,7 +400,7 @@ public class blueTest extends OpMode {
             /// Step 18: ball 6
             ///////////////////////////////////////////////////////////////////
             case 17:
-                if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 30)) {
                     follower.followPath(grab3);
                     step++;
                 }

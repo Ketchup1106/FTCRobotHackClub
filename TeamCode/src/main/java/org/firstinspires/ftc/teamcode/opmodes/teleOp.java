@@ -28,9 +28,9 @@ public class teleOp extends OpMode {
     Turret turret = new Turret();
 
     SpinDexer spindexer = new SpinDexer();
-    double goalX = 12;
+    double goalX = 0;
 
-    double goalY = 136;
+    double goalY = 144;
 
     Intake intake = new Intake();
 

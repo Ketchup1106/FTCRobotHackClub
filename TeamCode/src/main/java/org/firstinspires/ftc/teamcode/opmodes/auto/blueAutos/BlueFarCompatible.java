@@ -123,6 +123,8 @@ public class BlueFarCompatible extends OpMode {
         runtime.reset();
         spindexerDelayTimer.reset();
         RobotConstants.side = "blue";
+        targetVel = shooter.setVel(147.69020004518); //
+        shooter.setHood(147.69020004518);
     }
 
     public void loop(){
@@ -141,8 +143,11 @@ public class BlueFarCompatible extends OpMode {
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-//        turret.rotateToGoal(desiredTurretAngle);
-        targetVel = shooter.setVel(goalDist);
+        turret.rotateToGoal(desiredTurretAngle);
+        //targetVel = shooter.setVel(goalDist);
+        if(step > 4){
+            targetVel = shooter.setVel(144); //142.03986147294617
+        }
         spinPos = testDexer.updatePos();
         shooter.setHood(goalDist);
 
@@ -459,34 +464,11 @@ public class BlueFarCompatible extends OpMode {
                 break;
 
             case 23:
-                if(shooter.isActive){
-                    shooter.updateState(targetVel, spinPos, testDexer.targetPos);
-                    if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
-                        testDexer.setSpinState(4);
-                    }
-                    break;
+                if(!follower.isBusy()){
+                    step++;
                 }
-                testDexer.setSpinState(0);
-                step++;
                 break;
             case 24:
-                if (!follower.isBusy()) {
-                    follower.followPath(set4);
-                    follower.setMaxPower(1);
-                    intake.runFront();
-                    intakeSide = "front";
-                    testDexer.setSpinState(1);
-                    step++;
-                }
-                break;
-            case 25:
-                if (!follower.isBusy()) {
-                    intake.stopFront();
-                    follower.followPath(shoot4);
-                    step++;
-                }
-                break;
-            case 26:
                 if(shooter.isActive){
                     shooter.updateState(targetVel, spinPos, testDexer.targetPos);
                     if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
@@ -497,12 +479,14 @@ public class BlueFarCompatible extends OpMode {
                 testDexer.setSpinState(0);
                 step++;
                 break;
-            case 27:
-                follower.followPath(park);
-                step++;
+            case 25:
+                if(!follower.isBusy()) {
+                    follower.followPath(park);
+                    step++;
+                }
                 break;
 
-            case 28: //May have to add Parametric Call back if not enough time to reach this
+            case 26: //May have to add Parametric Call back if not enough time to reach this
                 if(!follower.isBusy()) {
                     RobotConstants.autoEnd = follower.getPose();
                     terminateOpModeNow();
@@ -521,7 +505,7 @@ public class BlueFarCompatible extends OpMode {
         final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(60, 16, Math.toRadians(180)); //Change Coordinates
         final Pose grabPose1 = new Pose(46, 34, Math.toRadians(180));
-        final Pose grabPose1One = new Pose(38, 34, Math.toRadians(180));
+        final Pose grabPose1One = new Pose(39, 34, Math.toRadians(180));
         final Pose grabPose1Two = new Pose(31, 34, Math.toRadians(180));
         final Pose grabbed1 = new Pose(20, 34, Math.toRadians(180));
         final Pose rampMid = new Pose(22, 67, Math.toRadians(225));

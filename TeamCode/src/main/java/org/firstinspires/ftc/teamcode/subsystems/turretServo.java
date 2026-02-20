@@ -14,7 +14,7 @@ public class turretServo {
 
     double gearRatio = 26/103.0;
 
-    double turrConst = (double)  1/8.25;
+    double turrConst = (double)  1/7.5;
 
     public double posPerDegree = 1.0/360;
     public double posPerRadian = 1/( Math.PI);

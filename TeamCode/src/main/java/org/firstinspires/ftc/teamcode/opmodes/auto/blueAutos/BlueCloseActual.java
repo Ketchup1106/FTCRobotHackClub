@@ -27,9 +27,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import android.util.Log;
 
-@Autonomous(name = "BLUE CLOSE TIPO", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
+@Autonomous(name = "Blue Close Regular", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
 
-public class BlueClose extends OpMode {
+public class BlueCloseActual extends OpMode {
 
     Follower follower;
     ElapsedTime spindexerDelayTimer = new ElapsedTime();
@@ -72,7 +72,7 @@ public class BlueClose extends OpMode {
 
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(16.482237, 110.092481,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(56.95, 8.5965,  Math.toRadians(180)));
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -123,10 +123,11 @@ public class BlueClose extends OpMode {
         runtime.reset();
         spindexerDelayTimer.reset();
         RobotConstants.side = "blue";
+        targetVel = shooter.setVel(147.69020004518);
+        shooter.setHood(147.69020004518);
     }
 
     public void loop(){
-        Log.v("loop", "ginder");
         follower.update();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 180
         double poseX = follower.getPose().getX(); //get robot pose
@@ -142,9 +143,12 @@ public class BlueClose extends OpMode {
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 //        turret.rotateToGoal(desiredTurretAngle);
-        targetVel = shooter.setVel(goalDist);
-        spinPos = testDexer.updatePos();
+        if(step > 4){
+            targetVel = shooter.setVel(142.03986147294617);
+        }
         shooter.setHood(goalDist);
+        spinPos = testDexer.updatePos();
+
 
         switch (testDexer.getSpinState()){
             case IDLE:
@@ -298,17 +302,14 @@ public class BlueClose extends OpMode {
             /// Step 10: go back to shoot
             ///////////////////////////////////////////////////////////////////
             case 9:
-                if (!follower.isBusy()) {
-                    follower.followPath(emptyRamp);
-                    step++;
-                }
-                break;
-
-            case 10:
-                if (!follower.isBusy()) {
+                if(!follower.isBusy()){
                     intake.stopFront();
                     testDexer.setSpinState(3);
                     follower.setMaxPower(1);
+                    follower.followPath(emptyRamp);
+                }
+            case 10:
+                if (!follower.isBusy()) {
                     follower.followPath(shoot2);
                     step++;
                 }
@@ -318,7 +319,7 @@ public class BlueClose extends OpMode {
             /// Step 11: wait for shot to finish
             ///////////////////////////////////////////////////////////////////
             case 11:
-                turret.rotateToGoal(.37);
+                turret.rotateToGoal(.34);
                 if (follower.isBusy()){
                     break;
                 }
@@ -527,7 +528,7 @@ public class BlueClose extends OpMode {
 
         final Pose startPose = new Pose(16.482237, 110.092481,  Math.toRadians(180));
 //        final Pose shootMid = new Pose(60, 8,  Math.toRadians(180));
-        final Pose shootMid2 = new Pose(50, 50,  Math.toRadians(180));
+        final Pose shootMid2 = new Pose(40, 70,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(24, 96, Math.toRadians(180)); //Change Coordinates
         final Pose grabPose1 = new Pose(46, 58, Math.toRadians(180));
         final Pose grabPose1One = new Pose(38, 58, Math.toRadians(180));
@@ -535,14 +536,14 @@ public class BlueClose extends OpMode {
         final Pose grabbed1 = new Pose(20, 58, Math.toRadians(180));
         final Pose rampMid = new Pose(22, 67, Math.toRadians(225));
         final Pose ramp = new Pose(15, 70, Math.toRadians(180));
-        final Pose grabPose2 = new Pose(46, 34, Math.toRadians(180));
-        final Pose grabPose2One = new Pose(38, 34, Math.toRadians(180));
-        final Pose grabPose2Two = new Pose(31, 34, Math.toRadians(180));
-        final Pose grabbed2 = new Pose(20, 34, Math.toRadians(180));
-        final Pose grabPose3 = new Pose(12, 20, Math.toRadians(200));
-        final Pose grabPose3One = new Pose(12, 18, Math.toRadians(200));
-        final Pose grabPose3Two = new Pose(12, 11, Math.toRadians(200));
-        final Pose grabbed3 = new Pose(12, 10, Math.toRadians(180));
+        final Pose grabPose2 = new Pose(10, 60, Math.toRadians(140));
+        final Pose grabPose2One = new Pose(10, 60, Math.toRadians(140));
+        final Pose grabPose2Two = new Pose(10, 60, Math.toRadians(140));
+        final Pose grabbed2 = new Pose(10, 60, Math.toRadians(140));
+        final Pose grabPose3 = new Pose(46, 84, Math.toRadians(200));
+        final Pose grabPose3One = new Pose(38, 84, Math.toRadians(200));
+        final Pose grabPose3Two = new Pose(31, 84, Math.toRadians(200));
+        final Pose grabbed3 = new Pose(20, 84, Math.toRadians(180));
         final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));
 
         preload = follower.pathBuilder()

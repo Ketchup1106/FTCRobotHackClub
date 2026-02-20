@@ -28,7 +28,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import android.util.Log;
 
-@Disabled
 @Autonomous(name = "Red Far Regular", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
 
 public class RedFar extends OpMode {
