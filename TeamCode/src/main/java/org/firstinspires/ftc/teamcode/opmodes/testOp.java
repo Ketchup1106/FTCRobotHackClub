@@ -5,6 +5,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -269,6 +270,17 @@ public class testOp extends OpMode {
         }
         if(gamepad2.dpadDownWasPressed()){ //corner calib
             EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION();
+        }
+
+        if(testDexer.resetNeeded){
+            if(spinPos == testDexer.getTargetPos()){
+                testDexer.encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                testDexer.encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+                testDexer.setTargetPos(0);
+            }
+            if(spinPos == 0){
+                testDexer.resetNeeded = false;
+            }
         }
 
 

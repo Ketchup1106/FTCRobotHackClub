@@ -21,6 +21,7 @@ public class TestDexer {
     ColorSensorBackTemp colorSensorBack = new ColorSensorBackTemp();
 
 
+    public boolean resetNeeded = false;
 
     final double encoderFactor = 8192/360.0; //ticks of encoder per degree
     public double frontPos = 0; //0
@@ -175,6 +176,10 @@ public class TestDexer {
             else if(targetPos == frontThirdIntakePos || targetPos == frontThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3 || targetPos == shootStartingAtSpot1 + 13000 || targetPos == shootStartingAtSpot2 + 13000 || targetPos == shootStartingAtSpot3 + 13000){
                 targetPos = frontPos - subtractor;
             }
+            if(targetPos > spinPos){
+                targetPos -= 16384;
+                resetNeeded = true;
+            }
         }
         else if(frontOrBack.equals("back")){
             if(targetPos == backPos || targetPos == backPos-16384){
@@ -185,6 +190,10 @@ public class TestDexer {
             }
             else if(targetPos == backThirdIntakePos ||  targetPos == backThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3  || targetPos == shootStartingAtSpot1 + 13000 || targetPos == shootStartingAtSpot2 + 13000 || targetPos == shootStartingAtSpot3 + 13000){
                 targetPos = backPos - subtractor;
+            }
+            if(targetPos > spinPos){
+                targetPos -= 16384;
+                resetNeeded = true;
             }
         }
     }
@@ -468,6 +477,10 @@ public class TestDexer {
 
     public void setTargetPos(double pos){
         targetPos = pos;
+    }
+
+    public void resetEncoder(){
+        encoder.setMode()
     }
 
 }

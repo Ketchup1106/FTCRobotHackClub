@@ -45,8 +45,8 @@ public class BlueCloseActual extends OpMode {
 
     int step = 0;
     double targetVel = 0;
-    double goalX = 6;
-    double goalY = 138;
+    double goalX = 0;
+    double goalY = 144;
     double goalDist;
     double goalAngle;
     String order = "null";
@@ -72,7 +72,7 @@ public class BlueCloseActual extends OpMode {
 
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56.95, 8.5965,  Math.toRadians(180)));
+        follower.setStartingPose(new Pose(16.482237, 110.092481,  Math.toRadians(180)));
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -123,8 +123,9 @@ public class BlueCloseActual extends OpMode {
         runtime.reset();
         spindexerDelayTimer.reset();
         RobotConstants.side = "blue";
-        targetVel = shooter.setVel(147.69020004518);
-        shooter.setHood(147.69020004518);
+        targetVel = shooter.setVel(53.665631459995);
+        shooter.setHood(53.665631459995);
+        follower.followPath(preload);
     }
 
     public void loop(){
@@ -144,7 +145,7 @@ public class BlueCloseActual extends OpMode {
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
 //        turret.rotateToGoal(desiredTurretAngle);
         if(step > 4){
-            targetVel = shooter.setVel(142.03986147294617);
+            targetVel = shooter.setVel(53.665631459995);
         }
         shooter.setHood(goalDist);
         spinPos = testDexer.updatePos();
@@ -547,9 +548,9 @@ public class BlueCloseActual extends OpMode {
         final Pose parkPose = new Pose(24, 70,   Math.toRadians(180));
 
         preload = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, startPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), startPose.getHeading())
-                .addParametricCallback(0.75, () -> {shooter.shoot3();})
+                .addPath(new BezierLine(startPose, shootPoseFar))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPoseFar.getHeading())
+                .addParametricCallback(1, () -> {shooter.shoot3();})
                 .build();
 
         set2 = follower.pathBuilder()
