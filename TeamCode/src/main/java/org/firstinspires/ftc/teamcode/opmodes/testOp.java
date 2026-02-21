@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.util.Log;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
@@ -154,7 +156,7 @@ public class testOp extends OpMode {
         desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
-
+        Log.v("Turn Pow: ", " " + gamepad1.right_stick_x);
 
         //NEW CONTROLS _______________________________________________________________________________
 

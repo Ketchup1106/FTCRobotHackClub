@@ -41,7 +41,7 @@ public class BlueCloseActual extends OpMode {
     turretServo turret = new turretServo();
     AprilTagStuff aprilTagStuff = new AprilTagStuff();
     // Paths
-    PathChain preload, set2, jerk2One, jerk2Two, grab2, emptyRamp, shoot2, set3, jerk3One, jerk3Two, grab3, shoot3, set4, grab4, shoot4, park;
+    PathChain preload, set2, jerk2One, jerk2Two, grab2, emptyRamp, shoot2, set3, jerk3One, jerk3Two, grab3, shoot3, set4, jerk4One, jerk4Two, grab4, shoot4, park;
 
     int step = 0;
     double targetVel = 0;
@@ -456,49 +456,83 @@ public class BlueCloseActual extends OpMode {
                     step++;
                 }
                 break;
-
             case 23:
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.4);
                     intake.runFront();
                     intakeSide = "front";
                     testDexer.setSpinState(1);
+                    step++;
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 14: ball 4
+            ///////////////////////////////////////////////////////////////////
+            case 24:
+                if(!follower.isBusy()){
+                    follower.followPath(jerk4One);
+                    step++;
+                    spindexerDelayTimer.reset();
+                }
+
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 15: wait for the dexer to move or if an error has occurred, move to next step
+            ///////////////////////////////////////////////////////////////////
+            case 25: //wait for the dexer to move or if an error has occurred, move to next step
+                if(!follower.isBusy()) {
+                    if(spindexerDelayTimer.seconds() > .7){
+                        step++;
+                        ballCount++;
+                        testDexer.spinToNext(intakeSide);
+                    }
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 16: ball 5
+            ///////////////////////////////////////////////////////////////////
+            case 26:
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                    follower.followPath(jerk4Two);
+                    step++;
+                    spindexerDelayTimer.reset();
+                }
+                break;
+            ///////////////////////////////////////////////////////////////////
+            /// Step 17: wait for the dexer to move or if an error has occurred, move to next step
+            ///////////////////////////////////////////////////////////////////
+            case 27: //wait for the dexer to move or if an error has occurred, move to next step
+                if(!follower.isBusy()) {
+                    if(spindexerDelayTimer.seconds() > .7){
+                        step++;
+                        ballCount++;
+                        testDexer.spinToNext(intakeSide);
+                    }
+                }
+                break;
+
+            case 28:
+                if (!follower.isBusy()) {
                     follower.followPath(grab4);
                     spindexerDelayTimer.reset();
-                    gottenBall = false;
                     step++;
                 }
                 break;
 
-            case 24:
-                if(!gottenBall){
-                    if(spindexerDelayTimer.seconds() > 0.7 && ballCount == 0){
-                        testDexer.spinToNext("front");
-                        ballCount++;
-                    }
-                    if(spindexerDelayTimer.seconds() > 1.4 && ballCount  == 1){
-                        testDexer.spinToNext("front");
-                        ballCount++;
-                    }
-                    if(spindexerDelayTimer.seconds() > 2.1 && ballCount == 2){
-                        gottenBall = true;
-                    }
-                    break;
-                }
+            case 29:
                 intake.stopFront();
                 follower.setMaxPower(1);
                 follower.followPath(shoot4);
                 step++;
 
                 break;
-            case 25:
+            case 30:
                 if(follower.isBusy()){
                     break;
                 }
                 step++;
                 break;
 
-            case 26:
+            case 31:
                 if(shooter.isActive){
                     shooter.updateState(targetVel, spinPos, testDexer.targetPos);
                     if(shooter.getLauunchState() == testShooter.LaunchState.LAUNCH && !launched){
@@ -510,12 +544,14 @@ public class BlueCloseActual extends OpMode {
                 step++;
                 break;
 
-            case 27:
-                follower.followPath(park);
-                step++;
+            case 32:
+                if(!follower.isBusy()){
+                    follower.followPath(park);
+                    step++;
+                }
                 break;
 
-            case 28: //May have to add Parametric Call back if not enough time to reach this
+            case 33: //May have to add Parametric Call back if not enough time to reach this
                 if(!follower.isBusy()) {
                     RobotConstants.autoEnd = follower.getPose();
                     terminateOpModeNow();
@@ -609,9 +645,17 @@ public class BlueCloseActual extends OpMode {
                 .addPath(new BezierLine(shootPoseFar, grabPose3))
                 .setLinearHeadingInterpolation(shootPoseFar.getHeading(), grabPose3.getHeading())
                 .build();
+        jerk4One = follower.pathBuilder()
+                .addPath(new BezierLine(grabPose3, grabPose3One))
+                .setLinearHeadingInterpolation(grabPose3.getHeading(), grabPose3One.getHeading())
+                .build();
+        jerk4Two = follower.pathBuilder()
+                .addPath(new BezierLine(grabPose3One, grabPose3Two))
+                .setLinearHeadingInterpolation(grabPose3One.getHeading(), grabPose3Two.getHeading())
+                .build();
         grab4 = follower.pathBuilder()
-                .addPath(new BezierLine(grabPose3, grabbed3))
-                .setLinearHeadingInterpolation(grabPose3.getHeading(), grabbed3.getHeading())
+                .addPath(new BezierLine(grabPose3Two, grabbed3))
+                .setLinearHeadingInterpolation(grabPose3Two.getHeading(), grabbed3.getHeading())
                 .build();
         shoot4 = follower.pathBuilder()
                 .addPath(new BezierLine(grabbed3, shootPoseFar))
