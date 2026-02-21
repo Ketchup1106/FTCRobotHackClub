@@ -29,7 +29,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import android.util.Log;
 
 @Autonomous(name = "Red Far Regular", group = "Autonomous", preselectTeleOp = "FAR Blue Teleop")
-
+@Disabled
 public class RedFar extends OpMode {
 
     Follower follower;
@@ -46,8 +46,8 @@ public class RedFar extends OpMode {
 
     int step = 0;
     double targetVel = 0;
-    double goalX = 138;
-    double goalY = 138;
+    double goalX = 144;
+    double goalY = 144;
     double goalDist;
     double goalAngle;
     String order = "null";
@@ -73,7 +73,7 @@ public class RedFar extends OpMode {
 
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(56.95, 8.5965, Math.toRadians(180)));
+        follower.setStartingPose(new Pose(87.05, 8.5965, Math.toRadians(180)));
         turret.init(hardwareMap);
         testDexer.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -88,7 +88,7 @@ public class RedFar extends OpMode {
         telemetry.update();
         testDexer.setUpForShooting("blah");
         testDexer.encoder.setDirection(DcMotorEx.Direction.REVERSE);
-        turret.rotateToGoal(0.7);
+
 
     }
     public void init_loop(){
@@ -127,7 +127,6 @@ public class RedFar extends OpMode {
     }
 
     public void loop(){
-        Log.v("loop", "ginder");
         follower.update();
         robotHeading = follower.getHeading(); //will always be something plus that starting of 180
         double poseX = follower.getPose().getX(); //get robot pose
@@ -141,8 +140,8 @@ public class RedFar extends OpMode {
 
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
-        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-//        turret.rotateToGoal(desiredTurretAngle);
+        desiredTurretAngle = turret.calculateTurnRed(goalAngle, robotHeading);
+        turret.rotateToGoal(desiredTurretAngle);
         targetVel = shooter.setVel(goalDist);
         spinPos = testDexer.updatePos();
         shooter.setHood(goalDist);
@@ -233,7 +232,7 @@ public class RedFar extends OpMode {
             //////////////////////////////////////
             case 3:
                 if (!follower.isBusy()) {
-                    intake.runBack();
+                    intake.runBackReverse();
                     intakeSide = "back";
 //                    testDexer.spinToNext(intakeSide);
                     step++;
@@ -266,7 +265,7 @@ public class RedFar extends OpMode {
             /// Step 7: ball 2
             ///////////////////////////////////////////////////////////////////
             case 6:
-                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.backSecondIntakePos, 50)){
                     follower.followPath(jerk2Two);
                     step++;
                     spindexerDelayTimer.reset();
@@ -289,8 +288,9 @@ public class RedFar extends OpMode {
             ///////////////////////////////////////////////////////////////////
             /// Step 9: ball 3
             ///////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////
             case 8:
-                if (!follower.isBusy() && MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                if (MathFunctions.roughlyEquals(spinPos, testDexer.backThirdIntakePos, 50)) {
                     follower.followPath(grab2);
                     step++;
                 }
@@ -312,7 +312,6 @@ public class RedFar extends OpMode {
             /// Step 11: wait for shot to finish
             ///////////////////////////////////////////////////////////////////
             case 10:
-                turret.rotateToGoal(.7);
                 if (follower.isBusy()){
                     break;
                 }
@@ -338,7 +337,7 @@ public class RedFar extends OpMode {
             ///////////////////////////////////////////////////////////////////
             case 12:
                 if (!follower.isBusy()) {
-                    intake.runBack();
+                    intake.runBackReverse();
                     intakeSide = "back";
                     testDexer.setSpinState(1);
                     step++;
@@ -372,7 +371,7 @@ public class RedFar extends OpMode {
             /// Step 16: ball 5
             ///////////////////////////////////////////////////////////////////
             case 15:
-                if(MathFunctions.roughlyEquals(spinPos, testDexer.frontSecondIntakePos, 50)){
+                if(MathFunctions.roughlyEquals(spinPos, testDexer.backSecondIntakePos, 50)){
                     follower.followPath(jerk3Two);
                     step++;
                     spindexerDelayTimer.reset();
@@ -397,7 +396,7 @@ public class RedFar extends OpMode {
             /// Step 18: ball 6
             ///////////////////////////////////////////////////////////////////
             case 17:
-                if (MathFunctions.roughlyEquals(spinPos, testDexer.frontThirdIntakePos, 50)) {
+                if (MathFunctions.roughlyEquals(spinPos, testDexer.backThirdIntakePos, 50)) {
                     follower.followPath(grab3);
                     step++;
                 }
@@ -449,8 +448,7 @@ public class RedFar extends OpMode {
 
             case 22:
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.4);
-                    intake.runBack();
+                    intake.runBackReverse();
                     intakeSide = "back";
                     testDexer.setSpinState(1);
                     follower.followPath(grab4);
@@ -524,20 +522,20 @@ public class RedFar extends OpMode {
         final Pose shootMid2 = new Pose(94, 50,  Math.toRadians(180));
         final Pose shootPoseFar = new Pose(84, 16, Math.toRadians(180));
         final Pose grabPose1 = new Pose(98, 58, Math.toRadians(180));
-        final Pose grabPose1One = new Pose(106, 58, Math.toRadians(180));
-        final Pose grabPose1Two = new Pose(113, 58, Math.toRadians(180));
-        final Pose grabbed1 = new Pose(124, 58, Math.toRadians(180));
+        final Pose grabPose1One = new Pose(104, 58, Math.toRadians(180));
+        final Pose grabPose1Two = new Pose(111, 58, Math.toRadians(180));
+        final Pose grabbed1 = new Pose(122, 58, Math.toRadians(180));
         final Pose rampMid = new Pose(122, 67, Math.toRadians(225));
         final Pose ramp = new Pose(129, 70, Math.toRadians(180));
         final Pose grabPose2 = new Pose(98, 34, Math.toRadians(180));
-        final Pose grabPose2One = new Pose(106, 34, Math.toRadians(180));
-        final Pose grabPose2Two = new Pose(113, 34, Math.toRadians(180));
+        final Pose grabPose2One = new Pose(104, 34, Math.toRadians(180));
+        final Pose grabPose2Two = new Pose(111, 34, Math.toRadians(180));
         final Pose grabbed2 = new Pose(124, 34, Math.toRadians(180));
-        final Pose grabPose3 = new Pose(132, 20, Math.toRadians(150));
-        final Pose grabPose3One = new Pose(132, 18, Math.toRadians(150));
-        final Pose grabPose3Two = new Pose(132, 11, Math.toRadians(150));
+        final Pose grabPose3 = new Pose(132, 20, Math.toRadians(180));
+        final Pose grabPose3One = new Pose(132, 18, Math.toRadians(180));
+        final Pose grabPose3Two = new Pose(132, 11, Math.toRadians(180));
         final Pose grabbed3 = new Pose(132, 10, Math.toRadians(180));
-        final Pose parkPose = new Pose(120, 70,   Math.toRadians(180));
+        final Pose parkPose = new Pose(108, 36,   Math.toRadians(180));
 
 
         preload = follower.pathBuilder()

@@ -38,9 +38,9 @@ public class testOp extends OpMode {
     turretServo turret = new turretServo();
 
     //SpinDexer spindexer = new SpinDexer();
-    double goalX = 6;
+    double goalX = 0;
 
-    double goalY = 138;
+    double goalY = 144;
     double turretXOffset;
     double turretYOffset;
 
@@ -105,7 +105,7 @@ public class testOp extends OpMode {
     @Override
     public void init(){
         if(RobotConstants.side.equals("red")){
-            goalX = 138;
+            goalX = 144;
         }
         drive.init(hardwareMap);
         shooter.init(hardwareMap, telemetry);
@@ -121,7 +121,7 @@ public class testOp extends OpMode {
 
     }
     public void start(){
-        shooter.spinUp(1200);
+        shooter.spinUp(1350);
     }
 
     @Override
@@ -153,19 +153,29 @@ public class testOp extends OpMode {
         int spinPos = testDexer.updatePos();
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
-        desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+        if(RobotConstants.side.equals("blue")){
+            desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+        }else{
+            desiredTurretAngle = turret.calculateTurnRed(goalAngle, robotHeading);
+        }
+
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
-        Log.v("Turn Pow: ", " " + gamepad1.right_stick_x);
+        drive.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, 1);
+
 
         //NEW CONTROLS _______________________________________________________________________________
 
         if(gamepad1.right_trigger > 0.1){
             intake.runFront();
+            if(testDexer.getSpinState() == TestDexer.SpinState.MANUAL_OVERRIDE && intakeSide.equals("back")){
+                testDexer.targetPos = 238749;
+                testDexer.spinToNextManual("front", spinPos);
+            }
             intakeSide = "front";
             if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
                 testDexer.setSpinState(1);
             }
+
         }
         else if(gamepad1.right_bumper){
             intake.runFrontReverse();
@@ -175,10 +185,17 @@ public class testOp extends OpMode {
         }
         if(gamepad1.left_trigger > .1){
             intake.runBackReverse();
+
+            if(testDexer.getSpinState() == TestDexer.SpinState.MANUAL_OVERRIDE && intakeSide.equals("front")){
+                testDexer.targetPos = 238749;
+                testDexer.spinToNextManual("back", spinPos);
+            }
             intakeSide = "back";
             if(ballCount < 3 && testDexer.getSpinState() != TestDexer.SpinState.GO_BACK && testDexer.getSpinState() != TestDexer.SpinState.MANUAL_OVERRIDE){
                 testDexer.setSpinState(1);
             }
+
+
         }
         else if(gamepad1.left_bumper){
             intake.runBack();
@@ -263,6 +280,12 @@ public class testOp extends OpMode {
 
         }
 
+//        if(gamepad1.aWasPressed()){
+//            turret.turrConst -= .01;
+//        }
+//        if(gamepad1.bWasPressed()){
+//            turret.turrConst += .01;
+//        }
 
         if(slowMode){
             powerSetter = 0.6;
@@ -274,16 +297,16 @@ public class testOp extends OpMode {
             EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION();
         }
 
-        if(testDexer.resetNeeded){
-            if(spinPos == testDexer.getTargetPos()){
-                testDexer.encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                testDexer.encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-                testDexer.setTargetPos(0);
-            }
-            if(spinPos == 0){
-                testDexer.resetNeeded = false;
-            }
-        }
+//        if(testDexer.resetNeeded){
+//            if(spinPos == testDexer.getTargetPos()){
+//                testDexer.encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//                testDexer.encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+//                testDexer.setTargetPos(0);
+//            }
+//            if(spinPos == 0){
+//                testDexer.resetNeeded = false;
+//            }
+//        }
 
 
         testDexer.setPowerToPosition2(spinPos, runtime.seconds());
@@ -323,6 +346,7 @@ public class testOp extends OpMode {
           telemetry.addData("spindexer pos", spinPos);
         telemetry.addData("spinstate ", testDexer.getSpinState());
         telemetry.addData("spindexer target ", testDexer.getTargetPos());
+        telemetry.addData("Turret Constant: ", " " + turret.turrConst);
 //        telemetry.addData("ballcount ", ballCount);
 ////        telemetry.addData("current order ",testDexer.currentOrder);
 ////        telemetry.addData("pos readings ", testDexer.getPatternOrSpots("1") + testDexer.getPatternOrSpots("2") + testDexer.getPatternOrSpots("3"));

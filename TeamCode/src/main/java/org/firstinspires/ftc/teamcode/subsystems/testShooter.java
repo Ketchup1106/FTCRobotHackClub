@@ -90,7 +90,7 @@ public class testShooter {
         switch(launchState){
 
             case IDLE:
-                spinUp(velocity);
+                spinUp(1350);
                 if(isActive) {
                     isActive = false;
                 }
@@ -165,19 +165,17 @@ public class testShooter {
 
     public double setVel(double distance){
         return MathFunctions.clamp(
-                (0.00372448*Math.pow(distance, 2) +
-                (4.41519*distance)+
-                774.65528)
+                ((5.38095*distance)+725.42857)
                 ,0, 2000);
     }
     public void setHood(double distance){
         hoodAngle.setPosition(
                 MathFunctions.clamp(
-                (-(8.95363*(1/(Math.pow(10, 9)))) * Math.pow(distance, 4)) +
-                (0.00000475784* Math.pow(distance, 3)) -
-                (0.000940881*Math.pow(distance, 2)) +
-                (0.0851894*distance) -
-                (2.16805),
+                (-(2.16985*(1/(Math.pow(10, 8)))) * Math.pow(distance, 4)) +
+                (0.00000805836* Math.pow(distance, 3)) -
+                (0.00110993*Math.pow(distance, 2)) +
+                (0.0753535*distance) -
+                (1.56595),
                 0, 1));
     }
 }

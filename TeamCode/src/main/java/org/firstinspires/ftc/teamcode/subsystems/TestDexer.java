@@ -164,10 +164,10 @@ public class TestDexer {
     public void spinToNextManual(String frontOrBack, int spinPos){
         int subtractor = 0;
         if(Math.abs(spinPos/8192) >= 1){
-            subtractor = 16384;
+            subtractor = 8192*(spinPos/8192);
         }
         if(frontOrBack.equals("front")){
-            if(targetPos == frontPos || targetPos == -16384){
+            if(targetPos == frontPos || targetPos == frontPos - 16384){
                 targetPos = frontSecondIntakePos - subtractor;
             }
             else if(targetPos == frontSecondIntakePos || targetPos == frontSecondIntakePos - 16384){
@@ -176,9 +176,8 @@ public class TestDexer {
             else if(targetPos == frontThirdIntakePos || targetPos == frontThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3 || targetPos == shootStartingAtSpot1 + 13000 || targetPos == shootStartingAtSpot2 + 13000 || targetPos == shootStartingAtSpot3 + 13000){
                 targetPos = frontPos - subtractor;
             }
-            if(targetPos > spinPos){
-                targetPos -= 16384;
-                resetNeeded = true;
+            else{
+                targetPos = frontPos;
             }
         }
         else if(frontOrBack.equals("back")){
@@ -190,11 +189,10 @@ public class TestDexer {
             }
             else if(targetPos == backThirdIntakePos ||  targetPos == backThirdIntakePos - 16384 || targetPos == shootStartingAtSpot1 || targetPos == shootStartingAtSpot2 || targetPos == shootStartingAtSpot3  || targetPos == shootStartingAtSpot1 + 13000 || targetPos == shootStartingAtSpot2 + 13000 || targetPos == shootStartingAtSpot3 + 13000){
                 targetPos = backPos - subtractor;
+            }else{
+                targetPos = backPos;
             }
-            if(targetPos > spinPos){
-                targetPos -= 16384;
-                resetNeeded = true;
-            }
+
         }
     }
     //step5: set up for shooting

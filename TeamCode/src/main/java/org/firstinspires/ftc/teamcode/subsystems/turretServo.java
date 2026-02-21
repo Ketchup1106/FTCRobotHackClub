@@ -14,7 +14,7 @@ public class turretServo {
 
     double gearRatio = 26/103.0;
 
-    double turrConst = (double)  1/7.5;
+    public double turrConst = .24;
 
     public double posPerDegree = 1.0/360;
     public double posPerRadian = 1/( Math.PI);
@@ -37,11 +37,11 @@ public class turretServo {
         return turnNeeded;
     }
     public double calculateTurnRed(double goalAngle, double robotAngle) {
-        robotAngle = fixNegativeHeading(Math.toDegrees(robotAngle));
-        turnNeeded = (robotAngle * posPerRadian - goalAngle * posPerRadian);
-        if(turnNeeded > posLimit || turnNeeded < 0){
-            return 0;
-        }
+        robotAngle = fixNegativeHeading((robotAngle)); //returns in rads
+        turnNeeded = ((robotAngle * posPerRadian - goalAngle * posPerRadian));
+
+        turnNeeded -= (goalAngle - (Math.PI)/4) * turrConst * posPerRadian;
+
         return turnNeeded;
     }
     public void rotateToGoal(double turn){
