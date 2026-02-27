@@ -1,24 +1,20 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.util.Log;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.AprilTagStuff;
 import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 //import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.TestDexer;
 import org.firstinspires.ftc.teamcode.subsystems.testShooter;
 import org.firstinspires.ftc.teamcode.subsystems.turretServo;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 @TeleOp(name = "FAR Blue Teleop")
@@ -153,14 +149,18 @@ public class testOp extends OpMode {
         int spinPos = testDexer.updatePos();
         goalDist = Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)); //pythagorean theorem
         goalAngle = (Math.atan2(disY, disX)); //inverse trig
-        if(RobotConstants.side.equals("blue")){
-            desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
-        }else{
+        if(RobotConstants.side.equals("red")){
             desiredTurretAngle = turret.calculateTurnRed(goalAngle, robotHeading);
+            drive.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
+
+        }else{
+
+            desiredTurretAngle = turret.calculateTurnBlue(goalAngle, robotHeading);
+            drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, powerSetter);
         }
 
         //follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        drive.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, 1);
+
 
 
         //NEW CONTROLS _______________________________________________________________________________
@@ -205,6 +205,16 @@ public class testOp extends OpMode {
         }
         if(gamepad1.yWasPressed()){
             slowMode = !slowMode;
+        }
+        if(gamepad1.bWasPressed()){
+            if(RobotConstants.side.equals("blue")){
+                RobotConstants.side = "red";
+                goalX = 144;
+            }
+            else {
+                RobotConstants.side = "blue";
+                goalX = 0;
+            }
         }
         if(gamepad2.yWasPressed()){
             shooter.shoot3();
@@ -288,13 +298,19 @@ public class testOp extends OpMode {
 //        }
 
         if(slowMode){
-            powerSetter = 0.6;
+            powerSetter = 0.4;
         }
         else{
-            powerSetter = 0.2;
+            powerSetter = 1;
         }
         if(gamepad2.dpadDownWasPressed()){ //corner calib
-            EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION();
+            if(RobotConstants.side.equals("red")){
+                EXECUTEBIGDADDYPRATHAMHOMINGFUNCTIONRED();
+            }
+            else{
+                EXECUTEBIGDADDYPRATHAMHOMINGFUNCTIONBLUE();
+            }
+
         }
 
 //        if(testDexer.resetNeeded){
@@ -372,7 +388,10 @@ public class testOp extends OpMode {
 //
 ////        telemetry.update();
     }
-    public void EXECUTEBIGDADDYPRATHAMHOMINGFUNCTION(){
+    public void EXECUTEBIGDADDYPRATHAMHOMINGFUNCTIONBLUE(){
+        follower.setPose(new Pose(135.05, 8.5965,  Math.toRadians(180))); //change later
+    }
+    public void EXECUTEBIGDADDYPRATHAMHOMINGFUNCTIONRED(){
         follower.setPose(new Pose(8.95, 8.5965,  Math.toRadians(180))); //change later
     }
     public void lockShooter(){ //should never have to be used
